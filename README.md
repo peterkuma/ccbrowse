@@ -1,9 +1,10 @@
-CCloud
+ccloud
 ======
 
-CCloud is a browser of data from atmospheric profilers. It is comprised
-of a web application and a backend for importing various types of product
-files. You can see an example at [browse.ccplot.org](http://browse.ccplot.org).
+ccloud is an open-source web application for browsing data from atmospheric
+profilers. It is comprised of a web application and a backend for importing
+various types of product files.
+<!--You can see an example at [browse.ccplot.org](http://browse.ccplot.org).-->
 
 In the current version, it supports importing a number of datasets from the
 CALIPSO satellite, but new importing classes can be added if needed.
@@ -98,7 +99,7 @@ How it works
 ccloud consists of two parts—the backend and the web application.
 The backend is responsible for importing data files into the profile as
 specified by `profile.json`. Normally, data is read from HDF files,
-interpolated onto a regular grid, and saved as tiles of 256x256 px. The tiles are
+interpolated onto a regular grid, and saved as tiles of 256x256 px. Tiles are
 saved as grayscale PNG images, with every four adjacent 8-bit pixels coding one
 32-bit float value, resulting in images of 1024x256 pixels.
 
