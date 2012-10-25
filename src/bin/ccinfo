@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+
+import sys
+import os
+import getopt
+from datetime import datetime
+import json
+
+import ccloud
+
+
+def usage():
+    sys.stderr.write('''Usage: {program_name} [DIRECTORY]
+       {program_name} -h
+
+Try `{program_name} -h\' for more information.
+'''.format(program_name=program_name))
+
+
+def print_help():
+    print '''Usage: {program_name} [DIRECTORY]
+       {program_name} -h
+
+Print information about a repository
+
+Positional arguments:
+  DIRECTORY       repository directory
+
+Report bugs to <ccplot-general@lists.sourceforge.net>'''.format(program_name=program_name)
+
+
+if __name__ == "__main__":
+    program_name = sys.argv[0]
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "h", ['help'])
+    except getopt.GetoptError, err:
+        print unicode(err)
+        usage()
+        sys.exit(1)
+    
+    dirname = '.'
+    if len(args) == 1: dirname = args[0]
+    if len(args) > 1:
+        usage()
+        sys.exit(1)
+
+    filename = os.path.join(dirname, 'profile.json')
+
+    try: profile = ccloud.Profile(filename)
+    except IOError, e:
+        print >> sys.stderr, u'%s: %s: %s' % (program_name, filename, e.strerror)
+        sys.exit(1)
+
+    try: print 'Name: %s' % profile['name']
+    except KeyError: pass
+    try: print 'Origin-X: %s' % profile['origin'][0].strftime('%Y-%m-%d %H:%M:%S')
+    except KeyError: pass
+    try: print 'Origin-Z: %d' % profile['origin'][1]
+    except KeyError: pass
+
+    if profile.has_key('zoom'):
+        sys.stdout.write('Zoom-Levels:')
+        i = 0
+        for level,zoom in [(k, profile['zoom'][k]) for k in sorted(profile['zoom'])]:
+            if i != 0: sys.stdout.write(', ')
+            if i % 4 == 0: sys.stdout.write('\n    ')
+            sys.stdout.write('%s (%dx%d)' % (
+                level,
+                zoom.get('width',''),
+                zoom.get('height',''),
+            ))
+            i += 1
+        print ''
+
+    if profile.has_key('layers'):
+        print 'Layers:'
+        for name,layer in [(k, profile['layers'][k]) for k in sorted(profile['layers'])]:
+            sys.stdout.write('    %s (%s;%s)' % (
+                name,
+                layer.get('dimensions',''),
+                layer.get('format',''),
+            ))
+            if layer.has_key('title'): print ' - %s' % layer['title']
+            else: print ''

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   id="svg5439"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="New document 7">
+  <defs
+     id="defs5441">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective5447" />
+    <inkscape:perspective
+       id="perspective5422"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient8178"
+       id="radialGradient4593"
+       gradientUnits="userSpaceOnUse"
+       cx="951.59967"
+       cy="43.8064"
+       fx="951.59967"
+       fy="43.8064"
+       r="12.225328" />
+    <linearGradient
+       id="linearGradient8178">
+      <stop
+         style="stop-color:#000000;stop-opacity:0.32173914;"
+         offset="0"
+         id="stop8180" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop8182" />
+    </linearGradient>
+    <filter
+       color-interpolation-filters="sRGB"
+       inkscape:collect="always"
+       id="filter8198">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.54142742"
+         id="feGaussianBlur8200" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.8"
+     inkscape:cx="70.84573"
+     inkscape:cy="33.61701"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1646"
+     inkscape:window-height="1023"
+     inkscape:window-x="34"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5444">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-366.99393,-524.36826)">
+    <path
+       sodipodi:type="arc"
+       style="color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.15067613;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter8198);enable-background:accumulate"
+       id="path4563"
+       sodipodi:cx="951.59967"
+       sodipodi:cy="43.8064"
+       sodipodi:rx="11.074652"
+       sodipodi:ry="11.074652"
+       d="m 962.67432,43.8064 c 0,6.116362 -4.95829,11.074652 -11.07465,11.074652 -6.11636,0 -11.07465,-4.95829 -11.07465,-11.074652 0,-6.116361 4.95829,-11.074651 11.07465,-11.074651 6.11636,0 11.07465,4.95829 11.07465,11.074651 z"
+       transform="matrix(0.64651284,0,0,0.64651284,-240.22748,504.04686)"
+       inkscape:export-filename="/mnt/data1/www/ccloud/www/img/favicon-16.png"
+       inkscape:export-xdpi="89.931732"
+       inkscape:export-ydpi="89.931732" />
+    <path
+       sodipodi:end="6.2831845"
+       sodipodi:start="4.2405082"
+       sodipodi:type="arc"
+       style="color:#000000;fill:#0197fd;stroke:none;stroke-width:2.30135226;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path4567"
+       sodipodi:cx="951.59967"
+       sodipodi:cy="43.8064"
+       sodipodi:rx="11.074652"
+       sodipodi:ry="11.074652"
+       d="m 946.56555,33.942043 c 5.44794,-2.780268 12.11821,-0.617696 14.89848,4.830238 0.79553,1.558836 1.21029,3.284015 1.21029,5.03411 l -11.07465,9e-6 z"
+       transform="matrix(0.59541431,0,0,0.59541431,-191.60215,506.2853)"
+       inkscape:export-filename="/mnt/data1/www/ccloud/www/img/favicon-16.png"
+       inkscape:export-xdpi="89.931732"
+       inkscape:export-ydpi="89.931732" />
+    <path
+       sodipodi:end="4.7161809"
+       sodipodi:start="3.1477358"
+       sodipodi:type="arc"
+       style="color:#000000;fill:#ff00ff;stroke:none;stroke-width:2.30135226;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path4569"
+       sodipodi:cx="951.59967"
+       sodipodi:cy="43.8064"
+       sodipodi:rx="11.074652"
+       sodipodi:ry="11.074652"
+       d="m 940.52523,43.738368 c 0.0375,-6.10608 5.01028,-11.029694 11.11643,-11.00654 l -0.042,11.074572 z"
+       transform="matrix(0.59541431,0,0,0.59541431,-191.60215,506.2853)"
+       inkscape:export-filename="/mnt/data1/www/ccloud/www/img/favicon-16.png"
+       inkscape:export-xdpi="89.931732"
+       inkscape:export-ydpi="89.931732" />
+    <path
+       transform="matrix(0.59541431,0,0,0.59541431,-191.60215,506.2853)"
+       d="m 947.51692,54.101013 c -4.25634,-1.688026 -7.03498,-5.821381 -6.9914,-10.400021 l 11.07415,0.105408 z"
+       sodipodi:ry="11.074652"
+       sodipodi:rx="11.074652"
+       sodipodi:cy="43.8064"
+       sodipodi:cx="951.59967"
+       id="path4571"
+       style="color:#000000;fill:#98fc66;stroke:none;stroke-width:2.30135226;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       sodipodi:type="arc"
+       sodipodi:start="1.9483606"
+       sodipodi:end="3.1511108"
+       inkscape:export-filename="/mnt/data1/www/ccloud/www/img/favicon-16.png"
+       inkscape:export-xdpi="89.931732"
+       inkscape:export-ydpi="89.931732" />
+    <path
+       sodipodi:end="7.3722438"
+       sodipodi:start="6.2755657"
+       sodipodi:type="arc"
+       style="color:#000000;fill:#fd3301;stroke:none;stroke-width:2.30135226;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path4573"
+       sodipodi:cx="951.59967"
+       sodipodi:cy="43.8064"
+       sodipodi:rx="11.074652"
+       sodipodi:ry="11.074652"
+       d="m 962.674,43.722017 c 0.0316,4.152907 -2.26285,7.974461 -5.94322,9.898641 L 951.59967,43.8064 z"
+       transform="matrix(0.59541431,0,0,0.59541431,-191.60215,506.2853)"
+       inkscape:export-filename="/mnt/data1/www/ccloud/www/img/favicon-16.png"
+       inkscape:export-xdpi="89.931732"
+       inkscape:export-ydpi="89.931732" />
+    <path
+       sodipodi:end="1.9540019"
+       sodipodi:start="1.033953"
+       sodipodi:type="arc"
+       style="color:#000000;fill:#ffff00;stroke:none;stroke-width:2.30135226;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path4575"
+       sodipodi:cx="951.59967"
+       sodipodi:cy="43.8064"
+       sodipodi:rx="11.074652"
+       sodipodi:ry="11.074652"
+       d="m 957.26353,53.323152 c -2.9712,1.768305 -6.5978,2.047445 -9.80462,0.754665 L 951.59967,43.8064 z"
+       transform="matrix(0.59541431,0,0,0.59541431,-191.60215,506.2853)"
+       inkscape:export-filename="/mnt/data1/www/ccloud/www/img/favicon-16.png"
+       inkscape:export-xdpi="89.931732"
+       inkscape:export-ydpi="89.931732" />
+    <path
+       transform="matrix(0.59541431,0,0,0.59541431,-191.60214,506.2853)"
+       d="m 962.67432,43.8064 c 0,6.116362 -4.95829,11.074652 -11.07465,11.074652 -6.11636,0 -11.07465,-4.95829 -11.07465,-11.074652 0,-6.116361 4.95829,-11.074651 11.07465,-11.074651 6.11636,0 11.07465,4.95829 11.07465,11.074651 z"
+       sodipodi:ry="11.074652"
+       sodipodi:rx="11.074652"
+       sodipodi:cy="43.8064"
+       sodipodi:cx="951.59967"
+       id="path4577"
+       style="color:#000000;fill:url(#radialGradient4593);fill-opacity:1;stroke:none;stroke-width:1.15067613;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       sodipodi:type="arc"
+       inkscape:export-xdpi="89.931732"
+       inkscape:export-ydpi="89.931732"
+       inkscape:export-filename="/mnt/data1/www/ccloud/www/img/favicon-16.png" />
+  </g>
+</svg>

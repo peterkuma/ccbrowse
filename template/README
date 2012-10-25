@@ -1,0 +1,16 @@
+This is a ccloud repository.
+
+CCloud is an application for visualizing data from atmospheric profilers.
+See https://github.com/peterkuma/ccloud/ for more information.
+
+Contents:
+
+    cache               tile cache
+    colormaps           custom colormaps
+    layers              layer data
+    products            raw product files
+    profile.json        profile specification
+    echo.json           NASA ECHO service login details
+
+Try `ccloud --help' for a list of commands that can be performed
+on the repository.

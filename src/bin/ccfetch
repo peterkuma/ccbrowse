@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+
+import sys
+import getopt
+from datetime import datetime
+import json
+
+import ccloud
+from ccloud.ccfetch import Calipso
+
+
+def usage():
+    sys.stderr.write('''Usage: {program_name} [OPTION]... -t TYPE -c FILE STARTDATE STOPDATE
+       {program_name} --help
+       
+Try `{program_name} --help\' for more information.
+'''.format(program_name=program_name))
+
+
+def print_help():
+    print '''Usage: {program_name} [OPTION]... -t TYPE -c FILE STARTDATE STOPDATE
+       {program_name} --help
+
+Fetch product files in a specified time interval.
+
+Positional arguments:
+  STARTDATE       start date specified as "YEAR-MONTH-DAY HOUR:MINUTE"
+  STOPDATE        stop date specified as "YEAR-MONTH-DAY HOUR:MINUTE"
+
+Optional arguments:
+
+  -c FILE          service configuration file
+  --continue ID    continue fetching order with specified tracking ID
+  --help           print this help information
+  -t TYPE          mission name
+
+Valid values for TYPE are: calipso
+
+Report bugs to <ccplot-general@lists.sourceforge.net>'''.format(program_name=program_name)
+
+
+if __name__ == "__main__":
+    program_name = sys.argv[0]
+    
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "c:t:h", ['help', 'continue='])
+    except getopt.GetoptError, err:
+        print unicode(err)
+        usage()
+        sys.exit(1)
+    
+    type = None
+    filename = 'echo.json'
+    tracking_id = None
+    
+    for opt,value in opts:
+        if opt == '--help':
+            print_help()
+            sys.exit(0)
+        elif opt == '-t':
+            type = value
+        elif opt == '-c':
+            filename = value
+        elif opt == '--continue':
+            tracking_id = value
+
+    if (len(args) != 2 or type == None):
+        usage()
+        sys.exit(1)
+    
+    try:
+        startdate = datetime.strptime(args[0], '%Y-%m-%d %H:%M')
+        stopdate = datetime.strptime(args[1], '%Y-%m-%d %H:%M')
+    except ValueError as e:
+        print >> sys.stderr, '%s: %s' % (program_name, e)
+        sys.exit(1)
+    
+    try:
+        with open(filename) as fp:
+            config = json.load(fp)
+    except IOError as e:
+        print >> sys.stderr, '%s: %s: %s' % (program_name, filename, e.strerror)
+    
+    if type == 'calipso':
+        calipso = Calipso(config)
+        try: calipso.order(startdate, stopdate, tracking_id=tracking_id)
+        except KeyboardInterrupt: pass
+        #finally: calipso.cleanup()
+    else:
+        print >> sys.stderr, '%s: Unrecognized type "%s"' % (program_name, type)
+        sys.exit(1)

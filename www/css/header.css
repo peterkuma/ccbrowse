@@ -1,0 +1,84 @@
+header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 80px;
+    box-shadow: 2px 2px 6px black;
+    -webkit-box-shadow: 2px 2px 6px black;
+    position: relative;
+    z-index: 200;
+    background-color: #111;
+}
+
+header h1 {
+    position: absolute;
+    left: 6px;
+    top: 10px;
+    width: 200px;
+    height: 50px;
+    color: transparent;
+    font-family: "Asap", sans-serif;
+    font-size: 32pt;
+    margin: 0;
+    background: url('../img/ccloud.png') no-repeat 14px 18px;
+}
+
+header h1 sup {
+    color: #ccff99;
+    font-size: 50%;
+    position: relative;
+    top: -8px;
+    left: 5px;
+}
+
+header h1 a {
+    display: block;
+    padding: 10px;
+}
+
+header h1 a:hover {
+    text-decoration: none;
+}
+
+#source-selection {
+    width: 250px;
+    margin: 0 auto;
+    color: #eee;
+    font-size: 18pt;
+}
+
+#source-selection a {
+    cursor: pointer;
+    display: inline-block;
+    margin: 30px 5px 0 5px;
+    padding: 2px 8px;
+    border-radius: 2px;
+}
+
+#source-selection a.active {
+    background-color: #0197fd;
+    color: black;
+}
+
+#toolbox {
+    position: absolute;
+    right: 5px;
+    bottom: 0;
+    color: #eee;
+    font-size: 20pt;
+}
+
+.github-ribbon + #toolbox {
+    right: 100px;
+}
+
+#toolbox a {
+    cursor: pointer;
+    display: block;
+    margin: 10px;
+    padding: 10px 20px 10px 50px;
+}
+
+#toolbox a[href="/about/"] {
+    background: url('../img/about.png') no-repeat 20px center;
+}

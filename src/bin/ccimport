@@ -1,0 +1,109 @@
+#!/usr/bin/env python
+
+import sys
+import getopt
+import logging
+
+import ccloud
+from ccloud.ccimport import Calipso, NaturalEarth
+
+SUPPORTED_TYPES = ['calipso', 'naturalearth']
+
+def usage():
+    print >> sys.stderr, '''Usage: {program_name} [-l LAYER] [-z ZOOM] -t TYPE PROFILE FILE
+       {program_name} --help
+Try `{program_name} --help' for more information.'''.format(
+        program_name=program_name
+    )
+    
+def print_help():
+    print '''Usage: {program_name} [-l LAYER] [-z ZOOM] -t TYPE PROFILE FILE
+       {program_name} --help
+
+Import data from FILE into profile specified by the json file PROFILE.
+
+Optional arguments:
+  -l LAYER         import only specified profile layer
+  -t TYPE          type of FILE or `help' for a list of supported types
+  -z ZOOM          import only specified zoom level'''.format(
+        program_name=program_name
+    )
+
+
+def save(product, profile, layer=None, zoom=None):
+    for level in sorted(profile['zoom'].keys()):
+        if zoom != None and level != zoom: continue
+        for l in product.layers():
+            if layer != None and l != layer: continue
+            line = None
+            X = product.xrange(l, level)
+            Z = product.zrange(l, level)
+            size = len(X)*len(Z)
+            i = 1
+            for x in X:
+                for z in Z:
+                    if line: sys.stderr.write('\r\033[K')
+                    line = '%s level %s tiles %d--%d [%d/%d] %.f%%' % \
+                           (l, level, X[0], X[-1], i, size, 100.0*i/size)
+                    sys.stderr.write(line)
+                    try:
+                        tile = product.tile(l, level, x, z)
+                        profile.save(l, tile)
+                    except Exception, e:
+                        logging.warning(e)
+                    i += 1
+            if line: print '\r\033[K%s level %s tiles %d--%d' % \
+                           (l, level, X[0], X[-1])
+
+
+if __name__ == "__main__":
+    program_name = sys.argv[0]
+    
+    logging.basicConfig(format='%(message)s', level=logging.INFO)
+    
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "l:t:hz:", ['help'])
+    except getopt.GetoptError, err:
+        print unicode(err)
+        usage()
+        sys.exit(1)
+    
+    file_type = None
+    layer = None
+    zoom = None
+    
+    for opt,value in opts:
+        if opt == '-l':
+            layer = value
+        if opt == '--help':
+            print_help()
+            sys.exit(0)
+        if opt == '-t':
+            if value == 'help':
+                print 'Supported types:'
+                for t in SUPPORTED_TYPES: print '  %s' % t
+                sys.exit(0)
+            file_type = value
+        if opt == '-z':
+            zoom = value
+
+    if (len(args) != 2 or file_type == None):
+        usage()
+        sys.exit(1)
+    
+    profile_filename = args[0]
+    filename = args[1]
+    
+    try:
+        with ccloud.Profile(profile_filename) as profile:
+            if file_type == 'calipso':
+                product = Calipso(filename, profile)
+                save(product, profile, layer=layer, zoom=zoom)
+            elif file_type == 'naturalearth':
+                naturalearth = NaturalEarth(filename, profile)
+                naturalearth.save(layer=layer)
+            else:
+                print >> sys.stderr, '%s: Unrecognized type %s' % (program_name, file_type)
+                sys.exit(1)
+    except KeyboardInterrupt: pass
+    

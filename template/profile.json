@@ -1,0 +1,135 @@
+{
+    "name": "A-Train",
+    "origin": ["2006-01-01 00:00:00", 0],
+    "prefix": "",
+    "zoom":
+    {
+        "0":
+        {
+            "width": 131072,
+            "height": 65636
+        },
+        "1":
+        {
+            "width": 65636,
+            "height": 32768
+        },
+        "2":
+        {
+            "width": 32768,
+            "height": 16384
+        },
+        "3":
+        {
+            "width": 16384,
+            "height": 8192
+        },
+        "4":
+        {
+            "width": 8192,
+            "height": 4096
+        },
+        "5":
+        {
+            "width": 4096,
+            "height": 2048
+        },
+        "6":
+        {
+            "width": 2048,
+            "height": 1024
+        }
+    },
+    "z-bounds": [0, 15000],
+    "index": "index.sqlite",
+    "layers": {
+        "calipso532":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "xz",
+            "interpolation": "nearest-neightbor",
+            "units": "km<sup>-1</sup> sr<sup>-1</sup>",
+            "title": "Total Att. Backscatter 532nm",
+            "offset": [15, 0],
+            "src": "layers/calipso532/{zoom}/{x},{z}.png",
+            "availability": "layers/calipso532/availability.json",
+            "attribution": "Data courtesy <a href=\"http://eosweb.larc.nasa.gov/PRODOCS/calipso/table_calipso.html\">NASA LARC Atmospheric Science Data Center</a>",
+            "colormap": "colormaps/calipso-backscatter.json"
+        },
+        "calipso532p":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "xz",
+            "interpolation": "nearest-neighbor",
+            "units": "km<sup>-1</sup> sr<sup>-1</sup>",
+            "title": "Perpendicular Att. Backscatter 532nm",
+            "offset": [15, 0],
+            "src": "layers/calipso532p/{zoom}/{x},{z}.png",
+            "availability": "layers/calipso532/availability.json",
+            "attribution": "Data courtesy <a href=\"http://eosweb.larc.nasa.gov/PRODOCS/calipso/table_calipso.html\">NASA LARC Atmospheric Science Data Center</a>",
+            "colormap": "colormaps/calipso-backscatter.json"
+        },
+        "pressure":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "xz",
+            "interpolation": "linear",
+            "units": "hPa",
+            "title": "Pressure",
+            "src": "layers/pressure/{zoom}/{x},{z}.png"
+        },
+        "longitude":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "x",
+            "interpolation": "linear",
+            "units": "degree",
+            "title": "Longitude",
+            "src": "layers/longitude/{zoom},{x}.png"
+        },
+        "latitude":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "x",
+            "interpolation": "linear",
+            "units": "degree",
+            "title": "Latitude",
+            "src": "layers/latitude/{zoom},{x}.png"
+        },
+        "trajectory":
+        {
+            "format": "geojson",
+            "dimensions": "x",
+            "inerpolation": "linear",
+            "units": "degree",
+            "title": "Trajectory",
+            "src": "layers/trajectory/{zoom}/{x}.json"
+        },
+        "geography":
+        {
+            "format": "geojson",
+            "title": "Geography",
+            "src": "layers/geography.json"
+        },
+        "geocoding":
+        {
+            "format": "geojson",
+            "dimensions": "x",
+            "title": "Geocoding",
+            "src": "layers/geocoding/{zoom}/{x}.json"
+        },
+        "places":
+        {
+            "format": "json",
+            "dimensions": "x",
+            "title": "Places",
+            "src": "layers/places/{zoom}/{x}.json",
+            "map": "layers/places/map.json"
+        }
+    }
+}

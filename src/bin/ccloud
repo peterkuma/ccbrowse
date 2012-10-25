@@ -1,0 +1,213 @@
+#!/usr/bin/env python
+
+import sys
+import os
+import getopt
+import shutil
+import subprocess
+
+from ccloud.config import sharepath
+
+def create(name):
+    try:
+        shutil.copytree(os.path.join(sharepath, 'template'), name)
+    except (shutil.Error, OSError) as e:
+        print >> sys.stderr, '%s: %s' % (program_name, e)
+        try: os.rmdir(name)
+        except: pass
+    
+def usage():
+    sys.stderr.write('''Usage: {program_name} COMMAND ARGUMENTS
+       {program_name} help COMMAND
+       {program_name} --help
+       
+Try `{program_name} --help\' for more information.
+'''.format(program_name=program_name))
+
+
+def print_help():
+    print '''Usage: {program_name} COMMAND ARGUMENTS
+       {program_name} help COMMAND
+       {program_name} --help
+       
+Perform commands on a ccloud repository.
+
+Available commands:
+  create        create a new repository
+  fetch         fetch product files
+  get           fetch and import products
+  import        import a product file
+  server        run the ccloud HTTP server
+
+Use `{program_name} help COMMAND' for more information about a command.
+
+Report bugs to <ccplot-general@lists.sourceforge.net>'''\
+    .format(program_name=program_name)
+
+def print_help_for(command):
+    if command == 'create':
+        print '''Usage: {program_name} create NAME
+
+Create a new repository.
+
+Positional arguments:
+  NAME          name of the repository'''.format(program_name=program_name)
+
+    elif command == 'get':
+        print '''Usage: {program_name} get TYPE STARTDATE STOPDATE
+
+Fetch and import products in the specified time interval.
+
+Positional arguments:
+  TYPE            type of the campaign
+  STARTDATE       start date specified as "YEAR-MONTH-DAY HOUR:MINUTE"
+  STOPDATE        stop date specified as "YEAR-MONTH-DAY HOUR:MINUTE"'''\
+    .format(program_name=program_name) 
+
+    elif command == 'fetch':
+        print '''Usage: {program_name} fetch TYPE STARTDATE STOPDATE
+
+Fetch product files in the specified time interval.
+
+Positional arguments:
+  TYPE            type of the campaign
+  STARTDATE       start date specified as "YEAR-MONTH-DAY HOUR:MINUTE"
+  STOPDATE        stop date specified as "YEAR-MONTH-DAY HOUR:MINUTE"'''\
+    .format(program_name=program_name)
+
+    elif command == 'import':
+        print '''Usage: {program_name} import TYPE FILE
+
+Import a product file.
+
+Positional arguments:
+  TYPE           type of FILE or `help' for a list of supported types
+  FILE           file to import'''.format(program_name=program_name)
+
+    elif command == 'server':
+        print '''Usage: {program_name} server [-d] [HOST] [PORT]
+
+Run the ccloud HTTP server.
+
+Positional arguments:
+  HOST           hostname (default: localhost)
+  PORT           port (default: 8080)
+
+Optional arguments:
+  -d             print debugging information'''\
+    .format(program_name=program_name) 
+
+    else:
+        print_help()
+
+if __name__ == "__main__":
+    program_name = sys.argv[0]
+    
+    if len(sys.argv) < 2:
+        if os.path.exists('profile.json'):
+            subprocess.call(['ccinfo'])
+            sys.exit(0)
+        usage()
+        sys.exit(1)
+    
+    #try:
+    #    opts, args = getopt.getopt(sys.argv[1:], "h", ['help'])
+    #except getopt.GetoptError, err:
+    #    print unicode(err)
+    #    usage()
+    #    sys.exit(1)
+    
+    #for opt,value in opts:
+    #    if opt == '-h' or opt == '--help':
+    #        print_help()
+    #        sys.exit(0)
+       
+    command = sys.argv[1]
+    
+    if command == '--help':
+        print_help()
+    
+    elif command == 'help':
+        if len(sys.argv) != 3:
+            print_help()
+            sys.exit(0)
+        print_help_for(sys.argv[2])
+    
+    elif command == 'create':
+        if len(sys.argv) != 3:
+            usage()
+            sys.exit(1)
+        name = sys.argv[2]
+        create(name)
+    
+    elif command in ('fetch', 'get'):
+        if len(sys.argv) != 5:
+            print_help_for(command)
+            sys.exit(1)
+
+        campaign = sys.argv[2]
+        startdate = sys.argv[3]
+        stopdate = sys.argv[4]
+
+        path = os.path.join('products', campaign)
+        try: os.makedirs(path)
+        except os.error, e: '%s: %s: %s' % (program_name, path, e.strerror)
+
+        cmd = ('ccfetch', '-c', '../../echo.json', '-t', campaign, startdate, stopdate)
+        
+        if command == 'fetch':
+            subprocess.call(cmd, cwd=path)
+        else:
+            p = subprocess.Popen(cmd, cwd=path, stdout=subprocess.PIPE)
+            output = p.communicate()[0]
+            files = output.split('\n')
+            for name in files:
+                filename = os.path.join(path, name)
+                cmd = ['ccimport', '-t', campaign, 'profile.json', filename]
+                subprocess.call(cmd)
+    
+    elif command == 'import':
+        if len(sys.argv) != 4:
+            print_help_for(command)
+            sys.exit(1)
+
+        file_type = sys.argv[2]
+        filename = sys.argv[3]
+
+        cmd = ['ccimport', '-t', file_type, 'profile.json', filename]
+        subprocess.call(cmd)
+        
+    elif command == 'server':
+        try:
+            opts, args = getopt.getopt(sys.argv[2:], 'd')
+        except getopt.GetoptError as err:
+            print unicode(err)
+            print_help_for(command)
+            sys.exit(1)
+        
+        debug = False
+        hostname = None
+        port = None
+        
+        for opt,value in opts:
+            if opt == '-d':
+                debug = True
+        
+        if len(args) > 2:
+            print_help_for(command)
+            sys.exit(1)
+        
+        if len(args) >= 1: hostname = args[0]
+        if len(args) >= 2: port = args[1]
+        
+        os.environ['PATH'] += ':'+os.path.dirname(__file__)
+        cmd = ['ccserver']
+        if debug: cmd.append('-d')
+        if hostname: cmd += ('-h', hostname)
+        if port: cmd += ('-p', port)
+        subprocess.call(cmd)
+        
+    else:
+        print >> sys.stderr, '%s: %s: Unknown command' % (program_name, command)
+        sys.exit(1)
+    

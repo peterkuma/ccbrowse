@@ -1,0 +1,39 @@
+#colormap-container {
+    background: #111;
+    width: 130px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    position: fixed;
+    right: 0;
+    top: 176px;
+    bottom: 0;
+    z-index: 50;
+}
+
+#colormap {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 20px;
+    right: 20px;
+    font-size: 10pt;
+    font-family: helvetica, sans-serif;
+}
+
+.colormap-over {
+    width: 20px;
+    height: 25px;
+    background: url('../img/over.png') no-repeat;
+}
+
+.colormap-under {
+    width: 20px;
+    height: 25px;
+    background: url('../img/under.png') no-repeat;
+}
+
+#colormap canvas {
+    margin: 10px;
+    height: 680px;
+    width: 130px;
+}

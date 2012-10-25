@@ -1,0 +1,66 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
+
+#location-bar {
+    position: absolute;
+    bottom: 6px;
+    width: 100%;
+    color: #eee;
+    font-size: 18pt;
+    font-family: "Open Sans";
+    font-weight: bold;
+    xtext-shadow: 0 0 3px #0197fd,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000;
+    xtext-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;
+    text-shadow: 2px 2px 0 #000;
+}
+
+#location-bar .center {
+    margin: 0 auto;
+    text-align: center;
+}
+
+#location-bar .left {
+    position: absolute;
+    left: 10px;
+    bottom: 0;
+    text-align: left;
+}
+
+#location-bar .right {
+    position: absolute;
+    right: 10px;
+    bottom: 0;
+    text-align: right;
+}
+
+/*
+#location-bar {
+    position: absolute;
+    left: 0;
+    right: 130px;
+    bottom: 0;
+    height: 30px;
+    xbackground-color: rgba(0,0,0,0.5);
+    background: url('../img/location-bar.png') repeat-x;
+    overflow: hidden;
+}
+
+#location-bar .container {
+    position: absolute;
+}
+
+#location-bar .container > div {
+    position: absolute;
+    width: 32px;
+    height: 30px;
+    color: #eee;
+    font-size: 12pt;
+    line-height: 30px;
+    xborder-left: 1px solid #888;
+    overflow-x: no-content;
+    text-align: center;
+}
+
+#location-bar .container > div:last-child {
+    xborder-right: 1px solid #888;
+}
+*/
