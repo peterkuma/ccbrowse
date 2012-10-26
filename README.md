@@ -19,6 +19,7 @@ First, make sure you have the following dependencies installed:
   * [PyNIO](http://www.pyngl.ucar.edu/Nio.shtml)
   * [Bottle](http://bottlepy.org/docs/dev/)
   * [Suds](https://fedorahosted.org/suds/)
+  * [Shapely](http://pypi.python.org/pypi/Shapely/)
   * [bintrees](http://pypi.python.org/pypi/bintrees/)
     (`pip install bintrees`)
 
