@@ -41,7 +41,6 @@
         }
     },
     "z-bounds": [0, 15000],
-    "index": "index.sqlite",
     "layers": {
         "calipso532":
         {
