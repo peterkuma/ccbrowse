@@ -9,7 +9,7 @@ various types of product files.
 In the current version, it supports importing a number of datasets from the
 CALIPSO satellite, but new importing classes can be added if needed.
 
-You might want to see a [screenshot](ccloud.png).
+You might want to see a [screenshot](https://raw.github.com/peterkuma/ccloud/master/ccloud.png).
 
 Installation
 ------------
