@@ -1,6 +1,10 @@
 ccloud
 ======
 
+<a href="https://github.com/peterkuma/ccloud/ccloud.png?raw=true">
+    <img src="https://github.com/peterkuma/ccloud/ccloud-small.png?raw=true" style="float: right" />
+</a>
+
 ccloud is an open-source web application for browsing data from atmospheric
 profilers. It is comprised of a web application and a backend for importing
 various types of product files.
