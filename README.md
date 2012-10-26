@@ -1,10 +1,6 @@
 ccloud
 ======
 
-<a href="https://github.com/peterkuma/ccloud/ccloud.png?raw=true">
-    <img src="https://github.com/peterkuma/ccloud/ccloud-small.png?raw=true" style="float: right" />
-</a>
-
 ccloud is an open-source web application for browsing data from atmospheric
 profilers. It is comprised of a web application and a backend for importing
 various types of product files.
@@ -12,6 +8,8 @@ various types of product files.
 
 In the current version, it supports importing a number of datasets from the
 CALIPSO satellite, but new importing classes can be added if needed.
+
+You might want to see a [screenshot](ccloud.png).
 
 Installation
 ------------
