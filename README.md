@@ -44,13 +44,16 @@ and directories where layers and cache will be stored.
 Because ccloud does not come with any data in the distribution,
 you first have to import some. [Create a new account](https://reverb.echo.nasa.gov/reverb/users/new)
 on the NASA ECHO service.
-Open `echo.json`, and enter login details for the account you just created:
+Open `config.json`, and enter login details for the account you just created
+under "echo" in "providers":
 
-    {
-        "login": "myrusername",
-        "password": "mypassword",
-    }
-    
+    "providers": {
+        "echo": {
+            "login": "myrusername",
+            "password": "mypassword",
+        }
+    },
+
 In order to import data, do:
 
     ccloud get calipso "2008-04-30 22:00" "2008-04-30 22:30"
@@ -74,11 +77,7 @@ Server options
 By default, the server listens on localhost:8080 for incoming HTTP connections,
 but you can change that by supplying command-line arguments, e.g.:
 
-    ccloud server 192.168.0.1 8000
-    
-Use the -d switch to enable debugging output:
-
-    ccloud server -d
+    ccloud server 192.168.0.1:8000
 
 Importing data
 --------------

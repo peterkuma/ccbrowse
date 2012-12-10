@@ -1,0 +1,61 @@
+{
+    "host": "localhost",
+    "port": 8080,
+    "debug": false,
+    "providers": {
+        "echo": {
+            "login": "",
+            "password": ""
+        }
+    },
+    "profile": "profile.json",
+    "colormaps": "colormaps",
+    "cache": {
+        "driver": "htree",
+        "chunk": "128MB",
+        "size": "4GB",
+        "src": "cache/chunks/{'%02d'%bits}:{hash}.tiles",
+        "index": "cache/index.sqlite",
+        "lock": "cache/.lock",
+        "key": "{layer}/{zoom}/{x},{z};{sha1(colormap)}",
+        "hashlen": 5,
+        "select": "SELECT raw_data, modified from tiles WHERE layer={layer} AND zoom={zoom} AND x={x} AND z={z} AND colormap={sha1(colormap)}",
+        "insert": "INSERT INTO tiles (_id, _hash, layer, zoom, x, z, colormap, modified, raw_data) VALUES ({_id}, {_hash}, {layer}, {zoom}, {x}, {z}, {sha1(colormap)}, strftime('%s'), {raw_data})",
+        "init": [
+            "CREATE TABLE tiles (_id INT, _hash TEXT, layer TEXT, zoom INT, x INT, z INT, colormap TEXT, modified INT, raw_data BLOB)",
+            "CREATE INDEX tiles_id_idx ON tiles (_id)",
+            "CREATE INDEX tiles_idx ON tiles (layer, zoom, x, z)",
+            "CREATE INDEX tiles_modified_idx ON tiles (modified)"
+        ]
+    },
+    "storage": [
+        {
+            "requires": ["layer", "zoom", "x", "z"],
+            "driver": "sqlite",
+            "src": "layers/{layer}/{zoom}/{x-x%100000}.tiles",
+            "select": "SELECT raw_data, modified from tiles WHERE x={x} AND z={z}",
+            "insert": "INSERT INTO tiles (x, z, raw_data, modified) VALUES ({x}, {z}, {raw_data}, strftime('%s'))",
+            "init": [
+                "CREATE TABLE tiles (x INT, z INT, raw_data BLOB, modified INT)",
+                "CREATE INDEX tiles_x_idx ON tiles (x)",
+                "CREATE INDEX tiles_modified_idx ON tiles (modified)"
+            ]
+        },
+        {
+            "requires": ["layer", "zoom", "x", "z", "format"],
+            "driver": "filesystem",
+            "src": "layers/{layer}/{zoom}/{x},{z}.{format}"
+        },
+        {
+            "requires": ["layer", "format"],
+            "predicate": "format == 'geojson'",
+            "driver": "filesystem",
+            "src": "layers/{layer}.json"
+        },
+        {
+            "requires": ["layer", "format"],
+            "driver": "filesystem",
+            "src": "layers/{layer}.{format}"
+        }
+    ]
+}

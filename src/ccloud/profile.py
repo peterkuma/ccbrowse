@@ -6,6 +6,9 @@ import dateutil
 import os
 
 import ccloud
+import ccloud.config
+from ccloud.storage import MemCacheDriver
+from ccloud import utils
 from .rangelist import RangeList, RangeListEncoder
 
 class ProfileJSONDecoder(json.JSONDecoder):
@@ -25,37 +28,35 @@ class ProfileJSONDecoder(json.JSONDecoder):
         else: return d
 
 
-class Tile(object):
-    level = None
-    x = 0
-    z = 0
-    type = 'array'
-    data = np.ndarray((0,0))
-    
-    
 class Profile(object):
-    def __init__(self, filename=None, root=''):
-        if filename: self.from_json(filename)
-        self.root = root
-        self.cache = {}
-        self.availability = {}
-
-    def __enter__(self, filename=None, root=''):
-        if filename: self.from_json(filename)
-        self.root = root
-        self.cache = {}
-        self.availability = {}
-        return self
+    def __init__(self, config, cache_size=4*1024*1024):
+        self.config = ccloud.config.default_config
+        self.config.update(config)
         
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if not hasattr(self, 'json'): return # The class failed to initialize.
-        self.sync_cache()
-        self.write_availability()
+        self.storage = ccloud.storage.Router(
+            self.config['storage'],
+            root=self.config['root'],
+            on_store=lambda obj: self.serialize(obj),
+            on_retrieve=lambda obj: self.deserialize(obj),
+        )
+        
+        filename = os.path.join(self.config['root'], self.config['profile'])
+        with open(filename) as fp:
+            self.json = json.load(fp, cls=ProfileJSONDecoder)
+        
+        self.cache = MemCacheDriver({
+            'size': cache_size,
+            'key': ['layer', 'zoom', 'x', 'z'],
+        }, backing_store=self.storage)
+        self.availability = {}
 
-    def from_json(self, filename):
-        fp = open(filename)
-        self.json = json.load(fp, cls=ProfileJSONDecoder)
-    
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.write_availability()
+        self.cache.empty()
+
     def __contains__(self, item):
         return self.json.has_key(item)    
 
@@ -67,73 +68,121 @@ class Profile(object):
 
     def has_key(self, key):
         return self.__contains__(key)
-        
-    def transform_x(self, x, level):
-        return x*self['zoom'][level]['width'] + self['origin'][0]
     
-    def transform_z(self, z, level):
-        return z*self['zoom'][level]['height'] + self['origin'][1]
+    def layer_for(self, obj):
+        if not obj.has_key('layer'):
+            raise ValueError('Missing object field: "layer"')
+        name = obj['layer']
+        if not self['layers'].has_key(name):
+            raise ValueError('No such layer %s' % name)
+        return self['layers'][name]
     
-    def save(self, layer, element):
-        if type(element) == Tile:
-            self.save_tile(layer, element)
-        elif type(element) == dict:
-            self.save_feature(layer, element)
-        else:
-            raise ValueError('Invalid element type %s' % type(element))
+    def deserialize(self, obj):
+        """Deserialize obj.raw_data to obj.data by a format-specific method."""
+        if not obj.has_key('raw_data') or obj.has_key('data'): return
+        
+        # Nothing to do if data matches raw_data.
+        #if obj.has_key('_data_from') and obj['_data_from'] == obj['raw_data']:
+        #    return
+        
+        layer = self.layer_for(obj)
+        if layer['format'] == 'png':
+            obj['data'] = utils.pngunpack(obj['raw_data'])
+        elif layer['format'] == 'geojson':
+            obj['data'] = json.loads(obj['raw_data'])
+        
+        #obj['_data_from'] = obj['raw_data']
+        
+    def serialize(self, obj):
+        """Serialize obj.data to obj.raw_data by a format-specific method."""
+        if not obj.has_key('data') or obj.has_key('raw_data'): return
+        
+        # Nothing to do if raw_data matches data.
+        #if obj.has_key('_raw_data_from') and obj['_raw_data_from'] == data:
+        #    return
+        
+        layer = self.layer_for(obj)
+        if layer['format'] == 'png':
+            obj['raw_data'] = utils.pngpack(obj['data'])
+        elif layer['format'] == 'geojson':
+            obj['raw_data'] = json.dumps(obj['data'])
+            
+        #obj['_raw_data_from'] = obj['data']
     
-    def save_feature(self, layer, feature):
-        src = self['layers'][layer]['src']
-        if src[0] != '/': src = self.root + '/' + src
+    def save(self, obj, append=True):
+        """Save object to profile.
         
-        # Emty cache - initialize with existing geojson data.
-        if not self.cache.has_key(layer):
-            self.cache[layer] = {}
-            try:
-                with open(src) as fp:
-                    geojson = json.load(fp)
-                    for f in geojson['features']:
-                        p = f['properties']
-                        self.cache[layer][(p['type'], p['name'])] = f
-            except (IOError, ValueError): pass
+        Object is a dictionary with the following mandatory and optional fields:
         
-        p = feature['properties']
-        self.cache[layer][(p['type'], p['name'])] = feature
+            layer   layer name
+            data    numpy array (format: png) or dictionary (format: geojson)
+            zoom    zoom level [optional]
+            x       x-coordinate (type: x or xz), [optional]
+            z       z-coordinate (type: xz) [optional]
+        
+        If append is True, object is merged with the original object.
+        """
+        if not obj.has_key('data'): raise ValueError('Missing object field: "data"')
+        layer = self.layer_for(obj)
+        
+        # Insert layer properties to obj.
+        o = layer.copy()
+        o.update(obj)
+        obj = o
+        from repr import repr
+        if append:
+            o = self.load(obj) # Original object.
+            if o != None and o.has_key('data'):
+                # Update all properties but data.
+                data = o['data']
+                o.update(obj)
+                o['data'] = data
+                
+                # Update data.
+                if layer['format'] == 'png':
+                    utils.array_update(o['data'], obj['data'])
+                elif layer['format'] == 'geojson':
+                    utils.geojson_update(o['data'], obj['data'])
+                else:
+                    # We don't know how to merge, overwrite the old object data.
+                    pass
+                obj = o
+                del obj['raw_data']
+        
+        self.cache.store(obj)
+        if obj.has_key('zoom') and obj.has_key('x'):
+            self.update_availability(obj['layer'], obj['zoom'], (obj['x'], obj['x']+1))
     
-    def sync_cache(self):
-        for (layer, c) in self.cache.items():
-            if self['layers'][layer]['format'] == 'geojson':
-                self.sync_geojson(layer, c)
+    def load(self, obj, exclude=[]):
+        """Load object from profile."""
+        layer = self.layer_for(obj)
+        if layer == None: return
+        
+        o = layer.copy()
+        o.update(obj)
+        obj = o
+        if obj.has_key('data'): del obj['data']
+        
+        o = self.cache.retrieve(obj, exclude=exclude)
+        if o == None:
+            o = self.storage.retrieve(obj, exclude=exclude)
+            if o != None:
+                o2 = layer.copy()
+                o2.update(o)
+                self.cache.store(o, dirty=False)
+        return o
     
-    def sync_geojson(self, layer, cache):
-        src = self['layers'][layer]['src']
-        if src[0] != '/': src = self.root + '/' + src
-        
-        geojson = {
-            'type': 'FeatureCollection',
-            'features': cache.values()
-        }
-        with open(src, 'w') as fp:
-            json.dump(geojson, fp, indent=True)
+    def colormap(self, name):
+        try:
+            filename = os.path.join(self.config['root'], self.config['colormaps'], name)
+            with open(filename) as fp:
+                colormap = json.load(fp)
+        except IOError:
+            filename = os.path.join(ccloud.config.sharepath, self.config['colormaps'], name)
+        with open(filename) as fp:
+            colormap = json.load(fp)
+        return colormap
     
-    def save_tile(self, layer, tile):
-        src = ccloud.utils.substitute(self['layers'][layer]['src'], {
-            'layer': layer,
-            'zoom': tile.level,
-            'x': tile.x,
-            'z': tile.z,
-        })
-        if src[0] != '/': src = os.path.join(self.root, src)
-        
-        if tile.type == 'array':
-            ccloud.utils.pngpack(tile.data, src)
-        elif tile.type == 'geometry':
-            ccloud.utils.geojsonpack(tile.data, src)
-        else:
-            raise ValueError('Invalid tile type %s' % tile.type)
-        
-        self.update_availability(layer, tile.level, (tile.x, tile.x+1))
-        
     def get_availability(self, layer):
         if self.availability.has_key(layer):
             return self.availability[layer]
@@ -161,31 +210,3 @@ class Profile(object):
         
         if availability.has_key(level): availability[level].append(start, stop)
         else: availability[level] = RangeList([(start, stop)])
-
-    def load(self, name, zoom=0, x=0, z=0):
-        key = (name,zoom,x,z)
-        if self.cache.has_key(key): return self.cache[key]
-        
-        layer = self['layers'][name]
-        src = ccloud.utils.substitute(layer['src'], {
-            'zoom': zoom,
-            'x': x,
-            'z': z,
-        })
-        if src[0] != '/': src = os.path.join(self.root, src)
-        
-        f = layer.get('format', 'png')
-        
-        if f == 'png':
-            return pngunpack(src)
-        elif f == 'geojson':
-            with open(src) as fp:
-                self.cache[key] = json.load(fp)
-                return self.cache[key]
-        else:
-            raise NotImplementedError('Format "%s" is not supported' % f)
-
-    def __del__(self):
-        if not hasattr(self, 'json'): return # The class failed to initialize.
-        self.sync_cache()
-    

@@ -1,0 +1,274 @@
+#!/usr/bin/env python
+
+import sys
+import getopt
+import os
+import signal
+import json
+import logging
+import sqlite3
+import fcntl
+
+import ccloud
+from ccloud import utils
+
+
+terminate = False
+foreground = False
+
+
+def connect(filename):
+    try:
+        conn = sqlite3.connect(filename)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+    except sqlite3.Error as e:
+        raise RuntimeError('%s: %s' % (filename, e))
+    return (filename, conn, c)
+
+
+def query((filename, conn, c), q, params=[]):
+    try: return c.execute(q, params)
+    except sqlite3.Error as e:
+        raise RuntimeError('%s: %s: %s' % (filename, q, e))
+
+
+def disconnect((filename, conn, c)):
+    try:
+        conn.commit()
+        conn.close()
+    except sqlite3.Error as e:
+        raise RuntimeError('%s: %s' % (filename, e))
+
+
+def clean(config):
+    def id2hash(id): return ('%0'+`config['hashlen']`+'x') % id
+    
+    if not os.path.exists(config['index']): return
+    c = connect(config['index'])
+    
+    if config['chunk'] > 0:
+        rows = query(c, 'SELECT * FROM htree WHERE size > ?', [config['chunk']])
+        for row in [r for r in rows]:
+            bits, hash, id = row['bits'], row['hash'], row['id']
+            if bits >= config['hashlen']*4: continue # Maximum depth reached.
+            
+            # Split the database into two by appending another bit to mask.
+            mask = ((1<<bits)-1) << (config['hashlen']*4-bits)
+            mask1 = ((1<<(bits+1))-1) << (config['hashlen']*4-bits-1)
+            mask2 = mask1
+            id1 = id & mask
+            id2 = (id & mask) + (1 << (config['hashlen']*4-bits-1))
+            
+            src = dict(bits=bits, mask=mask, hash=hash, id=id)
+            dst1 = dict(bits=bits+1, mask=mask1, hash=id2hash(id1), id=id1)
+            dst2 = dict(bits=bits+1, mask=mask2, hash=id2hash(id2), id=id2)
+            
+            if foreground:
+                print 'CLEAN: split %s into %s and %s' % (
+                    utils.substitute(config['src'], src),
+                    utils.substitute(config['src'], dst1),
+                    utils.substitute(config['src'], dst2),
+                )
+            
+            split(src, dst1, dst2)
+            
+            def sizeof(o):
+                filename = utils.substitute(config['src'], o)
+                try: return os.stat(filename).st_size
+                except OSError as e: raise RuntimeError(e)
+            
+            # Add the two new databases to index.
+            query(c, 'INSERT INTO htree (bits, id, hash, size) VALUES (?, ?, CAST(? AS TEXT), ?)',
+                  [dst1[k] for k in ('bits', 'id', 'hash')] + [sizeof(dst1)])
+            query(c, 'INSERT INTO htree (bits, id, hash, size) VALUES (?, ?, CAST(? AS TEXT), ?)',
+                  [dst2[k] for k in ('bits', 'id', 'hash')] + [sizeof(dst2)])
+            
+            # Remove the old database from index.
+            query(c, 'DELETE FROM htree WHERE bits = ? AND id = ?',
+                  (src['bits'], src['id']))
+            
+            # Remove the old database.
+            try: os.unlink(utils.substitute(config['src'], src))
+            except OSError as e: raise RuntimeError(e)
+            
+    disconnect(c)
+
+
+def split(src, dst1, dst2):
+    src_filename = utils.substitute(config['src'], src)
+    dst1_filename = utils.substitute(config['src'], dst1)
+    dst2_filename = utils.substitute(config['src'], dst2)
+    
+    c_src = connect(src_filename)
+    c_dst1 = connect(dst1_filename)
+    c_dst2 = connect(dst2_filename)
+    
+    query(c_src, 'ATTACH ? AS dst1', [dst1_filename])
+    query(c_src, 'ATTACH ? AS dst2', [dst2_filename])
+    
+    rows = query(c_src, 'SELECT * FROM sqlite_master')
+    for row in rows:
+        query(c_dst1, row['sql'])
+        query(c_dst2, row['sql'])
+    
+    rows = query(c_src, "SELECT * FROM sqlite_master WHERE type = 'table'")
+    for row in rows:
+        table = row['name']
+        query(c_src, 'INSERT INTO dst1.%s SELECT * FROM %s WHERE (_id & ?) = ?' %
+              (table, table), (dst1['mask'], dst1['id']))
+        query(c_src, 'INSERT INTO dst2.%s SELECT * FROM %s WHERE (_id & ?) = ?' %
+              (table, table), (dst2['mask'], dst2['id']))
+    
+    disconnect(c_dst2)
+    disconnect(c_dst1)
+    disconnect(c_src)
+
+
+def lock(filename):
+    lockfp = None
+    try:
+        fp = open(filename, 'a')
+        fcntl.lockf(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        lockfp = open(filename, 'w')
+        fp.close()
+        fcntl.lockf(lockfp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        lockfp.write('%s\n' % os.getpid())
+        lockfp.flush()
+        return lockfp
+    except IOError:
+        if fp != None: fp.close()
+        if lockfp != None: lockfp.close()
+        return None
+
+
+def unlock(lockfp, filename):
+    try:
+        os.unlink(filename)
+        fcntl.lockf(lockfp, fcntl.LOCK_UN)
+        lockfp.close()
+    except (OSError, IOError): pass
+
+
+def usage():
+    sys.stderr.write('''Usage: {program_name} [-df] [-n SECONDS] STORAGE
+       {program_name} --help
+Try `{program_name} --help' for more information.
+'''.format(program_name=program_name))
+
+
+def print_help():
+    sys.stdout.write('''Usage: {program_name} [-dfs] [-n SECONDS] STORAGE
+       {program_name} --help
+
+Perform clean operation on htree storage.
+
+Positional arguments:
+  STORAGE          JSON-formatted storage descriptor
+
+Optional arguments:
+  -d               run in deamon mode
+  -f               stay in foreground
+  -n SECONDS       wait n seconds before next clean (default: 30)
+  -s               fail silently if lock cannot be acquired
+'''.format(program_name=program_name))
+
+
+if __name__ == "__main__":
+    program_name = sys.argv[0]
+    logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
+    
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'dfsn:', ['help'])
+    except getopt.GetoptError as e:
+        logging.error(e)
+        usage()
+        sys.exit(1)
+        
+    daemon = False
+    wait = 30
+    fail_silently = False
+    
+    for opt,value in opts:
+        if opt == '--help':
+            print_help()
+            sys.exit(0)
+        elif opt == '-d':
+            daemon = True
+        elif opt == '-f':
+            foreground = True
+        elif opt == '-s':
+            fail_silently = True
+        elif opt == '-n':
+            try: wait = int(value)
+            except ValueError:
+                logging.error('Invalid value for %s: %s' % (opt, value))
+                sys.exit(1)
+            if wait <= 0:
+                logging.error('Invalid value for %s: %s' % (opt, value))
+                sys.exit(1)
+    
+    if len(args) != 1:
+        usage()
+        sys.exit(1)
+
+    # Default config.        
+    config = {
+        'size': 0,
+        'chunk': 0,
+    }
+    
+    try: config.update(json.loads(args[0]))
+    except ValueError as e:
+        logging.error('Invalid storage descriptor: %s' % e)
+        sys.exit(1)
+    
+    for key in ['index', 'src', 'lock', 'hashlen']:
+        if not config.has_key(key):
+            logging.error('Missing configuration field "%s"' % key)
+            sys.exit(1)
+    
+    config['chunk'] = utils.dehumanize_size(config['chunk'])        
+    config['size'] = utils.dehumanize_size(config['size'])
+    
+    def term_handler(signum, frame):
+        global terminate
+        terminate = True
+    signal.signal(signal.SIGTERM, term_handler)
+    signal.signal(signal.SIGINT, term_handler)
+    signal.signal(signal.SIGHUP, term_handler)
+    
+    lockfp = lock(config['lock'])
+    if lockfp == None:
+        if fail_silently: sys.exit(0)
+        logging.error('Failed to acquire lock')
+        sys.exit(1)
+    
+    if daemon:
+        if not foreground:
+            # Detach from terminal.
+            if os.fork() > 0: os._exit(0) # Terminate parent process.
+            # Child process.
+            os.setsid()
+        
+        try:
+            while True:
+                if terminate: break
+                try: clean(config)
+                except RuntimeError as e: logging.error(e)
+                # Pause for n seconds. Can be fasttracked by a signal
+                # such as SIGHUP.
+                signal.signal(signal.SIGALRM, lambda signum, frame: 0)
+                signal.alarm(wait)
+                signal.pause()
+                # Sadly, python does not support signal blocking as we
+                # have a race condiiton here. alarm can set off before we
+                # call pause, leaving the process in limbo.
+                
+        except KeyboardInterrupt: pass
+    else:
+        try: clean(config)
+        except RuntimeError as e: logging.error(e)
+        
+    unlock(lockfp, config['lock'])
+    

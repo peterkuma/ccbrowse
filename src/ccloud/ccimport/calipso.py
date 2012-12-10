@@ -55,10 +55,12 @@ class Calipso(Product):
         return range(z1, z2)
     
     def tile(self, layer, level, x, z):
-        tile = ccloud.Tile()
-        tile.level = level
-        tile.x = x
-        tile.z = z
+        tile = {
+            'layer': layer,
+            'zoom': level,
+            'x': x,
+            'z': z,
+        }
         
         datasets = self.DATASETS[layer]
         dataset = datasets[0] if type(datasets) == tuple else datasets
@@ -102,19 +104,25 @@ class Calipso(Product):
             lon = np.interp(np.arange(n1, n2, (n2-n1)/256.0),
                             np.arange(n1_, n2_, dtype=np.float32),
                             raw_data_lon)
-            tile.type = 'geometry'
-            tile.data = {
-                'type': 'LineString',
-                'coordinates': zip(lon, lat)
+            tile['data'] = {
+                'type': 'FeatureCollection',
+                'properties': {},
+                'features': [{
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': zip(lon, lat)                        
+                    },
+                }]      
             }
             return tile
         
         # One-dimensional layer.
         if self.profile['layers'][layer]['dimensions'] == 'x':
             raw_data = self.nio.variables[dataset][n1_:n2_, 0]
-            tile.data = np.interp(np.arange(n1, n2, (n2-n1)/256.0),
-                                  np.arange(n1_, n2_, dtype=np.float32),
-                                  raw_data).astype(np.float32).reshape(1, 256)
+            tile['data'] = np.interp(np.arange(n1, n2, (n2-n1)/256.0),
+                                     np.arange(n1_, n2_, dtype=np.float32),
+                                     raw_data).astype(np.float32).reshape(1, 256)
             return tile
         
         # Two-dimensional layer.
@@ -132,10 +140,10 @@ class Calipso(Product):
             #                               raw_data[i,:])
         elif interpolation == 'rbf':
             rbf = Rbf(Z, N, raw_data)
-            tile.data = rbf(np.arange(z1, z2, (z2-z1)/256.0),
-                            np.arange(n1, n2, (n2-n1)/256.0))
+            tile['data'] = rbf(np.arange(z1, z2, (z2-z1)/256.0),
+                               np.arange(n1, n2, (n2-n1)/256.0))
         else:
-            tile.data = cctk.interpolate2d(
+            tile['data'] = cctk.interpolate2d(
                 raw_data, Z, N, (z2, z1, 256),
                  (n1, n2, 256), float('nan'), 3, 3)
         

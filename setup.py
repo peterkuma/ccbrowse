@@ -30,13 +30,19 @@ setup(
     platforms='any',
     requires=['numpy', 'PyNIO', 'bottle', 'suds'],
     package_dir={'': 'src'},
-    packages=['ccloud', 'ccloud.ccfetch', 'ccloud.ccimport'],
+    packages=[
+        'ccloud',
+        'ccloud.ccfetch',
+        'ccloud.ccimport',
+        'ccloud.storage'
+    ],
     scripts=[
         'src/bin/ccfetch',
         'src/bin/ccimport',
         'src/bin/ccinfo',
         'src/bin/ccloud',
         'src/bin/ccserver',
+        'src/bin/cchtree-clean',
     ],
     data_files=data_files,
 )

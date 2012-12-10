@@ -5,6 +5,7 @@
 
 import os
 import sys
+import io
 import getopt
 import re
 import bottle
@@ -15,9 +16,10 @@ import numpy as np
 import Image
 from datetime import datetime
 import shapely.geometry
+import socket
+import logging
 
 import ccloud
-import ccloud.utils
 from ccloud.config import sharepath
 
 
@@ -37,6 +39,8 @@ def profile(filename):
 # Colormaps
 @route('/colormaps/<name>')
 def colormap(name):
+    profile.colormap(name)
+    
     if os.path.exists(os.path.join(config['colormaps'], name)):
         return bottle.static_file(name, root=config['colormaps'])
     return bottle.static_file(name, root=os.path.join(sharepath, 'www', 'colormaps'))
@@ -45,12 +49,17 @@ def colormap(name):
 # Places.
 @route('/layers/places/<zoom>/<x>.json')
 def places(zoom, x):
-    try:
-        trajectory = profile.load('trajectory', zoom, x, 0)
-        geography = profile.load('geography')
-    except IOError: return json.dumps({'places': []})
+    trajectory = profile.load({
+        'layer': 'trajectory',
+        'zoom': zoom,
+        'x': x,
+    })
+    geography = profile.load({'layer': 'geography'})
     
-    points = np.array(trajectory['features'][0]['geometry']['coordinates'])
+    if trajectory == None or geography == None:
+        return json.dumps({'places': []})
+    
+    points = np.array(trajectory['data']['features'][0]['geometry']['coordinates'])
     
     # Downsample.
     if request.query.reduce:
@@ -66,8 +75,8 @@ def places(zoom, x):
     
     out = np.zeros(points.shape[0], np.int)
     
-    for i in range(len(geography['features'])):
-        s = shapely.geometry.shape(geography['features'][i]['geometry'])
+    for i in range(len(geography['data']['features'])):
+        s = shapely.geometry.shape(geography['data']['features'][i]['geometry'])
         intersection = s.intersection(t)
         if type(intersection) != shapely.geometry.LineString: continue
         for point in intersection.coords:
@@ -82,14 +91,24 @@ def places(zoom, x):
 @route('/layers/geocoding/<zoom>/<x>.json')
 def geocoding(zoom, x):
     try:
-        trajectory = profile.load('trajectory', zoom, x, 0)
-        geography = profile.load('geography')
-    except IOError:
+        zoom = int(zoom)
+        x = int(x)
+    except ValueError: abort(404)
+    
+    trajectory = profile.load({
+        'layer': 'trajectory',
+        'zoom': int(zoom),
+        'x': int(x),
+        'z': 0,
+    })
+    geography = profile.load({'layer': 'geography'})
+
+    if trajectory == None or geography == None:
         abort(404)
     
     geom = {}
-    geom['type'] = trajectory['features'][0]['geometry']['type']
-    geom['coordinates'] = trajectory['features'][0]['geometry']['coordinates']
+    geom['type'] = trajectory['data']['features'][0]['geometry']['type']
+    geom['coordinates'] = trajectory['data']['features'][0]['geometry']['coordinates']
     
     # Downsample.
     if request.query.reduce:
@@ -105,7 +124,7 @@ def geocoding(zoom, x):
     
     features = []
     
-    for f in geography['features']:
+    for f in geography['data']['features']:
         s = shapely.geometry.shape(f['geometry'])
         i = s.intersection(t)
         if type(i) != shapely.geometry.linestring.LineString:
@@ -126,39 +145,47 @@ def geocoding(zoom, x):
     }, indent=True)
 
 
-# Availability.
-#@route('/layers/calipso532/availability.json')
-#def availability():
-#    return json.dumps({
-#        '2': [
-#            (2243747, 2243927),
-#        ],
-#    })
+@route('/layers/<layer>/availability.json')
+def availability(layer):
+    return json.dumps(profile.get_availability(layer),
+                      cls=ccloud.rangelist.RangeListEncoder)
 
 
-# Layers.
-@route('/layers/<src:path>')
-def serve(src):   
-    if src.endswith('.json'):
-        return serve_geojson(src)
+@route('/layers/<layer>/<zoom>/<x>.<format>')
+@route('/layers/<layer>/<zoom>/<x>,<z>.<format>')
+def serve(layer, zoom, x, z=0, format=None):
+    try:
+        obj = {
+            'layer': layer,
+            'zoom': zoom,
+            'x': int(x),
+            'z': int(z),
+            'format': format,
+        }
+    except ValueError: abort(404)
+    if format == 'json':
+        return serve_geojson(obj)
+    elif format == 'png':
+        return serve_tile(obj)
     else:
-        return serve_tile(src)
+        obj = profile.load(obj)
+        if obj != None and obj.has_key('raw_data'):
+            return obj['raw_data']
+    abort(404)
 
 
 # Everything else.
 @route('<filename:path>')
 def default(filename):
     return bottle.static_file(filename, root=os.path.join(sharepath, 'www'))
-
-
-def cache(src):
-    with open(src) as fp:
-        geojson = json.load(fp)
     
 
-def serve_geojson(src):    
+def serve_geojson(obj):
     if not request.query.q:
-        return bottle.static_file(src, root=config['layers'])
+        obj = profile.load(obj)
+        if obj == None: return abort(404)
+        bottle.response.content_type = 'application/json'
+        return obj['data']
 
     q = request.query.q
     m = re.match('^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', q)
@@ -187,23 +214,37 @@ def serve_geojson(src):
 serve_geojson.cache = {}
 
 
-def serve_tile(src):
-    cfilename = os.path.join(config['cache'], src)
-    ifilename = os.path.join(config['layers'], src)
+def serve_tile(obj):
+    #cfilename = 'cache/%(layer)s/%(zoom)s/%(x)s,%(z)s.png' % obj
+    bottle.response.content_type = 'image/png'
     
-    # Cache.
+    # Retrieve date of last modification.
+    obj = profile.load(obj, exclude=['data'])
+    if obj == None: abort(404)
+    #modified = obj['modified']
+    
     if not request.query.q:
-        try:
-            istat = os.stat(ifilename)
-            cstat = os.stat(cfilename)
-            
-            # Cache is up to date.
-            if cstat.st_mtime >= istat.st_mtime:
-                return bottle.static_file(src, root=config['cache'])
-        except OSError: pass
+        # Attempt to retrieve from cache.
+        o = cache.retrieve(obj)
+        if o != None and o['modified'] >= obj['modified']:
+            print 'Cache hit'
+            buf = io.BytesIO()
+            buf.write(o['raw_data'])
+            return buf.getvalue()
     
-    try: data = ccloud.utils.pngunpack(ifilename)
-    except IOError: abort(404)
+    print 'Cache miss'
+    
+    #if not request.query.q:
+    #    try:       
+    #        stat = os.stat(cfilename)
+    #        if stat.st_mtime >= modified:
+    #            # Cache is up to date.
+    #            return bottle.static_file(cfilename, root='.')
+    #    except OSError: pass
+    
+    obj = profile.load(obj)
+    if obj == None: abort(404)
+    data = obj['data']
     
     if request.query.q:
         q = request.query.q
@@ -214,48 +255,42 @@ def serve_tile(src):
             except ValueError: pass
         abort(404)
     
-    try:
-        with open(os.path.join(config['root'], 'colormaps', profile['layers']['calipso532']['colormap'])) as fp:
-            colormap = json.load(fp)
-    except IOError:
-        with open(os.path.join(sharepath, profile['layers']['calipso532']['colormap'])) as fp:
-            colormap = json.load(fp)
-    
-    out = Image.fromarray(ccloud.utils.colorize(data, colormap))
+    m = re.match('colormaps/(.+)', profile['layers'][obj['layer']]['colormap'])
+    colormap = profile.colormap(m.group(1))
+    img = Image.fromarray(ccloud.utils.colorize(data, colormap))
+    buf = io.BytesIO()
+    img.save(buf, 'png')
+    out = buf.getvalue()
+    cache.store(dict(obj, raw_data=buffer(out)))
+    return out
     
     # Save to cache.
-    try: os.makedirs(os.path.dirname(cfilename))
-    except OSError: pass
-    out.save(cfilename)
-    
-    response = StringIO.StringIO()
-    out.save(response, format='PNG')
-    bottle.response.content_type = 'image/png'
-    
-    return response.getvalue()
+    #try: os.makedirs(os.path.dirname(cfilename))
+    #except OSError: pass
+    #out.save(cfilename)
+    #return bottle.static_file(cfilename, root='.')
 
 
 def usage():
-    sys.stderr.write('''Usage: {program_name} [-d] [-h HOST] [-p PORT] [ROOT]
+    sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
        {program_name} --help
 Try `{program_name} --help' for more information.
 '''.format(program_name=program_name))
 
 
 def print_help():
-    sys.stderr.write('''Usage: {program_name} [-d] [-h HOST] [-p PORT] [ROOT]
+    sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
        {program_name} --help
        
 Run the ccloud HTTP server.
 
 Positional arguments:
-  ROOT              document root (default: .)
+  HOST              hostname (default: localhost)
+  PORT              port (default: 8080)
 
 Optional arguments:
-
-  -d                print debugging information
-  -h HOST           hostname (default: localhost)
-  -p PORT           port (default: 8080)
+  -c FILE           configuration file (default: config.json)
+  -d                print debugging information    
   --help            print this help information
 
 Report bugs to <ccplot-general@lists.sourceforge.net>.
@@ -263,43 +298,68 @@ Report bugs to <ccplot-general@lists.sourceforge.net>.
 
 
 if __name__ == "__main__":
-    # Default configuration.
-    config = {
-        'host': 'localhost',
-        'port': 8080,
-        'debug': False,
-        'root': '.',
-    }
+    program_name = sys.argv[0]
+    logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
+    os.setpgrp()
+    
+    config = ccloud.config.default_config
+    filename = 'config.json'
     
     # Command line arguments.
-    program_name = sys.argv[0]
-    try: opts, args = getopt.getopt(sys.argv[1:], "dh:p:", ['help'])
-    except getopt.GetoptError, err:
-        print unicode(err)
+    try: opts, args = getopt.getopt(sys.argv[1:], 'c:d', ['help'])
+    except getopt.GetoptError as e:
+        logging.error(e)
         usage()
         sys.exit(1)
     
     for opt,value in opts:
         if opt == '-d':
             config['debug'] = True
-        elif opt == '-h':
-            config['host'] = value
-        elif opt == '-p':
-            config['port'] = value
+        elif opt == '-c':
+            filename = value
         elif opt == '--help':
             print_help()
             sys.exit(0)
-
+    
     if len(args) > 1:
         usage()
         sys.exit(1)
     
-    if len(args) >= 1: config['root'] = args[0]
-    config['cache'] = os.path.join(config['root'], 'cache')
-    config['colormaps'] = os.path.join(config['root'], 'colormaps')
-    config['layers'] = os.path.join(config['root'], 'layers')
+    try:
+        with open(filename) as fp:
+            config.update(json.load(fp))
+    except IOError as e:
+        logging.error('%s: %s' % (e.filename, e.strerror))
+        sys.exit(1)
     
-    profile = ccloud.Profile(os.path.join(config['root'], 'profile.json'))
+    host = None
+    port = None
+    if len(args) == 1:
+        i = args[0].rfind(':')
+        if i == -1: port = args[0]
+        else:
+            host = args[0][:i]
+            port = args[0][(i+1):]
+    
+    if host != None: config['host'] = host
+    try:
+        if port != None: config['port'] = int(port)
+    except ValueError:
+        logging.error('Invalid port number %s' % args[0][i+1:])
+        sys.exit(1)
+    
+    profile = ccloud.Profile(config)
+    
+    # Init cache.
+    try: driver = ccloud.storage.DRIVERS[config['cache']['driver']]
+    except KeyError: driver = ccloud.storage.NullDriver
+    cache = driver(config.get('cache'))
     
     bottle.debug(config['debug'])
-    run(host=config['host'], port=config['port'], reloader=True)
+    
+    try: run(host=config['host'], port=config['port'], reloader=True)
+    except socket.error as e:
+        logging.error('[%s:%s]: %s' % (config['host'], config['port'], e.strerror))
+    except KeyboardInterrupt: pass
+    
+    del cache

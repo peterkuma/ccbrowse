@@ -61,7 +61,7 @@ class Calipso(object):
 </asdc:options>
 '''
     
-    def __init__(self, config):
+    def __init__(self, config, path=''):
         default_config = {
             'login': '',
             'password': '',
@@ -78,6 +78,7 @@ class Calipso(object):
 
         self.config = default_config
         self.config.update(config)
+        self.path = path
         self.token = None
         
     def order(self, startdate, stopdate, tracking_id=None):
@@ -132,7 +133,7 @@ class Calipso(object):
             print >> sys.stderr, 'Order price is not 0, not submitting the order'
             return
         
-        sys.stderr.write('Submitting order... ')
+        sys.stderr.write('Submitting order (this may take a while)... ')
         sys.stderr.flush()
         self.submit_order(oguid)
         while not self.order_is_closed(oguid):
@@ -157,8 +158,9 @@ class Calipso(object):
         
         for name in files:
             if name[0] == '.' or not name.endswith('.hdf'): continue
+            filename = os.path.join(self.path, name)
             try:
-                utils.download(url+name, name, progress=True)
+                utils.download(url+name, filename, progress=True)
                 print name
             except urllib2.URLError as e: print >> sys.stderr, "%s: %s" % (url+name ,e)
 

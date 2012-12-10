@@ -3,6 +3,8 @@
 import sys
 import getopt
 import logging
+import json
+import functools
 
 import ccloud
 from ccloud.ccimport import Calipso, NaturalEarth
@@ -10,26 +12,45 @@ from ccloud.ccimport import Calipso, NaturalEarth
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
 
 def usage():
-    print >> sys.stderr, '''Usage: {program_name} [-l LAYER] [-z ZOOM] -t TYPE PROFILE FILE
+    sys.stderr.write('''Usage: {program_name} [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE
        {program_name} --help
-Try `{program_name} --help' for more information.'''.format(
-        program_name=program_name
-    )
-    
+Try `{program_name} --help' for more information.
+'''.format(program_name=program_name))
+
+
 def print_help():
-    print '''Usage: {program_name} [-l LAYER] [-z ZOOM] -t TYPE PROFILE FILE
+    sys.stdout.write('''Usage: {program_name} [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE
        {program_name} --help
 
-Import data from FILE into profile specified by the json file PROFILE.
+Import data from FILE into profile specified in configuration file CONFIG.
+
+Positional arguments:
+  TYPE             product type
+  FILE             product file
 
 Optional arguments:
+  -c FILE          configuration file (default: config.json)
   -l LAYER         import only specified profile layer
   -t TYPE          type of FILE or `help' for a list of supported types
-  -z ZOOM          import only specified zoom level'''.format(
-        program_name=program_name
-    )
+  -z ZOOM          import only specified zoom level
+  
+Supported product types:
+  calipso
+  naturalearth
+  
+Report bugs to <ccplot-general@lists.sourceforge.net>
+'''.format(program_name=program_name))
 
 
+def save_decorator(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        try: f(*args, **kwargs)
+        except KeyboardInterrupt: print
+    return wrapper
+
+
+@save_decorator
 def save(product, profile, layer=None, zoom=None):
     for level in sorted(profile['zoom'].keys()):
         if zoom != None and level != zoom: continue
@@ -39,63 +60,68 @@ def save(product, profile, layer=None, zoom=None):
             X = product.xrange(l, level)
             Z = product.zrange(l, level)
             size = len(X)*len(Z)
-            i = 1
+            i = 0
             for x in X:
                 for z in Z:
                     if line: sys.stderr.write('\r\033[K')
                     line = '%s level %s tiles %d--%d [%d/%d] %.f%%' % \
                            (l, level, X[0], X[-1], i, size, 100.0*i/size)
                     sys.stderr.write(line)
-                    try:
-                        tile = product.tile(l, level, x, z)
-                        profile.save(l, tile)
-                    except Exception, e:
-                        logging.warning(e)
+                    #try:
+                    tile = product.tile(l, level, x, z)
+                    if type(tile) == tuple: print tile
+                    profile.save(tile)
+                    #except Exception, e:
+                    #    logging.warning(e)
                     i += 1
+            profile.write_availability()
             if line: print '\r\033[K%s level %s tiles %d--%d' % \
                            (l, level, X[0], X[-1])
 
 
 if __name__ == "__main__":
     program_name = sys.argv[0]
-    
-    logging.basicConfig(format='%(message)s', level=logging.INFO)
+    logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "l:t:hz:", ['help'])
-    except getopt.GetoptError, err:
-        print unicode(err)
+        opts, args = getopt.getopt(sys.argv[1:], 'c:l:z:', ['help'])
+    except getopt.GetoptError as e:
+        logging.error(e)
         usage()
         sys.exit(1)
     
+    config_filename = 'config.json'
     file_type = None
     layer = None
     zoom = None
     
     for opt,value in opts:
-        if opt == '-l':
-            layer = value
         if opt == '--help':
             print_help()
             sys.exit(0)
-        if opt == '-t':
-            if value == 'help':
-                print 'Supported types:'
-                for t in SUPPORTED_TYPES: print '  %s' % t
-                sys.exit(0)
-            file_type = value
-        if opt == '-z':
+        elif opt == '-c':
+            config_filename = value
+        elif opt == '-l':
+            layer = value
+        elif opt == '-z':
             zoom = value
-
-    if (len(args) != 2 or file_type == None):
+    
+    if len(args) != 2:
         usage()
         sys.exit(1)
     
-    profile_filename = args[0]
+    file_type = args[0]
     filename = args[1]
     
     try:
-        with ccloud.Profile(profile_filename) as profile:
+        with open(config_filename) as fp:
+            config = json.load(fp)
+    except IOError as e:
+        logging.error('%s: %s' % (e.filename, e.strerror))
+        sys.exit(1)
+    
+    try:
+        with ccloud.Profile(config, cache_size=0) as profile:
             if file_type == 'calipso':
                 product = Calipso(filename, profile)
                 save(product, profile, layer=layer, zoom=zoom)
@@ -103,7 +129,10 @@ if __name__ == "__main__":
                 naturalearth = NaturalEarth(filename, profile)
                 naturalearth.save(layer=layer)
             else:
-                print >> sys.stderr, '%s: Unrecognized type %s' % (program_name, file_type)
+                logging.error('%s: Unrecognized type %s' % (program_name, file_type))
                 sys.exit(1)
+    except RuntimeError as e:
+        logging.error(e)
+    except IOError as e:
+        logging.error('%s: %s' % (e.filename, e.strerror))
     except KeyboardInterrupt: pass
-    

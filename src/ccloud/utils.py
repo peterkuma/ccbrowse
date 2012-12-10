@@ -3,8 +3,10 @@ import os
 import Image
 import numpy as np
 import json
+import io
 import ImageColor, PngImagePlugin
 from contextlib import closing
+import re
 
 
 def coerce(x, low, high):
@@ -13,52 +15,72 @@ def coerce(x, low, high):
     return x
 
 
+#def substitute(s, variables):
+#    for (key, value) in variables.items():
+#        placeholder = '{'+key+'}'
+#        value = unicode(value)
+#        i = s.find(placeholder)
+#        j = 0
+#        while i >= 0:
+#            j = i+len(placeholder)
+#            s = s[:i] + value + s[j:]
+#            start = i + len(value)
+#            i = s.find(placeholder, start)
+#    return s
+
+
 def substitute(s, variables):
-    for (key, value) in variables.items():
-        placeholder = '{'+key+'}'
-        value = unicode(value)
-        i = s.find(placeholder)
-        j = 0
-        while i >= 0:
-            j = i+len(placeholder)
-            s = s[:i] + value + s[j:]
-            start = i + len(value)
-            i = s.find(placeholder, start)
-    return s
+    """Substitute variables in string s.
+    
+    Variables are in format "{var}", where var is a key in the dictionary
+    variables. Substitution is performed by eval(var, variables).
+    Unrecognized variables are replaced by an empty string.
+    """
+    params = []
+    def repl(m):
+        try: return unicode(eval(m.group(1), variables))
+        except: return ''
+    return re.sub('\{(.+?)\}', repl, s)
 
 
-def pngpack(data, filename):    
-    #nbytes = data.dtype.itemsize
+def substitute_sql(s, variables):
+    """Substitute variables in SQL query s.
+    
+    Variables are in format "{var}", where var is a key in the dictionary
+    variables. Substitution is performed by eval(var, variables).
+    Returns tuple (q, params), where q is a parametric query derived from s
+    with variables replaced by '?', and params is a corresponding list of
+    parameters taken from the dictionary variables.
+    """
+    params = []
+    def repl(m):
+        try:
+            params.append(eval(m.group(1), variables))
+            return '?'
+        except: return 'NULL'
+    
+    q = re.sub('\{(.+?)\}', repl, s)
+    return q, params
+
+
+def pngpack(data):
+    nbytes = data.dtype.itemsize
     w, h = data.shape
-    
-    try:
-        im = Image.open(filename)
-        #if im.size != (w, h): raise IOError
-        out = np.zeros((w, h), dtype=np.float32)
-        out.data = np.array(im).data
-    except IOError, AttributeError:
-        try: os.makedirs(os.path.dirname(filename))
-        except OSError: pass
-        out = None
-    
-    if out != None:
-        mask = np.logical_not(np.isnan(data))
-        out[mask] = data[mask]
-    else:
-        out = data
-    
-    tmp = np.zeros((w, h*4), dtype=np.uint8)
-    tmp.data = out.data
+    tmp = np.zeros((w, h*nbytes), dtype=np.uint8)
+    tmp.data = data.data
     im = Image.fromarray(tmp)
-    
     meta = PngImagePlugin.PngInfo()
-    meta.add_text('type', 'float32')
-    
-    im.save(filename, 'png', pnginfo=meta)
+    meta.add_text('type', data.dtype.name)
+    buf = io.BytesIO()
+    im.save(buf, 'png', pnginfo=meta)
+    return buffer(buf.getvalue())
 
 
-def pngunpack(filename):
-    im = Image.open(filename)
+def pngunpack(raw_data):
+    buf = io.BytesIO()
+    buf.write(raw_data)
+    buf.seek(0)
+    im = Image.open(buf)
     typ = im.info.get('type', 'float32')
     try: dtype = np.dtype(typ)
     except TypeError: dtype = np.float32
@@ -66,25 +88,46 @@ def pngunpack(filename):
     w, h = im.size
     if w % nbytes != 0:
         raise IOError('Invalid PNG packing')
-    raw = np.array(im)
+    tmp = np.array(im)
     data = np.zeros((h, w/nbytes), dtype=dtype)
-    data.data = raw.data
+    data.data = tmp.data
     return data
-    
 
-def geojsonpack(data, filename):
-    try: os.makedirs(os.path.dirname(filename))
-    except OSError: pass
+
+def array_update(a, b):
+    """Update numpy array a with values of b where b is not NaN."""
+    if a.shape != b.shape:
+        raise ValueError('Shape of arrays not matching: "%s" vs. "%s"' % (a.shape, b.shape))
+    mask = np.logical_not(np.isnan(b))
+    a[mask] = b[mask]
+
+
+def geojson_update(a, b, feature_index=None):
+    """Update GeoJSON a with features of b.
     
-    with open(filename, 'w') as fp:
-        json.dump({
-            'type': 'FeatureCollection',
-            'properties': {},
-            'features': [{
-                'type': 'Feature',
-                'geometry': data,
-            }]
-        }, fp, indent=True)
+    Features with matching "type" and "name" properties are overwritten.
+    
+    feature_index is a dictionary mapping (type,name) pairs of a's features
+    to the feature objects. If supplied, the operation can be done significantly
+    faster. feature_index, if present, is updated to reflect the new state of a.
+    """
+    if not b.has_key('features'): return
+    if feature_index == None:
+        # Build a temporary index.
+        feature_index = {}
+        for f in a['features']:
+            try:
+                key = (f['properties']['type'],f['properties']['name'])
+                feature_index[key] = f
+            except KeyError: pass
+    
+    for f in b['features']:
+        try:
+            key = (f['properties']['type'],f['properties']['name'])            
+            if not feature_index.has_key(key):
+                a['features'].append(f)
+            feature_index[key] = f
+        except KeyError: pass
 
 
 def colorize(data, colormap):
@@ -118,10 +161,23 @@ def colorize(data, colormap):
 
 
 def humanize_size(size):
-    for u in ['B','KB','MB','GB']:
+    for u in ['B','kB','MB','GB']:
         if size < 1024: return '%.1f %s' % (size, u)
         size /= 1024.0
     return "%.1f TB" % size
+
+
+def dehumanize_size(s):
+    if type(s) == int: return s
+    m = re.match(r'^(\d+(?:\.\d*)?)\s*(B|kB|MB|GB|TB)?$', s)
+    if m == None: return ValueError('Invalid size literal: "%s"' % s)
+    units = m.group(2)
+    if units == None: return int(m.group(1))
+    mult = 1
+    for u in ['B', 'kB', 'MB', 'GB', 'TB']:
+        if u == units: break
+        mult *= 1024
+    return int(float(m.group(1))*mult)
 
 
 def download(url, name=None, progress=False):

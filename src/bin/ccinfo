@@ -18,7 +18,7 @@ Try `{program_name} -h\' for more information.
 
 
 def print_help():
-    print '''Usage: {program_name} [DIRECTORY]
+    sys.stdout.write('''Usage: {program_name} [DIRECTORY]
        {program_name} -h
 
 Print information about a repository
@@ -26,7 +26,8 @@ Print information about a repository
 Positional arguments:
   DIRECTORY       repository directory
 
-Report bugs to <ccplot-general@lists.sourceforge.net>'''.format(program_name=program_name)
+Report bugs to <ccplot-general@lists.sourceforge.net>
+'''.format(program_name=program_name))
 
 
 if __name__ == "__main__":

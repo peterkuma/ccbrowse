@@ -4,13 +4,14 @@ import sys
 import getopt
 from datetime import datetime
 import json
+import logging
 
 import ccloud
 from ccloud.ccfetch import Calipso
 
 
 def usage():
-    sys.stderr.write('''Usage: {program_name} [OPTION]... -t TYPE -c FILE STARTDATE STOPDATE
+    sys.stderr.write('''Usage: {program_name} [OPTION]... TYPE STARTDATE STOPDATE
        {program_name} --help
        
 Try `{program_name} --help\' for more information.
@@ -18,74 +19,88 @@ Try `{program_name} --help\' for more information.
 
 
 def print_help():
-    print '''Usage: {program_name} [OPTION]... -t TYPE -c FILE STARTDATE STOPDATE
+    sys.stdout.write('''Usage: {program_name} [OPTION]... TYPE STARTDATE STOPDATE
        {program_name} --help
 
 Fetch product files in a specified time interval.
 
 Positional arguments:
+  TYPE            product type
   STARTDATE       start date specified as "YEAR-MONTH-DAY HOUR:MINUTE"
   STOPDATE        stop date specified as "YEAR-MONTH-DAY HOUR:MINUTE"
 
 Optional arguments:
-
-  -c FILE          service configuration file
+  -c FILE          configuration file (default: config.json)
+  -O DIR           output files to a specified directory
   --continue ID    continue fetching order with specified tracking ID
   --help           print this help information
-  -t TYPE          mission name
 
-Valid values for TYPE are: calipso
+Supported product types:
+  calipso
 
-Report bugs to <ccplot-general@lists.sourceforge.net>'''.format(program_name=program_name)
+Report bugs to <ccplot-general@lists.sourceforge.net>
+'''.format(program_name=program_name))
 
 
 if __name__ == "__main__":
     program_name = sys.argv[0]
+    logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "c:t:h", ['help', 'continue='])
-    except getopt.GetoptError, err:
-        print unicode(err)
+        opts, args = getopt.getopt(sys.argv[1:], 'c:O:', ['help', 'continue='])
+    except getopt.GetoptError as e:
+        logging.error(e)
         usage()
         sys.exit(1)
     
     type = None
-    filename = 'echo.json'
+    filename = 'config.json'
     tracking_id = None
+    outdir = ''
     
     for opt,value in opts:
         if opt == '--help':
             print_help()
             sys.exit(0)
-        elif opt == '-t':
-            type = value
         elif opt == '-c':
             filename = value
+        elif opt == '-O':
+            outdir = value
         elif opt == '--continue':
             tracking_id = value
 
-    if (len(args) != 2 or type == None):
+    if len(args) != 3:
         usage()
         sys.exit(1)
+        
+    type = args[0]
     
     try:
-        startdate = datetime.strptime(args[0], '%Y-%m-%d %H:%M')
-        stopdate = datetime.strptime(args[1], '%Y-%m-%d %H:%M')
+        startdate = datetime.strptime(args[1], '%Y-%m-%d %H:%M')
+        stopdate = datetime.strptime(args[2], '%Y-%m-%d %H:%M')
     except ValueError as e:
-        print >> sys.stderr, '%s: %s' % (program_name, e)
+        logging.error(e)
         sys.exit(1)
+    
+    config = ccloud.config.default_config
     
     try:
         with open(filename) as fp:
-            config = json.load(fp)
+            config.update(json.load(fp))
     except IOError as e:
-        print >> sys.stderr, '%s: %s: %s' % (program_name, filename, e.strerror)
+        logging.error('%s: %s' % (e.filename, e.strerror))
+        sys.exit(1)
     
     if type == 'calipso':
-        calipso = Calipso(config)
+        try: provider = config['providers']['echo']
+        except KeyError:
+            logging.error('ECHO provider not defined in the configuration file')
+            sys.exit(1)
+        calipso = Calipso(provider, path=outdir)
         try: calipso.order(startdate, stopdate, tracking_id=tracking_id)
-        except KeyboardInterrupt: pass
+        except KeyboardInterrupt:
+            print
         #finally: calipso.cleanup()
     else:
-        print >> sys.stderr, '%s: Unrecognized type "%s"' % (program_name, type)
+        loggig.error('Unrecognized type "%s"' % type)
         sys.exit(1)
