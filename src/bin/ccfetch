@@ -69,18 +69,26 @@ if __name__ == "__main__":
         elif opt == '--continue':
             tracking_id = value
 
-    if len(args) != 3:
+    if len(args) < 1:
         usage()
         sys.exit(1)
-        
+    
     type = args[0]
     
-    try:
-        startdate = datetime.strptime(args[1], '%Y-%m-%d %H:%M')
-        stopdate = datetime.strptime(args[2], '%Y-%m-%d %H:%M')
-    except ValueError as e:
-        logging.error(e)
-        sys.exit(1)
+    if not tracking_id:
+        if len(args) != 3 and tracking_id == None:
+            usage()
+            sys.exit(1)
+        
+        try:
+            startdate = datetime.strptime(args[1], '%Y-%m-%d %H:%M')
+            stopdate = datetime.strptime(args[2], '%Y-%m-%d %H:%M')
+        except ValueError as e:
+            logging.error(e)
+            sys.exit(1)        
+    else:
+        startdate = None
+        stopdate = None
     
     config = ccloud.config.default_config
     
