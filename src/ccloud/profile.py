@@ -41,8 +41,11 @@ class Profile(object):
         )
         
         filename = os.path.join(self.config['root'], self.config['profile'])
-        with open(filename) as fp:
-            self.json = json.load(fp, cls=ProfileJSONDecoder)
+        try:
+            with open(filename) as fp:
+                self.json = json.load(fp, cls=ProfileJSONDecoder)
+        except ValueError as e:
+            raise RuntimeError('%s: %s' % (filename, e))
         
         self.cache = MemCacheDriver({
             'size': cache_size,

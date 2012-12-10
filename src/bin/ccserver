@@ -348,7 +348,10 @@ if __name__ == "__main__":
         logging.error('Invalid port number %s' % args[0][i+1:])
         sys.exit(1)
     
-    profile = ccloud.Profile(config)
+    try: profile = ccloud.Profile(config)
+    except RuntimeError as e:
+        logging.error(e)
+        sys.exit(1)
     
     # Init cache.
     try: driver = ccloud.storage.DRIVERS[config['cache']['driver']]
