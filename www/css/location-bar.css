@@ -2,6 +2,7 @@
 
 #location-bar {
     position: absolute;
+    z-index: 100;
     bottom: 6px;
     width: 100%;
     color: #eee;
