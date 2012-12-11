@@ -63,7 +63,7 @@
             "dimensions": "x",
             "units": "degree",
             "title": "Longitude",
-            "src": "layers/longitude/{zoom}/{x}.png",
+            "src": "layers/longitude/{zoom}/{x},0.png",
             "availability": "layers/longitude/availability.json"
         },
         "latitude":
@@ -73,37 +73,41 @@
             "dimensions": "x",
             "units": "degree",
             "title": "Latitude",
-            "src": "layers/latitude/{zoom}/{x}.png",
+            "src": "layers/latitude/{zoom}/{x},0.png",
             "availability": "layers/latitude/availability.json"
         },
         "trajectory":
         {
-            "format": "geojson",
+            "format": "json",
+            "type": "geojson",
             "dimensions": "x",
             "units": "degree",
             "title": "Trajectory",
-            "src": "layers/trajectory/{zoom}/{x}.json",
+            "src": "layers/trajectory/{zoom}/{x},0.json",
             "availability": "layers/trajectory/availability.json"
         },
         "geography":
         {
-            "format": "geojson",
+            "format": "json",
+            "type": "geojson",
             "title": "Geography",
             "src": "layers/geography.json"
         },
         "geocoding":
         {
-            "format": "geojson",
+            "format": "json",
+            "type": "geojson",
             "dimensions": "x",
             "title": "Geocoding",
-            "src": "layers/geocoding/{zoom}/{x}.json"
+            "src": "layers/geocoding/{zoom}/{x},0.json"
         },
         "places":
         {
             "format": "json",
+            "type": "geojson",
             "dimensions": "x",
             "title": "Places",
-            "src": "layers/places/{zoom}/{x}.json"
+            "src": "layers/places/{zoom}/{x},0.json"
         }
     }
 }

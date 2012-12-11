@@ -91,7 +91,7 @@ class Profile(object):
         layer = self.layer_for(obj)
         if layer['format'] == 'png':
             obj['data'] = utils.pngunpack(obj['raw_data'])
-        elif layer['format'] == 'geojson':
+        elif layer['format'] == 'json':
             obj['data'] = json.loads(obj['raw_data'])
         
         #obj['_data_from'] = obj['raw_data']
@@ -107,7 +107,7 @@ class Profile(object):
         layer = self.layer_for(obj)
         if layer['format'] == 'png':
             obj['raw_data'] = utils.pngpack(obj['data'])
-        elif layer['format'] == 'geojson':
+        elif layer['format'] == 'json':
             obj['raw_data'] = json.dumps(obj['data'])
             
         #obj['_raw_data_from'] = obj['data']
@@ -118,7 +118,7 @@ class Profile(object):
         Object is a dictionary with the following mandatory and optional fields:
         
             layer   layer name
-            data    numpy array (format: png) or dictionary (format: geojson)
+            data    numpy array (format: png) or dictionary (format: json)
             zoom    zoom level [optional]
             x       x-coordinate (type: x or xz), [optional]
             z       z-coordinate (type: xz) [optional]
@@ -144,7 +144,7 @@ class Profile(object):
                 # Update data.
                 if layer['format'] == 'png':
                     utils.array_update(o['data'], obj['data'])
-                elif layer['format'] == 'geojson':
+                elif layer['format'] == 'json' and layer['type'] == 'geojson':
                     utils.geojson_update(o['data'], obj['data'])
                 else:
                     # We don't know how to merge, overwrite the old object data.

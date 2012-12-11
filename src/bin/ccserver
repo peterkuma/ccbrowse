@@ -47,8 +47,8 @@ def colormap(name):
 
 
 # Places.
-@route('/layers/places/<zoom>/<x>.json')
-def places(zoom, x):
+@route('/layers/places/<zoom>/<x>,<z>.json')
+def places(zoom, x, z):
     trajectory = profile.load({
         'layer': 'trajectory',
         'zoom': zoom,
@@ -88,8 +88,8 @@ def places(zoom, x):
 
 
 # Geocoding.
-@route('/layers/geocoding/<zoom>/<x>.json')
-def geocoding(zoom, x):
+@route('/layers/geocoding/<zoom>/<x>,<z>.json')
+def geocoding(zoom, x, z):
     try:
         zoom = int(zoom)
         x = int(x)
@@ -104,7 +104,7 @@ def geocoding(zoom, x):
     geography = profile.load({'layer': 'geography'})
 
     if trajectory == None or geography == None:
-        abort(404)
+        abort(404, 'Geocoding support not available')
     
     geom = {}
     geom['type'] = trajectory['data']['features'][0]['geometry']['type']
@@ -151,27 +151,27 @@ def availability(layer):
                       cls=ccloud.rangelist.RangeListEncoder)
 
 
-@route('/layers/<layer>/<zoom>/<x>.<format>')
-@route('/layers/<layer>/<zoom>/<x>,<z>.<format>')
-def serve(layer, zoom, x, z=0, format=None):
+@route('/layers/<layer>.<fmt>')
+@route('/layers/<layer>/<zoom>/<x>,<z>.<fmt>')
+def serve(layer, zoom=None, x=None, z=None, fmt=None):
     try:
-        obj = {
-            'layer': layer,
-            'zoom': zoom,
-            'x': int(x),
-            'z': int(z),
-            'format': format,
-        }
+        obj = {}
+        obj['layer'] = layer
+        if zoom != None: obj['zoom'] = zoom
+        if x != None: obj['x'] = int(x)
+        if z != None: obj['z'] = int(z)
+        if fmt != None: obj['format'] = fmt
     except ValueError: abort(404)
-    if format == 'json':
-        return serve_geojson(obj)
-    elif format == 'png':
+    
+    if obj['format'] == 'json':
+        return serve_json(obj)
+    elif obj['format'] == 'png':
         return serve_tile(obj)
     else:
         obj = profile.load(obj)
         if obj != None and obj.has_key('raw_data'):
             return obj['raw_data']
-    abort(404)
+    abort(404, 'Object not found')
 
 
 # Everything else.
@@ -180,48 +180,41 @@ def default(filename):
     return bottle.static_file(filename, root=os.path.join(sharepath, 'www'))
     
 
-def serve_geojson(obj):
+def serve_json(obj):
+    obj = profile.load(obj)
+    if obj == None: abort(404, 'Object not found')
+    
     if not request.query.q:
-        obj = profile.load(obj)
-        if obj == None: return abort(404)
         bottle.response.content_type = 'application/json'
-        return obj['data']
-
+        if obj.has_key('data'): return obj['data']
+        else: abort(404, 'Object has no data')
+    
     q = request.query.q
     m = re.match('^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', q)
-    if not m: abort(404)
+    if not m: abort(404, 'Invalid query coordinates')
     try:
         lat = float(m.group(1))
         lon = float(m.group(2))
-    except ValueError:
-        abort(404)
+    except ValueError: abort(404, 'Invalid query coordinates')
     
     point = shapely.geometry.Point(lon, lat)
-
-    if not serve_geojson.cache.has_key(src):
-        with open(os.path.join(config['layers'], src)) as fp:
-            serve_geojson.cache[src] = json.load(fp)
-        
-    geojson = serve_geojson.cache[src]
-        
-    for f in geojson['features']:
+    
+    for f in obj['data']['features']:
         s = shapely.geometry.shape(f['geometry'])
         if s.contains(point):
+            bottle.response.content_type = 'application/json'
             return json.dumps(f['properties'])
     
+    bottle.response.content_type = 'application/json'
     return json.dumps({})
-
-serve_geojson.cache = {}
 
 
 def serve_tile(obj):
     #cfilename = 'cache/%(layer)s/%(zoom)s/%(x)s,%(z)s.png' % obj
-    bottle.response.content_type = 'image/png'
     
     # Retrieve date of last modification.
     obj = profile.load(obj, exclude=['data'])
-    if obj == None: abort(404)
-    #modified = obj['modified']
+    if obj == None: abort(404, 'Object not found')
     
     if not request.query.q:
         # Attempt to retrieve from cache.
@@ -230,6 +223,7 @@ def serve_tile(obj):
             print 'Cache hit'
             buf = io.BytesIO()
             buf.write(o['raw_data'])
+            bottle.response.content_type = 'image/png'
             return buf.getvalue()
     
     print 'Cache miss'
@@ -243,7 +237,7 @@ def serve_tile(obj):
     #    except OSError: pass
     
     obj = profile.load(obj)
-    if obj == None: abort(404)
+    if obj == None: abort(404, 'Object not found')
     data = obj['data']
     
     if request.query.q:
@@ -251,9 +245,10 @@ def serve_tile(obj):
         m = re.match('^(\d+),(\d+)$', q)
         if m:
             x, y = int(m.group(1)), int(m.group(2))
+            bottle.response.content_type = 'text/plain'
             try: return unicode(data[y, x])
             except ValueError: pass
-        abort(404)
+        abort(404, 'Invalid query coordinates')
     
     m = re.match('colormaps/(.+)', profile['layers'][obj['layer']]['colormap'])
     colormap = profile.colormap(m.group(1))
@@ -262,6 +257,7 @@ def serve_tile(obj):
     img.save(buf, 'png')
     out = buf.getvalue()
     cache.store(dict(obj, raw_data=buffer(out)))
+    bottle.response.content_type = 'image/png'
     return out
     
     # Save to cache.
