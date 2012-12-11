@@ -9,8 +9,9 @@ Contents:
     colormaps           custom colormaps
     layers              layer data
     products            raw product files
+    config.json         repository configuration file
     profile.json        profile specification
-    echo.json           NASA ECHO service login details
+    wsgi.py             WSGI module
 
 Try `ccloud --help' for a list of commands that can be performed
 on the repository.

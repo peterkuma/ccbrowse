@@ -8,6 +8,7 @@ src/ccloud/__init__.py
 src/ccloud/config.py
 src/ccloud/profile.py
 src/ccloud/utils.py
+src/ccloud/server.py
 src/ccloud/ccfetch/__init__.py
 src/ccloud/ccfetch/calipso.py
 src/ccloud/ccimport/__init__.py
