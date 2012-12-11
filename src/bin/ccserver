@@ -43,7 +43,7 @@ def colormap(name):
     
     if os.path.exists(os.path.join(config['colormaps'], name)):
         return bottle.static_file(name, root=config['colormaps'])
-    return bottle.static_file(name, root=os.path.join(sharepath, 'www', 'colormaps'))
+    return bottle.static_file(name, root=os.path.join(sharepath, 'colormaps'))
 
 
 # Places.
