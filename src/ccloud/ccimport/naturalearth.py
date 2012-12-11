@@ -22,8 +22,11 @@ class NaturalEarth(object):
                 try: output = e.output
                 except AttributeError: output = 'Command failed'
                 raise RuntimeError('%s: %s' % (cmd, output))
-            with codecs.open(tmpfile, encoding='cp1252') as fp:
-                geojson = json.load(fp)
+            try:
+                with codecs.open(tmpfile, encoding='cp1252') as fp:
+                    geojson = json.load(fp)
+            except (IOError, ValueError) as e:
+                raise RuntimeError('%s: %s' % (tmpfile, e))
         finally:
             try: os.unlink(tmpfile)
             except: pass
@@ -38,31 +41,37 @@ class NaturalEarth(object):
         }
         
         for feature in self.geojson['features']:
-            p = feature['properties']
-            if p['FeatureCla'] == 'Admin-0 countries':
+            try:
+                p = feature['properties']
+                if p.has_key('featurecla'): featurecla = p['featurecla']
+                else: featurecla = p['FeatureCla']
+                if p.has_key('name'): name = p['name']
+                else: name = p['Name']
+                geometry = feature['geometry']
+            except KeyError: continue
+                
+            if featurecla in ('Admin-0 country', 'Admin-0 countries'):
                 geography['features'].append({
                     'type': 'Feature',
                     'properties': {
                         'type': 'country',
-                        'name': p['NAME'],
-                        'code': p['ISO_A3'],
+                        'name': name,
+                        'code': p.get('ISO_A3', ''),
                     },
-                    'geometry': feature['geometry'],
+                    'geometry': geometry,
                 })
-            elif p['FeatureCla'] in ('ocean', 'sea', 'bay', 'gulf'):
-                name = p['Name']
-                
+            elif featurecla in ('ocean', 'sea', 'bay', 'gulf'):
                 # Ocan names are uppercase, capitalize words instead.
-                if p['FeatureCla'] == 'ocean':
+                if featurecla == 'ocean':
                     name = ' '.join([w.capitalize() for w in name.split()])
                     
                 geography['features'].append({
                     'type': 'Feature',
                     'properties': {
-                        'type': p['FeatureCla'],
+                        'type': featurecla,
                         'name': name,
                     },
-                    'geometry': feature['geometry'],
+                    'geometry': geometry,
                 })
             else:
                 continue
