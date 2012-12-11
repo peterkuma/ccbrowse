@@ -18,6 +18,9 @@ foreground = False
 
 
 def connect(filename):
+    if not os.path.exists(filename):
+        try: os.makedirs(os.path.dirname(filename))
+        except OSError: pass
     try:
         conn = sqlite3.connect(filename)
         conn.row_factory = sqlite3.Row
@@ -126,6 +129,9 @@ def split(src, dst1, dst2):
 
 
 def lock(filename):
+    try: os.makedirs(os.path.dirname(filename))
+    except OSError: pass
+    fp = None
     lockfp = None
     try:
         fp = open(filename, 'a')
