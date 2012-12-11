@@ -1,0 +1,330 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import io
+import getopt
+import re
+import bottle
+from bottle import route, request, abort
+import StringIO
+import json
+import numpy as np
+import Image
+from datetime import datetime
+import shapely.geometry
+import socket
+import logging
+
+import ccloud
+from ccloud.config import sharepath
+
+
+def init(conf):
+    """Initialize server."""
+    global config
+    global cache
+    global profile
+    
+    config = conf
+    
+    bottle.debug(config['debug'])
+    
+    profile = ccloud.Profile(config)
+    
+    try: driver = ccloud.storage.DRIVERS[config['cache']['driver']]
+    except KeyError: driver = ccloud.storage.NullDriver
+    cache = driver(config.get('cache'))
+
+
+def app(config):
+    """Return WSGI application."""
+    init(config)
+    return bottle.default_app()
+
+
+def run(config):
+    """Run server."""
+    init(config)
+    try: bottle.run(host=config['host'], port=config['port'], reloader=True)
+    except socket.error as e:
+        raise RuntimeErorr('[%s:%s]: %s' % (config['host'], config['port'], e.strerror))
+    global cache
+    del cache
+
+
+# Index.
+@route('/')
+@route('/about/')
+def index():
+    return bottle.static_file('index.html', root=os.path.join(sharepath, 'www'))
+
+
+# Profile.
+@route('<filename:re:/profile\.json>')
+def profile(filename):
+    return bottle.static_file(filename, root=config['root'])
+
+
+# Colormaps
+@route('/colormaps/<name>')
+def colormap(name):
+    profile.colormap(name)
+    
+    if os.path.exists(os.path.join(config['colormaps'], name)):
+        return bottle.static_file(name, root=config['colormaps'])
+    return bottle.static_file(name, root=os.path.join(sharepath, 'colormaps'))
+
+
+# Places.
+@route('/layers/places/<zoom>/<x>,<z>.json')
+def places(zoom, x, z):
+    trajectory = profile.load({
+        'layer': 'trajectory',
+        'zoom': zoom,
+        'x': x,
+    })
+    geography = profile.load({'layer': 'geography'})
+    
+    if trajectory == None or geography == None:
+        return json.dumps({'places': []})
+    
+    points = np.array(trajectory['data']['features'][0]['geometry']['coordinates'])
+    
+    # Downsample.
+    if request.query.reduce:
+        try: factor = int(request.query.reduce)
+        except ValueError: factor = 1
+        if factor <= 0: factor = 1
+        points = points[np.arange(0, points.shape[0]) % factor == 0,:]
+    
+    t = shapely.geometry.shape({
+        'type': 'LineString',
+        'coordinates': points,
+    })
+    
+    out = np.zeros(points.shape[0], np.int)
+    
+    for i in range(len(geography['data']['features'])):
+        s = shapely.geometry.shape(geography['data']['features'][i]['geometry'])
+        intersection = s.intersection(t)
+        if type(intersection) != shapely.geometry.LineString: continue
+        for point in intersection.coords:
+            for j in range(len(points)):
+                if points[j][0] == point[0] and points[j][1] == point[1]:
+                    out[j] = i
+    
+    return json.dumps({'places': list(out)}, indent=True)
+
+
+# Geocoding.
+@route('/layers/geocoding/<zoom>/<x>,<z>.json')
+def geocoding(zoom, x, z):
+    try:
+        zoom = int(zoom)
+        x = int(x)
+    except ValueError: abort(404)
+    
+    trajectory = profile.load({
+        'layer': 'trajectory',
+        'zoom': int(zoom),
+        'x': int(x),
+        'z': 0,
+    })
+    geography = profile.load({'layer': 'geography'})
+
+    if trajectory == None or geography == None:
+        abort(404, 'Geocoding support not available')
+    
+    geom = {}
+    geom['type'] = trajectory['data']['features'][0]['geometry']['type']
+    geom['coordinates'] = trajectory['data']['features'][0]['geometry']['coordinates']
+    
+    # Downsample.
+    if request.query.reduce:
+        try: factor = int(request.query.reduce)
+        except ValueError: factor = 1
+        if factor <= 0: factor = 1
+        n = len(geom['coordinates'])
+        coords = np.array(geom['coordinates'])
+        coords = coords[np.arange(0, n) % factor == 0,:]
+        geom['coordinates'] = coords
+    
+    t = shapely.geometry.shape(geom)
+    
+    features = []
+    
+    for f in geography['data']['features']:
+        s = shapely.geometry.shape(f['geometry'])
+        i = s.intersection(t)
+        if type(i) != shapely.geometry.linestring.LineString:
+            continue
+        
+        features.append({
+            'type': 'Feature',
+            'properties': f['properties'],
+            'geometry': {
+                'type': 'LineString',
+                'coordinates': list(i.coords),
+            },
+        })
+
+    return json.dumps({
+        'type': 'FeatureCollection',
+        'features': features,
+    }, indent=True)
+
+
+@route('/layers/<layer>/availability.json')
+def availability(layer):
+    return json.dumps(profile.get_availability(layer),
+                      cls=ccloud.rangelist.RangeListEncoder)
+
+
+@route('/layers/<layer>.<fmt>')
+@route('/layers/<layer>/<zoom>/<x>,<z>.<fmt>')
+def serve(layer, zoom=None, x=None, z=None, fmt=None):
+    try:
+        obj = {}
+        obj['layer'] = layer
+        if zoom != None: obj['zoom'] = zoom
+        if x != None: obj['x'] = int(x)
+        if z != None: obj['z'] = int(z)
+        if fmt != None: obj['format'] = fmt
+    except ValueError: abort(404)
+    
+    if obj['format'] == 'json':
+        return serve_json(obj)
+    elif obj['format'] == 'png':
+        return serve_tile(obj)
+    else:
+        obj = profile.load(obj)
+        if obj != None and obj.has_key('raw_data'):
+            return obj['raw_data']
+    abort(404, 'Object not found')
+
+
+# Everything else.
+@route('<filename:path>')
+def default(filename):
+    return bottle.static_file(filename, root=os.path.join(sharepath, 'www'))
+    
+
+def serve_json(obj):
+    obj = profile.load(obj)
+    if obj == None: abort(404, 'Object not found')
+    
+    if not request.query.q:
+        bottle.response.content_type = 'application/json'
+        if obj.has_key('data'): return obj['data']
+        else: abort(404, 'Object has no data')
+    
+    q = request.query.q
+    m = re.match('^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', q)
+    if not m: abort(404, 'Invalid query coordinates')
+    try:
+        lat = float(m.group(1))
+        lon = float(m.group(2))
+    except ValueError: abort(404, 'Invalid query coordinates')
+    
+    point = shapely.geometry.Point(lon, lat)
+    
+    for f in obj['data']['features']:
+        s = shapely.geometry.shape(f['geometry'])
+        if s.contains(point):
+            bottle.response.content_type = 'application/json'
+            return json.dumps(f['properties'])
+    
+    bottle.response.content_type = 'application/json'
+    return json.dumps({})
+
+
+def serve_tile(obj):
+    #cfilename = 'cache/%(layer)s/%(zoom)s/%(x)s,%(z)s.png' % obj
+    
+    # Retrieve date of last modification.
+    obj = profile.load(obj, exclude=['data'])
+    if obj == None: abort(404, 'Object not found')
+    
+    if not request.query.q:
+        # Attempt to retrieve from cache.
+        o = cache.retrieve(obj)
+        if o != None and o['modified'] >= obj['modified']:
+            #print 'Cache hit'
+            buf = io.BytesIO()
+            buf.write(o['raw_data'])
+            bottle.response.content_type = 'image/png'
+            return buf.getvalue()
+    
+    #print 'Cache miss'
+    
+    #if not request.query.q:
+    #    try:       
+    #        stat = os.stat(cfilename)
+    #        if stat.st_mtime >= modified:
+    #            # Cache is up to date.
+    #            return bottle.static_file(cfilename, root='.')
+    #    except OSError: pass
+    
+    obj = profile.load(obj)
+    if obj == None: abort(404, 'Object not found')
+    data = obj['data']
+    
+    if request.query.q:
+        q = request.query.q
+        m = re.match('^(\d+),(\d+)$', q)
+        if m:
+            x, y = int(m.group(1)), int(m.group(2))
+            bottle.response.content_type = 'text/plain'
+            try: return unicode(data[y, x])
+            except ValueError: pass
+        abort(404, 'Invalid query coordinates')
+    
+    m = re.match('colormaps/(.+)', profile['layers'][obj['layer']]['colormap'])
+    colormap = profile.colormap(m.group(1))
+    img = Image.fromarray(ccloud.utils.colorize(data, colormap))
+    buf = io.BytesIO()
+    img.save(buf, 'png')
+    out = buf.getvalue()
+    cache.store(dict(obj, raw_data=buffer(out)))
+    bottle.response.content_type = 'image/png'
+    return out
+    
+    # Save to cache.
+    #try: os.makedirs(os.path.dirname(cfilename))
+    #except OSError: pass
+    #out.save(cfilename)
+    #return bottle.static_file(cfilename, root='.')
+
+
+def usage():
+    sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
+       {program_name} --help
+Try `{program_name} --help' for more information.
+'''.format(program_name=program_name))
+
+
+def print_help():
+    sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
+       {program_name} --help
+       
+Run the ccloud HTTP server.
+
+Positional arguments:
+  HOST              hostname (default: localhost)
+  PORT              port (default: 8080)
+
+Optional arguments:
+  -c FILE           configuration file (default: config.json)
+  -d                print debugging information    
+  --help            print this help information
+
+Report bugs to <ccplot-general@lists.sourceforge.net>.
+'''.format(program_name=program_name))
+
+
+if __name__ == "__main__":
+    program_name = sys.argv[0]
+    logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
+    os.setpgrp()
+    
