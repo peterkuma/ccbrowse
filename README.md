@@ -17,7 +17,7 @@ Installation
 First, make sure you have the following dependencies installed:
 
   * [gcc](http://gcc.gnu.org/)
-  * [Python 2.x](http://www.python.org)
+  * [Python >= 2.6 and < 3.0 (incl. dev files)](http://www.python.org)
   * [numpy](http://numpy.scipy.org/)
   * [scipy](http://www.scipy.org/)
   * [PyNIO](http://www.pyngl.ucar.edu/Nio.shtml)
