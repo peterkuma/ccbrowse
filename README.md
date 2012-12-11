@@ -18,13 +18,15 @@ First, make sure you have the following dependencies installed:
 
   * [gcc](http://gcc.gnu.org/)
   * [Python 2.x](http://www.python.org)
+  * [numpy](http://numpy.scipy.org/)
+  * [scipy](http://www.scipy.org/)
   * [PyNIO](http://www.pyngl.ucar.edu/Nio.shtml)
   * [PIL](http://www.pythonware.com/products/pil/)
   * [pytz](http://pytz.sourceforge.net/)
   * [python-dateutil](http://labix.org/python-dateutil)
-  * [Bottle](http://bottlepy.org/docs/dev/)
   * [Suds](https://fedorahosted.org/suds/)
   * [Shapely](http://pypi.python.org/pypi/Shapely/)
+  * [Bottle >= 0.10.11](http://bottlepy.org/docs/dev/) (`pip install bottle`)
   * [bintrees](http://pypi.python.org/pypi/bintrees/)
     (`pip install bintrees`)
 
