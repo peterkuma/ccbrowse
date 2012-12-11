@@ -1,5 +1,5 @@
 import os
-from distutils.core import setup
+from distutils.core import setup, Extension
 from glob import glob
 
 #def find(path):
@@ -43,6 +43,9 @@ setup(
         'src/bin/ccloud',
         'src/bin/ccserver',
         'src/bin/cchtree-clean',
+    ],
+    ext_modules=[
+        Extension('cctk', sources=['src/cctkmodule.c'])
     ],
     data_files=data_files,
 )
