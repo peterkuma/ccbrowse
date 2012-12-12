@@ -49,9 +49,9 @@ def app(config):
 def run(config):
     """Run server."""
     init(config)
-    try: bottle.run(host=config['host'], port=config['port'], reloader=True)
+    try: bottle.run(host=config['host'], port=config['port'], reloader=config['debug'])
     except socket.error as e:
-        raise RuntimeErorr('[%s:%s]: %s' % (config['host'], config['port'], e.strerror))
+        raise RuntimeError('[%s:%s]: %s' % (config['host'], config['port'], e.strerror))
     global cache
     del cache
     
