@@ -80,18 +80,15 @@ if __name__ == "__main__":
     program_name = sys.argv[0]
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     
+    if len(sys.argv) < 2:
+        usage()
+        sys.exit(1)
+    
     command = sys.argv[1]
     
     if command != 'create' and not os.path.exists('config.json'):
         logging.error('This is not a ccloud repository')
         sys.exit(1)
-    
-    #if len(sys.argv) < 2:
-    #    if os.path.exists('profile.json'):
-    #        subprocess.call(['ccinfo'])
-    #        sys.exit(0)
-    #    usage()
-    #    sys.exit(1)
     
     if command == '--help':
         print_help()
