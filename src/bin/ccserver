@@ -41,6 +41,7 @@ if __name__ == "__main__":
     
     config = ccloud.config.default_config
     filename = 'config.json'
+    debug = False
     
     # Command line arguments.
     try: opts, args = getopt.getopt(sys.argv[1:], 'c:d', ['help'])
@@ -51,7 +52,7 @@ if __name__ == "__main__":
     
     for opt,value in opts:
         if opt == '-d':
-            config['debug'] = True
+            debug = True
         elif opt == '-c':
             filename = value
         elif opt == '--help':
@@ -71,6 +72,8 @@ if __name__ == "__main__":
     except IOError as e:
         logging.error('%s: %s' % (e.filename, e.strerror))
         sys.exit(1)
+        
+    config['debug'] = debug
     
     host = None
     port = None
