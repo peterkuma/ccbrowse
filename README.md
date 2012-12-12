@@ -52,7 +52,7 @@ Because ccloud does not come with any data in the distribution,
 you first have to import some. [Create a new account](https://reverb.echo.nasa.gov/reverb/users/new)
 on the NASA ECHO service.
 Open `config.json`, and enter login details for the account you just created
-under "echo" in "providers":
+under `echo` in `providers`:
 
     "providers": {
         "echo": {
@@ -61,11 +61,11 @@ under "echo" in "providers":
         }
     },
 
-In order to import data, do:
+In order to import data, run:
 
     ccloud get calipso "2012-01-01 12:00" "2012-01-01 12:30"
 
-The command will connect the ECHO service, order and download
+The command will connect the ECHO service, and download
 product files in the specified time interval. When done,
 the files will be processed into tiles and imported into the repository.
 
@@ -102,7 +102,7 @@ you can import them with:
 
     ccloud import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
 
-Similarly, if you want to fetch product files without importing, do:
+Similarly, if you want to fetch product files without importing, run:
 
     cccloud fetch calipso "2012-01-01 12:00" "2012-01-01 12:30"
 
@@ -165,7 +165,7 @@ Repository
 The ccloud repository is a directory that holds imported tiles, cache
 and downloaded product files. Additionally, it contains information
 necessary for performing operations on the repository,
-such as the configuration file and profile specification. Here is a full
+such as the configuration file and profile specification. Here is a
 list of files in a typical ccloud repository:
 
     cache               tile cache
@@ -180,7 +180,7 @@ list of files in a typical ccloud repository:
 When you fetch a product, it is downloaded into `products`, split
 and interpolated into tiles and saved in `layers`. When tiles
 are requested from the server, a chosen colormap is applied on them,
-and the resulting images are saved in cache.
+and the resulting images are saved in `cache`.
 
 How tiles and images are stored is configurable. By default, tiles
 are stored in a number of SQLite databases, sharded (split) by the x-coordinate,
@@ -188,7 +188,7 @@ in order to avoid overly large database files and large number of files
 in file system directories. Images are stored in SQLite databases
 sharded by hashing, and automatically resharded to maintain
 database files of a suitable size. This should allow the repository
-to grow to TBs of data and millions of tiles, as is necessitated by the
+to grow to terabytes of data and millions of tiles, as is necessitated by the
 vast amount of satellite recordings available.
 
 Other options of storage include filesystem storage, when each tile
@@ -227,24 +227,24 @@ The repository configuration is defined in `config.json`, e.g.:
 
 The configuration options are:
 
-    host            hostname to listen on (default: localhost)
-    port            port to listen on (default: 8080)
-    debug           enable server debugging (default: false)
-    providers       specification of services for fetching products
-      echo          the NASA ECHO service
-        login       ECHO login name
-        password    ECHO password
-    profile         path to profile.json (default: profile.json)
-    colormaps       directory containing colormap files (default: colormaps)
-    cache           server cache (permanent) storage configuration
-      driver        storage driver name
-      [option]...   storage configuration options
-    storage         list of tile storage definitions
-      [storage]     storage configuration
-        requires    list of required parameters
-        driver      storage driver name
-        [option]... storage configuration options
-      [storage]...
+    host                    hostname to listen on (default: localhost)
+    port                    port to listen on (default: 8080)
+    debug                   enable server debugging (default: false)
+    providers               specification of services for fetching products
+        echo                the NASA ECHO service
+            login           ECHO login name
+            password        ECHO password
+    profile                 path to profile.json (default: profile.json)
+    colormaps               directory containing colormap files (default: colormaps)
+    cache                   server cache (permanent) storage configuration
+        driver              storage driver name
+        [option]...         storage configuration options
+    storage                 list of tile storage definitions
+        [storage]           storage configuration
+            requires        list of required parameters
+            driver          storage driver name
+            [option]...     storage configuration options
+        [storage]...
       
 The storage configuration options are documented in a later section.
 
@@ -298,32 +298,32 @@ A sample `profile.json`:
     
 The structure of the profile specification is as follows:
 
-    name                name of the profile
-    origin              the physical coordinates of the origin of the system
-                        as time in format "year-month-day hour:minute:second"
-                        and altitude in meters
-    prefix              URL prefix (when hosting on http://your.domain/prefix/)
-    zoom                list of zoom levels
-      0                 zoom level 0
-        width           tile width in seconds
-        height          tile height in meters
-      1                 zoom level 1
-      ...
-    layers              list of layers
-      [layer name]      short name of the layer (without white space)
-        format          tile format (png or json)
-        type            tile data type (float32 or geojson)
-        dimensions      layer dimensions
-                        "xz" for two-dimensional layers
-                        "x" for one-dimensional layers
-                        "" for zero-dimensional layers (e.g. geography)
-        units           physical units of data
-        title           layer title
-        src             source URL
-        availability    layer availability
-        attribution     data attribution text displayed on the map
-        colormap        colormap for rendering images
-      ...
+    name                    name of the profile
+    origin                  the physical coordinates of the origin of the system
+                            as time in format "year-month-day hour:minute:second"
+                            and altitude in meters
+    prefix                  URL prefix (when hosting on http://your.domain/prefix/)
+    zoom                    list of zoom levels
+        0                   zoom level 0
+            width           tile width in seconds
+            height          tile height in meters
+        1                   zoom level 1
+        [...]
+    layers                  list of layers
+        [layer name]        short name of the layer (without white space)
+            format          tile format (png or json)
+            type            tile data type (float32 or geojson)
+            dimensions      layer dimensions
+                            "xz" for two-dimensional layers
+                            "x" for one-dimensional layers
+                            "" for zero-dimensional layers (e.g. geography)
+            units           physical units of data
+            title           layer title
+            src             source URL
+            availability    layer availability
+            attribution     data attribution text displayed on the map
+            colormap        colormap for rendering images
+        [...]
 
 As a user, you might wish to modify zoom level and origin, whereas
 you should not modify layers unless you developed you own import class,
