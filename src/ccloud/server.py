@@ -20,6 +20,9 @@ import ccloud
 from ccloud.config import sharepath
 
 
+RFC822_TIME = '%a, %d %b %Y %H:%M:%S GMT'
+
+
 def init(conf):
     """Initialize server."""
     global config
@@ -51,6 +54,18 @@ def run(config):
         raise RuntimeErorr('[%s:%s]: %s' % (config['host'], config['port'], e.strerror))
     global cache
     del cache
+    
+
+def last_modified(modified):
+    if type(modified) == int: modified = datetime.utcfromtimestamp(modified)
+    modified_since = bottle.request.get_header('If-Modified-Since')
+    if modified_since != None:
+        try:
+            m = datetime.strptime(modified_since, RFC822_TIME)
+            if m >= modified: abort(304, 'Not Modified')
+        except ValueError:pass
+    
+    bottle.response.set_header('Last-Modified', modified.strftime(RFC822_TIME))
 
 
 # Index.
@@ -191,7 +206,7 @@ def serve(layer, zoom=None, x=None, z=None, fmt=None):
         if x != None: obj['x'] = int(x)
         if z != None: obj['z'] = int(z)
         if fmt != None: obj['format'] = fmt
-    except ValueError: abort(404)
+    except ValueError: abort(404)    
     
     if obj['format'] == 'json':
         return serve_json(obj)
@@ -208,7 +223,7 @@ def serve(layer, zoom=None, x=None, z=None, fmt=None):
 @route('<filename:path>')
 def default(filename):
     return bottle.static_file(filename, root=os.path.join(sharepath, 'www'))
-    
+
 
 def serve_json(obj):
     obj = profile.load(obj)
@@ -239,14 +254,14 @@ def serve_json(obj):
     return json.dumps({})
 
 
-def serve_tile(obj):
-    #cfilename = 'cache/%(layer)s/%(zoom)s/%(x)s,%(z)s.png' % obj
-    
-    # Retrieve date of last modification.
-    obj = profile.load(obj, exclude=['data'])
-    if obj == None: abort(404, 'Object not found')
-    
+def serve_tile(obj):  
     if not request.query.q:
+        # Retrieve date of last modification.
+        obj = profile.load(obj, exclude=['data'])
+        if obj == None: abort(404, 'Object not found')
+        
+        last_modified(obj['modified'])
+        
         # Attempt to retrieve from cache.
         o = cache.retrieve(obj)
         if o != None and o['modified'] >= obj['modified']:
@@ -257,15 +272,6 @@ def serve_tile(obj):
             return buf.getvalue()
     
     #print 'Cache miss'
-    
-    #if not request.query.q:
-    #    try:       
-    #        stat = os.stat(cfilename)
-    #        if stat.st_mtime >= modified:
-    #            # Cache is up to date.
-    #            return bottle.static_file(cfilename, root='.')
-    #    except OSError: pass
-    
     obj = profile.load(obj)
     if obj == None: abort(404, 'Object not found')
     data = obj['data']
@@ -289,12 +295,6 @@ def serve_tile(obj):
     cache.store(dict(obj, raw_data=buffer(out)))
     bottle.response.content_type = 'image/png'
     return out
-    
-    # Save to cache.
-    #try: os.makedirs(os.path.dirname(cfilename))
-    #except OSError: pass
-    #out.save(cfilename)
-    #return bottle.static_file(cfilename, root='.')
 
 
 def usage():
