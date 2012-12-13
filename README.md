@@ -109,6 +109,12 @@ Similarly, if you want to fetch product files without importing, run:
 The product files will be saved under the `products/calipso` directory inside
 the repository.
 
+You can choose to import only a certain layer or zoom level with -l and -z.
+
+    ccloud import calipso -l calipso532 -z 2 CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
+    
+would generate tiles for the layer calipso532 and zoom level 2.
+
 Deployment
 ----------
 
@@ -141,7 +147,7 @@ Create a file `/etc/gunicorn.d/ccloud`:
 
 replacing path to the ccloud repository and username. In order to
 make ccloud available on a public domain, you can deploy an HTTP server such as
-[nginx](http://nginx.org/), and use this example virtual server configuration file:
+[nginx](http://nginx.org/), and use this example virtual server configuration:
 
     server {
             listen 80;
@@ -518,7 +524,7 @@ tiles. The interface between the backend and the web application is
 defined by `profile.json`.
 
 When importing product files, data is interpolated onto a regular grid
-and saved as tiles of 256x256 px. Tiles are
+and saved as tiles of 256x256px. Tiles are
 saved as grayscale PNG images, with every four adjacent 8-bit pixels coding one
 32-bit float value, resulting in images of 1024x256 pixels.
 
