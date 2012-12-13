@@ -15,7 +15,10 @@
    id="svg4497"
    version="1.1"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="progress.svg"
+   inkscape:export-filename="/mnt/data1/www/ccloud/www/img/progress.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4499">
     <linearGradient
@@ -54,14 +57,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="18.746875"
-     inkscape:cx="8.5714286"
-     inkscape:cy="1.410235"
+     inkscape:cx="-0.68344721"
+     inkscape:cy="0.90348387"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1646"
-     inkscape:window-height="1023"
-     inkscape:window-x="34"
+     inkscape:window-width="1650"
+     inkscape:window-height="1028"
+     inkscape:window-x="30"
      inkscape:window-y="0"
      inkscape:window-maximized="1" />
   <metadata
@@ -82,11 +85,13 @@
      id="layer1"
      transform="translate(0,-1042.3622)">
     <rect
-       style="color:#000000;fill:url(#linearGradient4515);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       style="color:#000000;fill:url(#linearGradient4515);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;opacity:0.86877828"
        id="rect4507"
        width="10"
        height="10"
        x="2.3607374e-08"
-       y="1042.3622" />
+       y="1042.3622"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
   </g>
 </svg>
