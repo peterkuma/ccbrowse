@@ -178,7 +178,7 @@ list of files in a typical ccloud repository:
     README              README file
 
 When you fetch a product, it is downloaded into `products`, split
-and interpolated into tiles and saved in `layers`. When tiles
+and interpolated into tiles of 256x256px and saved in `layers`. When tiles
 are requested from the server, a chosen colormap is applied on them,
 and the resulting images are saved in `cache`.
 
@@ -295,7 +295,23 @@ A sample `profile.json`:
             [...]
         }
     }
-    
+
+We can see a number of things in this profile specification:
+
+  * It defines a profile called `A-Train`.
+  * The x-axis begins at midnight 1st Jan 2006, and the z-axis begins at
+    an altitude of 0m.
+  * The lowest zoom level (`0`) has tiles of 131072s in width and 65636m in
+    height (remember that tiles always have a fixed size of 256x256px,
+    so this determines the zoom factor and aspect ratio).
+  * There is a two-dimensional (`xz`) layer called `calipso532`.
+    Its full name is "Total Att. Backscatter 532nm" and has units of km-1 sr-1.
+    Data in this layer is rendered with the `colormaps/calipso-backscatter.json`
+    colormap.
+  * There is a layer called `geography`, which does not have any dimensions
+    (it is a single GeoJSON file). This is because it holds information
+    about countires and marine areas, which is common for all x-z tiles.
+
 The structure of the profile specification is as follows:
 
     name                    name of the profile
@@ -338,6 +354,16 @@ or modify the tiles in storage accordingly (which may be difficult).
 
 You can safely change `name`, `prefix`, layer `title`, `units`, and
 `colormap`.
+
+If you were to add a new layer to the profile specification,
+it would not become supported by ccloud without additional effort.
+The web application would display its name in the selection of layers,
+but could not retrieve any data. For that, you have write an import
+class or extend an existing one, which reads the relevant data from product
+files and returns an array of data interpolated on a regular grid of 256x256
+elements for each tile. You can find instructions on how to do that in
+`src/ccloud/ccimport/product.py`, and use the existing import classes
+in the same directory as an example.
 
 Storage
 -------
