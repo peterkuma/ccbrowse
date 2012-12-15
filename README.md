@@ -109,9 +109,9 @@ Similarly, if you want to fetch product files without importing, run:
 The product files will be saved under the `products/calipso` directory inside
 the repository.
 
-You can choose to import only a certain layer or zoom level with -l and -z.
+You can choose to import only a certain layer or zoom level with `-l` and `-z`.
 
-    ccloud import calipso -l calipso532 -z 2 CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
+    ccloud import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
     
 would generate tiles for the layer calipso532 and zoom level 2.
 
