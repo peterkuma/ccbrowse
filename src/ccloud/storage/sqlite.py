@@ -68,7 +68,7 @@ class SQLiteDriver(Driver):
         try: rows = c.execute(q, params)
         except sqlite3.Error as e: raise RuntimeError("%s: %s" % (q, e))
         row = rows.fetchone()
-        if row == None: return None
+        if row is None: return None
         o = obj.copy()
         o.update(dict(zip(row.keys(), row)))
         conn.close()

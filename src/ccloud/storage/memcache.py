@@ -51,7 +51,7 @@ class MemCacheDriver(Driver):
                 except IndexError: break
                 obj = entry[1]
                 dirty = entry[2]
-                if obj == None: continue
+                if obj is None: continue
                 del self.index[self.keyof(obj)]
                 self.size -= self.sizeof(obj)
                 if dirty and self.backing_store:
@@ -102,7 +102,7 @@ class MemCacheDriver(Driver):
             except IndexError: break
             obj = entry[1]
             dirty = entry[2]
-            if obj == None: continue
+            if obj is None: continue
             del self.index[self.keyof(obj)]
             self.size -= self.sizeof(obj)
             if dirty and self.backing_store:

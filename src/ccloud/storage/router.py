@@ -33,12 +33,12 @@ class Router(Driver):
     def store(self, obj):
         if self.on_store: self.on_store(obj)
         storage = self.storage_for(obj)
-        if storage == None:
+        if storage is None:
             raise RuntimeError('No suitable storage for object: %s' %
                                reprlib.repr(obj))
         storage.store(obj)
     
     def retrieve(self, obj, exclude=[]):
         storage = self.storage_for(obj)
-        if storage == None: return None
+        if storage is None: return None
         return Driver.retrieve(self, storage.retrieve(obj, exclude), exclude)

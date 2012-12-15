@@ -245,7 +245,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGHUP, term_handler)
     
     lockfp = lock(config['lock'])
-    if lockfp == None:
+    if lockfp is None:
         if fail_silently: sys.exit(0)
         logging.error('Failed to acquire lock')
         sys.exit(1)

@@ -76,7 +76,7 @@ if __name__ == "__main__":
     type = args[0]
     
     if not tracking_id:
-        if len(args) != 3 and tracking_id == None:
+        if len(args) != 3 and tracking_id is None:
             usage()
             sys.exit(1)
         

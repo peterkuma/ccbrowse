@@ -101,7 +101,7 @@ def places(zoom, x, z):
     })
     geography = profile.load({'layer': 'geography'})
     
-    if trajectory == None or geography == None:
+    if trajectory is None or geography is None:
         return json.dumps({'places': []})
     
     points = np.array(trajectory['data']['features'][0]['geometry']['coordinates'])
@@ -148,7 +148,7 @@ def geocoding(zoom, x, z):
     })
     geography = profile.load({'layer': 'geography'})
 
-    if trajectory == None or geography == None:
+    if trajectory is None or geography is None:
         abort(404, 'Geocoding support not available')
     
     geom = {}
@@ -227,7 +227,7 @@ def default(filename):
 
 def serve_json(obj):
     obj = profile.load(obj)
-    if obj == None: abort(404, 'Object not found')
+    if obj is None: abort(404, 'Object not found')
     
     if not request.query.q:
         bottle.response.content_type = 'application/json'
@@ -258,7 +258,7 @@ def serve_tile(obj):
     if not request.query.q:
         # Retrieve date of last modification.
         obj = profile.load(obj, exclude=['data'])
-        if obj == None: abort(404, 'Object not found')
+        if obj is None: abort(404, 'Object not found')
         
         last_modified(obj['modified'])
         
@@ -273,7 +273,7 @@ def serve_tile(obj):
     
     #print 'Cache miss'
     obj = profile.load(obj)
-    if obj == None: abort(404, 'Object not found')
+    if obj is None: abort(404, 'Object not found')
     data = obj['data']
     
     if request.query.q:

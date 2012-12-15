@@ -167,7 +167,7 @@ class Profile(object):
         if obj.has_key('data'): del obj['data']
         
         o = self.cache.retrieve(obj, exclude=exclude)
-        if o == None:
+        if o is None:
             o = self.storage.retrieve(obj, exclude=exclude)
             if o != None:
                 o2 = layer.copy()

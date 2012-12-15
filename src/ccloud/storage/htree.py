@@ -76,7 +76,7 @@ class HtreeDriver(Driver):
         
         row = rows.fetchone()
         
-        if row == None:
+        if row is None:
             bits = 0
             hash = '0'*self.config['hashlen']
         else:
@@ -191,7 +191,7 @@ class HtreeDriver(Driver):
             raise RuntimeError('%s: %s: %s' % (filename, q, e))
         row = rows.fetchone()
         
-        if row == None: return None
+        if row is None: return None
         o = obj.copy()
         o.update(dict(zip(row.keys(), row)))
         

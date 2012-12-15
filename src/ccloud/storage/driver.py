@@ -44,7 +44,7 @@ class Driver(object):
         which can make the retrieval significantly faster for some type of
         drivers.
         """
-        if obj == None: return None
+        if obj is None: return None
         o = obj.copy()
         for field in exclude:
             if o.has_key(field): del o[field]

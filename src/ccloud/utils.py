@@ -112,7 +112,7 @@ def geojson_update(a, b, feature_index=None):
     faster. feature_index, if present, is updated to reflect the new state of a.
     """
     if not b.has_key('features'): return
-    if feature_index == None:
+    if feature_index is None:
         # Build a temporary index.
         feature_index = {}
         for f in a['features']:
@@ -170,9 +170,9 @@ def humanize_size(size):
 def dehumanize_size(s):
     if type(s) == int: return s
     m = re.match(r'^(\d+(?:\.\d*)?)\s*(B|kB|MB|GB|TB)?$', s)
-    if m == None: return ValueError('Invalid size literal: "%s"' % s)
+    if m is None: return ValueError('Invalid size literal: "%s"' % s)
     units = m.group(2)
-    if units == None: return int(m.group(1))
+    if units is None: return int(m.group(1))
     mult = 1
     for u in ['B', 'kB', 'MB', 'GB', 'TB']:
         if u == units: break
@@ -181,7 +181,7 @@ def dehumanize_size(s):
 
 
 def download(url, name=None, progress=False):
-    if name == None: name = os.path.basename(url)
+    if name is None: name = os.path.basename(url)
     if name == '': raise ValueError
     
     # Only output progress if attached to a terminal.
