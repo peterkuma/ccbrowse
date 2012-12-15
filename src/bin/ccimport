@@ -13,14 +13,14 @@ from ccloud.ccimport import Calipso, NaturalEarth
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
 
 def usage():
-    sys.stderr.write('''Usage: {program_name} [-s] [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE
+    sys.stderr.write('''Usage: {program_name} [-s] [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE...
        {program_name} --help
 Try `{program_name} --help' for more information.
 '''.format(program_name=program_name))
 
 
 def print_help():
-    sys.stdout.write('''Usage: {program_name} [-s] [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE
+    sys.stdout.write('''Usage: {program_name} [-s] [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE...
        {program_name} --help
 
 Import data from FILE into profile specified in configuration file CONFIG.
@@ -124,12 +124,12 @@ if __name__ == "__main__":
         elif opt == '-z':
             zoom = value
     
-    if len(args) != 2:
+    if len(args) < 2:
         usage()
         sys.exit(1)
     
     file_type = args[0]
-    filename = args[1]
+    filenames = args[1:]
     
     try:
         with open(config_filename) as fp:
@@ -140,16 +140,18 @@ if __name__ == "__main__":
     
     try:
         with ccloud.Profile(config, cache_size=0) as profile:
-            if file_type == 'calipso':
-                product = Calipso(filename, profile)
-                save(product, profile, layer=layer, zoom=zoom,
-                     statistics=statistics)
-            elif file_type == 'naturalearth':
-                naturalearth = NaturalEarth(filename, profile)
-                naturalearth.save(layer=layer)
-            else:
-                logging.error('%s: Unrecognized type %s' % (program_name, file_type))
-                sys.exit(1)
+            for filename in filenames:
+                if file_type == 'calipso':
+                    product = Calipso(filename, profile)
+                    save(product, profile, layer=layer, zoom=zoom,
+                         statistics=statistics)
+                elif file_type == 'naturalearth':
+                    naturalearth = NaturalEarth(filename, profile)
+                    naturalearth.save(layer=layer)
+                else:
+                    logging.error('%s: Unrecognized type %s' %
+                                  (program_name, file_type))
+                    sys.exit(1)
     except RuntimeError as e:
         logging.error(e)
     except IOError as e:
