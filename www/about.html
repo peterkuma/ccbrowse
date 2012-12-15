@@ -27,8 +27,9 @@
 </ul>
 <h2>Interpolation</h2>
 <p>
-    Data is interpolated by a nearest-neighbour algorithm,
-    as described in <a href="http://ccplot.org/pub/doc/pdf/Visualising_Data_from_CloudSat_and_CALIPSO_Satellites.pdf">Visualising Data from CloudSat and CALIPSO Satellites</a>.
+    Data is interpolated by averaging all data points overlying a given
+    pixel of the resulting image. When the scale of the image is greater
+    than that of the data, ordinary nearest-neighbor interpolation is performed.
 </p>
 <!--
 <h2>Data Sources</h2>
