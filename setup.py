@@ -1,6 +1,7 @@
 import os
 from distutils.core import setup, Extension
 from glob import glob
+from Cython.Distutils import build_ext
 
 #def find(path):
 #    return [os.path.join(i[0], f) for i in os.walk(path) for f in i[2]]
@@ -44,8 +45,10 @@ setup(
         'src/bin/ccserver',
         'src/bin/cchtree-clean',
     ],
+    cmdclass = {'build_ext': build_ext},
     ext_modules=[
-        Extension('cctk', sources=['src/cctkmodule.c'])
+        Extension('cctk', sources=['src/cctkmodule.c']),
+        Extension('ccext', ['src/ccext.pyx'])
     ],
     data_files=data_files,
 )
