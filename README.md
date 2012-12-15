@@ -20,6 +20,7 @@ First, make sure you have the following dependencies installed:
 
   * [gcc](http://gcc.gnu.org/)
   * [Python](http://www.python.org) >= 2.6 and < 3.0 (incl. dev files)
+  * [Cython](http://www.cython.org/)
   * [SQLite](http://www.sqlite.org/)
   * [numpy](http://numpy.scipy.org/)
   * [scipy](http://www.scipy.org/)
