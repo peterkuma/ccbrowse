@@ -33,6 +33,11 @@ class SQLiteDriver(Driver):
             c = conn.cursor()
         except sqlite3.Error as e:
             raise RuntimeError('%s: %s' % (filename, e))
+       
+        q = 'PRAGMA synchronous = OFF'
+        try: c.execute(q)
+        except sqlite3.Error as e:
+            raise RuntimeError('%s: %s: %s' % (filename, q, e))
         
         # Initialize database.
         if not exists:
