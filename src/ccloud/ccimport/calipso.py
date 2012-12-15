@@ -3,22 +3,23 @@ import pytz
 import Nio
 import numpy as np
 import math
-from scipy.interpolate import Rbf
+from scipy.interpolate import Rbf, interp1d
 
 import ccloud
 import cctk
+import ccext
 import calipso_constants
 
 from .product import Product
 
 class Calipso(Product):
     DATASETS = {
-        'calipso532': 'Total_Attenuated_Backscatter_532',
-        'calipso532p': 'Perpendicular_Attenuated_Backscatter_532',
-        'latitude': 'Latitude',
-        'longitude': 'Longitude',
-        'trajectory': ('Latitude', 'Longitude'),
-        #'pressure': 'Pressure',
+        'calipso532': ['Total_Attenuated_Backscatter_532'],
+        'calipso532p': ['Perpendicular_Attenuated_Backscatter_532'],
+        'calipso532-newinterp': ['Total_Attenuated_Backscatter_532'],
+        'latitude': ['Latitude'],
+        'longitude': ['Longitude'],
+        'trajectory': ['Latitude', 'Longitude'],
     }
     
     LIDAR_ALTITUDES = calipso_constants.LIDAR_ALTITUDES
@@ -36,8 +37,8 @@ class Calipso(Product):
         w = self.profile['zoom'][level]['width']
         
         time = self.nio.variables["Profile_UTC_Time"]
-        t1 = self._td2ms(self._time2dt(time[0][0]) - self.profile['origin'][0])
-        t2 = self._td2ms(self._time2dt(time[-1][0]) - self.profile['origin'][0])
+        t1 = self._dt2ms(self._time2dt(time[0][0]) - self.profile['origin'][0])
+        t2 = self._dt2ms(self._time2dt(time[-1][0]) - self.profile['origin'][0])
         
         x1 = int(math.floor(t1 / w))
         x2 = int(math.ceil(t2 / w))
@@ -55,6 +56,23 @@ class Calipso(Product):
         return range(z1, z2)
     
     def tile(self, layer, level, x, z):
+        #
+        #    z ^
+        #      |
+        #  mm  +     +----------------------------------------+
+        #      |     |                                        |
+        #      |     |                PRODUCT                 |
+        #      |     |                                        |
+        #  z2  + - - + - - - - - +---------+                  |
+        # (m2) |     |           |         |                  |
+        #      |     |           |  tile   h                  |
+        #      |     |           |         |                  |
+        #  z1  + - - + - - - - - +----w----+                  |
+        # (m1) |     |                                        |
+        #      |     |                                        |
+        #  m0  +-----+-----------+---------+------------------+------------->
+        #           t0          t1 (n1)   t2 (n2)            tn (nn)       t
+        
         tile = {
             'layer': layer,
             'zoom': level,
@@ -62,42 +80,37 @@ class Calipso(Product):
             'z': z,
         }
         
-        datasets = self.DATASETS[layer]
-        dataset = datasets[0] if type(datasets) == tuple else datasets
+        datasets = [self.nio.variables[name] for name in self.DATASETS[layer]]
+        dataset = datasets[0]
+        height = self.LIDAR_ALTITUDES
         
         w = self.profile['zoom'][level]['width']
         h = self.profile['zoom'][level]['height']
-        
+        n0 = 0
+        nn = dataset.shape[0]
+        m0 = 0
+        mm = dataset.shape[1]
+        time = self.nio.variables["Profile_UTC_Time"]
+        t0 = self._dt2ms(self._time2dt(time[0][0]) - self.profile['origin'][0])
+        tn = self._dt2ms(self._time2dt(time[-1][0]) - self.profile['origin'][0])
+        sampling_interval = (tn - t0)/(nn - n0)
         t1 = x*w
         t2 = t1 + w
-        
         z1 = z*h + self.profile['origin'][1]
         z2 = z1 + h
-        
-        time = self.nio.variables["Profile_UTC_Time"]
-        
-        if layer == 'pressure':
-            height = self.MET_DATA_ALTITUDES
-        else:
-            height = self.LIDAR_ALTITUDES
-        
-        t0 = self._td2ms(self._time2dt(time[0][0]) - self.profile['origin'][0])
-        tn = self._td2ms(self._time2dt(time[-1][0]) - self.profile['origin'][0])
-        sampling_interval = (tn-t0)/time.shape[0]
-        
-        n1 = int(math.floor((t1 - t0)/sampling_interval))
-        n2 = int(math.ceil((t2 - t0)/sampling_interval))
-        
-        m1 = len(height) - np.searchsorted(height[::-1], z2)
-        m2 = len(height) - np.searchsorted(height[::-1], z1)
-        
-        n1_ = ccloud.utils.coerce(n1, 0, self.nio.variables[dataset].shape[0])
-        n2_ = ccloud.utils.coerce(n2, 0, self.nio.variables[dataset].shape[0])
+        n1 = (t1 - t0)/sampling_interval
+        n2 = (t2 - t0)/sampling_interval
+        n1_ = ccloud.utils.coerce(int(math.floor(n1)), n0, nn)
+        n2_ = ccloud.utils.coerce(int(math.ceil(n2)+1), n0, nn)
+        m1 = len(height) - np.searchsorted(height[::-1], z2) - 1
+        m1 = ccloud.utils.coerce(m1, m0, mm)
+        m2 = len(height) - np.searchsorted(height[::-1], z1) + 1
+        m2 = ccloud.utils.coerce(m2, m0, mm)
         
         # Trajectory - special case.
         if layer == 'trajectory':
-            raw_data_lat = self.nio.variables[datasets[0]][n1_:n2_, 0]
-            raw_data_lon = self.nio.variables[datasets[1]][n1_:n2_, 0]
+            raw_data_lat = datasets[0][n1_:n2_, 0]
+            raw_data_lon = datasets[1][n1_:n2_, 0]
             lat = np.interp(np.arange(n1, n2, (n2-n1)/256.0),
                             np.arange(n1_, n2_, dtype=np.float32),
                             raw_data_lat)
@@ -119,37 +132,66 @@ class Calipso(Product):
         
         # One-dimensional layer.
         if self.profile['layers'][layer]['dimensions'] == 'x':
-            raw_data = self.nio.variables[dataset][n1_:n2_, 0]
+            raw_data = dataset[n1_:n2_, 0]
             tile['data'] = np.interp(np.arange(n1, n2, (n2-n1)/256.0),
                                      np.arange(n1_, n2_, dtype=np.float32),
                                      raw_data).astype(np.float32).reshape(1, 256)
             return tile
         
         # Two-dimensional layer.
-        raw_data = self.nio.variables[dataset][n1_:n2_,m1:m2]
-        Z, N = np.meshgrid(height[m1:m2], np.arange(n1_, n2_, dtype=np.float32))
+        raw_data = dataset[n1_:n2_,m1:m2]
+        interpolation = self.profile['layers'][layer].get('interpolation', 'smart')
         
-        interpolation = self.profile['layers'][layer].get('interpolation', 'nearest-neighbor')
+        try:
+            fillvalue = dataset.attributes['fillvalue'][0]
+            raw_data = np.ma.masked_equal(raw_data, fillvalue, copy=False)
+            raw_data.set_fill_value(np.nan)
+        except KeyError, IndexError: pass
         
-        if interpolation == 'linear':
-            raise NotImplementedError('Linear interpolation not implemented')
-            #tile.data = np.zeros((256, 256), np.float32)
-            #for i in range(256):
-            #    tile.data[i,:] = np.interp(np.arange(z1, z2, (z2-z1)/256.0),
-            #                               height[m1:m2],
-            #                               raw_data[i,:])
-        elif interpolation == 'rbf':
-            rbf = Rbf(Z, N, raw_data)
-            tile['data'] = rbf(np.arange(z1, z2, (z2-z1)/256.0),
-                               np.arange(n1, n2, (n2-n1)/256.0))
-        else:
+        if interpolation == 'smart':
+            N = np.arange(n1, n2, (n2-n1)/256.0)
+            N = np.round(N).astype(np.int) - n1_
+            f = interp1d(height[m1:m2][::-1], np.arange(m1, m2)[::-1], 'nearest',
+                         bounds_error=False, fill_value=m1-1)
+            M = f(np.arange(z1, z2, (z2-z1)/256.0)[::-1])
+            M = np.round(M).astype(np.int) - m1
+            data = ccext.interp2d(raw_data.astype(np.float32).filled(),
+                                  N.astype(np.float32),
+                                  M.astype(np.float32))
+            tile['data'] = data.T.copy()
+        
+        elif interpolation == 'nearest':
+            N = np.arange(n1, n2, (n2-n1)/256.0)
+            N = np.round(N).astype(np.int) - n1_
+            N = np.ma.masked_outside(N, 0, raw_data.shape[0]-1, copy=False)
+            N.set_fill_value(0)
+            
+            f = interp1d(height[m1:m2][::-1], np.arange(m1, m2)[::-1], 'nearest',
+                         bounds_error=False, fill_value=m1-1)
+            M = f(np.arange(z1, z2, (z2-z1)/256.0)[::-1])
+            M = np.round(M).astype(np.int) - m1
+            M = np.ma.masked_outside(M, 0, raw_data.shape[1]-1, copy=False)
+            M.set_fill_value(0)
+
+            Mmask = M.mask if M.mask.ndim else np.zeros(M.shape, dtype=np.bool)
+            Nmask = N.mask if N.mask.ndim else np.zeros(N.shape, dtype=np.bool)
+            mask = ~(np.asmatrix(~Mmask).T*np.asmatrix(~Nmask))
+            mesh = np.meshgrid(N.filled(), M.filled())
+            data = np.ma.masked_where(mask, raw_data[mesh], copy=False)
+            tile['data'] = data.filled(np.nan)
+        
+        elif interpolation == 'nearest-old':
+            Z, N = np.meshgrid(height[m1:m2], np.arange(n1_, n2_, dtype=np.float32))
             tile['data'] = cctk.interpolate2d(
                 raw_data, Z, N, (z2, z1, 256),
-                 (n1, n2, 256), float('nan'), 3, 3)
+                (n1, n2, 256), float('nan'), 3, 3)
+        
+        else:
+            raise RuntimeError('Unknown interpolation %s' % interpolation)
         
         return tile
     
-    def _td2ms(self, td):
+    def _dt2ms(self, td):
         return 1.0 * (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**3
     
     def _time2dt(self, time):
