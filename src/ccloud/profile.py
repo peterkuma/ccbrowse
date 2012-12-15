@@ -158,8 +158,8 @@ class Profile(object):
     
     def load(self, obj, exclude=[]):
         """Load object from profile."""
-        layer = self.layer_for(obj)
-        if layer == None: return
+        try: layer = self.layer_for(obj)
+        except ValueError: return None
         
         o = layer.copy()
         o.update(obj)
