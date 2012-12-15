@@ -5,6 +5,7 @@ import getopt
 import logging
 import json
 import functools
+import time
 
 import ccloud
 from ccloud.ccimport import Calipso, NaturalEarth
@@ -12,14 +13,14 @@ from ccloud.ccimport import Calipso, NaturalEarth
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
 
 def usage():
-    sys.stderr.write('''Usage: {program_name} [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE
+    sys.stderr.write('''Usage: {program_name} [-s] [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE
        {program_name} --help
 Try `{program_name} --help' for more information.
 '''.format(program_name=program_name))
 
 
 def print_help():
-    sys.stdout.write('''Usage: {program_name} [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE
+    sys.stdout.write('''Usage: {program_name} [-s] [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE
        {program_name} --help
 
 Import data from FILE into profile specified in configuration file CONFIG.
@@ -31,6 +32,7 @@ Positional arguments:
 Optional arguments:
   -c FILE          configuration file (default: config.json)
   -l LAYER         import only specified profile layer
+  -s               print statistics
   -t TYPE          type of FILE or `help' for a list of supported types
   -z ZOOM          import only specified zoom level
   
@@ -51,7 +53,9 @@ def save_decorator(f):
 
 
 @save_decorator
-def save(product, profile, layer=None, zoom=None):
+def save(product, profile, layer=None, zoom=None, statistics=False):
+    if statistics: stat = dict(n=0, read=0, save=0)
+    
     for level in sorted(profile['zoom'].keys()):
         if zoom != None and level != zoom: continue
         for l in product.layers():
@@ -67,24 +71,35 @@ def save(product, profile, layer=None, zoom=None):
                     line = '%s level %s tiles %d--%d [%d/%d] %.f%%' % \
                            (l, level, X[0], X[-1], i, size, 100.0*i/size)
                     sys.stderr.write(line)
-                    #try:
+                    
+                    if statistics: t1 = time.clock()
+                    
                     tile = product.tile(l, level, x, z)
-                    if type(tile) == tuple: print tile
+                    
+                    if statistics:
+                        t2 = time.clock()
+                        stat['read'] += t2 - t1
+                    
                     profile.save(tile)
-                    #except Exception, e:
-                    #    logging.warning(e)
+                    
+                    if statistics:
+                        stat['save'] += time.clock() - t2
+                        stat['n'] += 1
+
                     i += 1
             profile.write_availability()
             if line: print '\r\033[K%s level %s tiles %d--%d' % \
                            (l, level, X[0], X[-1])
-
+    if statistics:
+        print 'Statistics: read and processing %.2f ms/tile, save %.2f ms/tile' % \
+              (1000*stat['read']/stat['n'], 1000*stat['save']/stat['n'])
 
 if __name__ == "__main__":
     program_name = sys.argv[0]
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'c:l:z:', ['help'])
+        opts, args = getopt.getopt(sys.argv[1:], 'c:l:sz:', ['help'])
     except getopt.GetoptError as e:
         logging.error(e)
         usage()
@@ -94,6 +109,7 @@ if __name__ == "__main__":
     file_type = None
     layer = None
     zoom = None
+    statistics = False
     
     for opt,value in opts:
         if opt == '--help':
@@ -103,6 +119,8 @@ if __name__ == "__main__":
             config_filename = value
         elif opt == '-l':
             layer = value
+        elif opt == '-s':
+            statistics = True
         elif opt == '-z':
             zoom = value
     
@@ -124,7 +142,8 @@ if __name__ == "__main__":
         with ccloud.Profile(config, cache_size=0) as profile:
             if file_type == 'calipso':
                 product = Calipso(filename, profile)
-                save(product, profile, layer=layer, zoom=zoom)
+                save(product, profile, layer=layer, zoom=zoom,
+                     statistics=statistics)
             elif file_type == 'naturalearth':
                 naturalearth = NaturalEarth(filename, profile)
                 naturalearth.save(layer=layer)
