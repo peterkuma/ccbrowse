@@ -90,7 +90,7 @@ def save(product, profile, layer=None, zoom=None, statistics=False):
             profile.write_availability()
             if line: print '\r\033[K%s level %s tiles %d--%d' % \
                            (l, level, X[0], X[-1])
-    if statistics:
+    if statistics and stat['n'] > 0:
         print 'Statistics: read and processing %.2f ms/tile, save %.2f ms/tile' % \
               (1000*stat['read']/stat['n'], 1000*stat['save']/stat['n'])
 
