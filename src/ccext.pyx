@@ -6,12 +6,14 @@ cdef extern from "math.h":
     double floor(double)
     double ceil(double)
     double round(double)
-    int isnan(double x)
+    bint isnan(double x)
 
-#@cython.boundscheck(False)
-def interp2d(np.ndarray[float, ndim=2] data not None,
-             np.ndarray[float, ndim=1] N not None,
-             np.ndarray[float, ndim=1] M not None):
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+def interp2d(np.ndarray[np.float32, ndim=2, mode="c"] data not None,
+             np.ndarray[np.float32, ndim=1, mode="c"] N not None,
+             np.ndarray[np.float32, ndim=1, mode="c"] M not None):
     """Interpolate 2D data on given points.
     
     data is a two-dimensional array of data to be interpolated.
@@ -42,8 +44,8 @@ def interp2d(np.ndarray[float, ndim=2] data not None,
     """
     cdef int i, j, n, m
     cdef int q
-    cdef float n1, n2
-    cdef float m1, m2
+    cdef np.float32 n1, n2
+    cdef np.float32 m1, m2
     cdef int lenM, lenN
     cdef int w, h
     lenM = M.shape[0]
@@ -52,7 +54,7 @@ def interp2d(np.ndarray[float, ndim=2] data not None,
     h = data.shape[1]
     
     output = np.zeros((lenN, lenM), dtype=np.float32)
-    cdef np.ndarray[float, ndim=2] out = output
+    cdef np.ndarray[np.float32, ndim=2] out = output
     
     for i in range(lenN):
         for j in range(lenM):
@@ -66,13 +68,14 @@ def interp2d(np.ndarray[float, ndim=2] data not None,
             if m2 - m1 < 1: m1 = m2 = M[j]
             
             q = 0
-            for n in range(<int>round(n1), <int>round(n2+1)):
-                for m in range(<int>round(m1), <int>round(m2+1)):
+            for n in range(<int>(n1+0.5), <int>(n2+0.5+1)):
+                for m in range(<int>(m1+0.5), <int>(m2+0.5+1)):
                     if n < 0 or n >= w: continue
                     if m < 0 or m >= h: continue
                     if isnan(data[n,m]): continue
                     out[i,j] += data[n,m]
                     q += 1
+            # Assumption: q != 0.
             out[i,j] /= q
     
     return output
