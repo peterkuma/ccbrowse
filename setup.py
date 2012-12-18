@@ -48,7 +48,10 @@ setup(
     cmdclass = {'build_ext': build_ext},
     ext_modules=[
         Extension('cctk', sources=['src/cctkmodule.c']),
-        Extension('ccext', ['src/ccext.pyx'])
+        Extension('ccext',
+                  ['src/ccext.pyx'],
+                  extra_compile_args=['-march=native'],
+        ),
     ],
     data_files=data_files,
 )
