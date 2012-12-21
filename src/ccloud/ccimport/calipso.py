@@ -1,6 +1,5 @@
 import datetime as dt
 import pytz
-import Nio
 import numpy as np
 import math
 from scipy.interpolate import Rbf, interp1d
@@ -9,6 +8,7 @@ import ccloud
 import cctk
 import ccext
 import calipso_constants
+from ccloud.hdf import HDF
 
 from .product import Product
 
@@ -27,7 +27,7 @@ class Calipso(Product):
 
     def __init__(self, filename, profile):
         self.profile = profile
-        self.nio = Nio.open_file(filename, "r", format="hdf")
+        self.hdf = HDF(filename)
     
     def layers(self):
         layers = self.profile['layers'].keys()
@@ -35,11 +35,9 @@ class Calipso(Product):
         
     def xrange(self, layer, level):
         w = self.profile['zoom'][level]['width']
-        
-        time = self.nio.variables["Profile_UTC_Time"]
-        t1 = self._dt2ms(self._time2dt(time[0][0]) - self.profile['origin'][0])
-        t2 = self._dt2ms(self._time2dt(time[-1][0]) - self.profile['origin'][0])
-        
+        time = self.hdf['Profile_UTC_Time']
+        t1 = self._dt2ms(self._time2dt(time[0,0]) - self.profile['origin'][0])
+        t2 = self._dt2ms(self._time2dt(time[-1,0]) - self.profile['origin'][0])
         x1 = int(math.floor(t1 / w))
         x2 = int(math.ceil(t2 / w))
         return range(x1, x2)
@@ -80,7 +78,7 @@ class Calipso(Product):
             'z': z,
         }
         
-        datasets = [self.nio.variables[name] for name in self.DATASETS[layer]]
+        datasets = [self.hdf[name] for name in self.DATASETS[layer]]
         dataset = datasets[0]
         height = self.LIDAR_ALTITUDES
         
@@ -90,9 +88,9 @@ class Calipso(Product):
         nn = dataset.shape[0]
         m0 = 0
         mm = dataset.shape[1]
-        time = self.nio.variables["Profile_UTC_Time"]
-        t0 = self._dt2ms(self._time2dt(time[0][0]) - self.profile['origin'][0])
-        tn = self._dt2ms(self._time2dt(time[-1][0]) - self.profile['origin'][0])
+        time = self.hdf['Profile_UTC_Time']
+        t0 = self._dt2ms(self._time2dt(time[0,0]) - self.profile['origin'][0])
+        tn = self._dt2ms(self._time2dt(time[-1,0]) - self.profile['origin'][0])
         sampling_interval = (tn - t0)/(nn - n0)
         t1 = x*w
         t2 = t1 + w
@@ -100,12 +98,12 @@ class Calipso(Product):
         z2 = z1 + h
         n1 = (t1 - t0)/sampling_interval
         n2 = (t2 - t0)/sampling_interval
-        n1_ = ccloud.utils.coerce(int(math.floor(n1)), n0, nn)
-        n2_ = ccloud.utils.coerce(int(math.ceil(n2)+1), n0, nn)
+        n1_ = ccloud.utils.coerce(int(math.floor(n1)), n0, nn-1)
+        n2_ = ccloud.utils.coerce(int(math.ceil(n2)+1), n0, nn-1)
         m1 = len(height) - np.searchsorted(height[::-1], z2) - 1
-        m1 = ccloud.utils.coerce(m1, m0, mm)
+        m1 = ccloud.utils.coerce(m1, m0, mm-1)
         m2 = len(height) - np.searchsorted(height[::-1], z1) + 1
-        m2 = ccloud.utils.coerce(m2, m0, mm)
+        m2 = ccloud.utils.coerce(m2, m0, mm-1)
         
         # Trajectory - special case.
         if layer == 'trajectory':
@@ -142,10 +140,12 @@ class Calipso(Product):
         raw_data = dataset[n1_:n2_,m1:m2]
         interpolation = self.profile['layers'][layer].get('interpolation', 'smart')
         
+        raw_data = np.ma.masked_array(raw_data)
+        raw_data.set_fill_value(np.nan)
+        
         try:
-            fillvalue = dataset.attributes['fillvalue'][0]
-            raw_data = np.ma.masked_equal(raw_data, fillvalue, copy=False)
-            raw_data.set_fill_value(np.nan)
+            fillvalue = dataset.attributes['fillvalue']
+            raw_data = np.ma.masked_equal(raw_data, fillvalue, copy=False)    
         except KeyError, IndexError: pass
         
         if interpolation == 'smart':
