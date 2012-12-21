@@ -24,7 +24,6 @@ First, make sure you have the following dependencies installed:
   * [SQLite](http://www.sqlite.org/)
   * [numpy](http://numpy.scipy.org/)
   * [scipy](http://www.scipy.org/)
-  * [PyNIO](http://www.pyngl.ucar.edu/Nio.shtml)
   * [PIL](http://www.pythonware.com/products/pil/)
   * [pytz](http://pytz.sourceforge.net/)
   * [python-dateutil](http://labix.org/python-dateutil)
