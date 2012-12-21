@@ -3,6 +3,12 @@ cimport numpy as np
 import numpy as np
 from contextlib import contextmanager
 
+cdef extern from "errno.h":
+    cdef extern int errno
+
+cdef extern from "string.h":
+    char *strerror(int)
+
 cdef extern from "hdf/hdf.h":
     cdef enum:
         FAIL = -1
@@ -14,9 +20,11 @@ cdef extern from "hdf/hdf.h":
         DFNT_INT32 = 24
         DFNT_FLOAT32 = 5
         DFNT_FLOAT64 = 6
-        
+    
+    ctypedef np.npy_int16 int16
     ctypedef np.npy_int32 int32
     ctypedef int intn
+    ctypedef int hdf_err_code_t
     
     int32 SDstart(char *, int32)
     int32 SDnametoindex(int32, char *)
@@ -28,6 +36,8 @@ cdef extern from "hdf/hdf.h":
     intn SDattrinfo(int32, int32, char *, int32 *, int32 *)
     intn SDreadattr(int32, int32, void *)
     int32 SDfindattr(int32, char *)
+    int16 HEvalue(int32)
+    char *HEstring(hdf_err_code_t)
 
 DTYPE = {
     DFNT_INT32: np.int32,
@@ -95,8 +105,7 @@ class HDF(object):
     def __init__(self, filename):
         self.filename = filename
         self.sd = SDstart(filename, DFACC_READ);
-        if self.sd == FAIL:
-            raise IOError('%s: Failed to open file' % filename)
+        if self.sd == FAIL: self._error('HDF: SDstart failed', from_errno=True)
     
     def __enter__(self):
         pass
@@ -109,13 +118,23 @@ class HDF(object):
         self._sds_close(sds)
         return Dataset(self, key)
 
+    def _error(self, errmsg=None, from_errno=False):
+        errcode = HEvalue(1)
+        if errcode != 0:
+            raise IOError(errcode, HEstring(errcode), self.filename)
+        elif errno != 0 and from_errno:
+            raise IOError(errno, strerror(errno), self.filename)
+        elif errmsg is not None:
+            raise IOError(0, errmsg, self.filename)
+        else:
+            raise IOError(0, 'HDF: Unknown error', self.filename)
+
     def _sds(self, name):
+        errno = 0
         index = SDnametoindex(self.sd, name)
-        if index == FAIL:
-            raise KeyError('%s: %s: No such dataset' % (self.filename, name))
+        if index == FAIL: self._error('File has no dataset "%s"' % name)
         sds = SDselect(self.sd, index)
-        if sds == FAIL:
-            raise IOError('%s: %s: Failed to open dataset' % (self.filename, name))
+        if sds == FAIL: self._error('HDF: SDselect of dataset "%s" failed' % name)
         return sds
     
     def _sds_close(self, sds):
@@ -128,8 +147,7 @@ class HDF(object):
         sds = self._sds(name)
         res = SDgetinfo(sds, NULL, &rank, <int32 *>dims.data, &data_type, NULL)
         self._sds_close(sds)
-        if res == FAIL:
-            raise IOError('%s: %s: Failed to read dataset' % (self.filename, name))
+        if res == FAIL: self._error('HDF: SDgetinfo on dataset "%s" failed' % name)
         try: dtype = DTYPE[data_type]
         except KeyError: raise NotImplementedError('%s: %s: Data type %s not implemented'
                                               % (self.filename, name, data_type))
@@ -177,13 +195,14 @@ class HDF(object):
         index = SDfindattr(sds, name)
         self._sds_close(sds)
         if index == FAIL:
-            raise KeyError('%s: %s has no attribute %s' % (self.filename, dataset, name))
+            self._error('Dataset "%s" has no attribute "%s"' % (dataset, name))
         sds = self._sds(dataset)
         cdef np.ndarray[char, ndim=1] tmp = np.zeros(FIELDNAMELENMAX, dtype=np.byte)
         res = SDattrinfo(sds, index, <char *>tmp.data, &data_type, &count)
         self._sds_close(sds)
         if res == FAIL:
-            raise IOError('%s: %s: Failed to read attribute %s' % (self.filename, dataset, name))        
+            self._error('HDF: SDattrinfo on "%s" of dataset "%s" failed' %\
+                        (name, dataset))
         
         try: dtype = DTYPE[data_type]
         except KeyError: raise NotImplementedError('%s: %s: Data type %s not implemented'
@@ -194,8 +213,8 @@ class HDF(object):
         sds = self._sds(dataset)
         res = SDreadattr(sds, index, <void *>buf.data);
         self._sds_close(sds)
-        
         if res == FAIL:
-            raise IOError('%s: %s: Failed to read attribute %s' % (self.filename, dataset, name))
+            self._error('HDF: SDreadattr on "%s" of dataset "%s" failed' %\
+                        (name, dataset))
         
         return data[0] if count == 1 else data
