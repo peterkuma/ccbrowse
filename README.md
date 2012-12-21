@@ -19,9 +19,12 @@ ccloud can be installed on Linux or Mac OS X.
 First, make sure you have the following dependencies installed:
 
   * [gcc](http://gcc.gnu.org/)
+  * [libjpeg](http://www.ijg.org/)
+  * [zlib](http://www.zlib.net/)
   * [Python](http://www.python.org) >= 2.6 and < 3.0 (incl. dev files)
   * [Cython](http://www.cython.org/)
   * [SQLite](http://www.sqlite.org/)
+  * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
   * [numpy](http://numpy.scipy.org/)
   * [scipy](http://www.scipy.org/)
   * [PIL](http://www.pythonware.com/products/pil/)
