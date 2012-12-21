@@ -11,9 +11,9 @@ cdef extern from "math.h":
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def interp2d(np.ndarray[np.float32, ndim=2, mode="c"] data not None,
-             np.ndarray[np.float32, ndim=1, mode="c"] N not None,
-             np.ndarray[np.float32, ndim=1, mode="c"] M not None):
+def interp2d(np.ndarray[float, ndim=2, mode="c"] data not None,
+             np.ndarray[float, ndim=1, mode="c"] N not None,
+             np.ndarray[float, ndim=1, mode="c"] M not None):
     """Interpolate 2D data on given points.
     
     data is a two-dimensional array of data to be interpolated.
@@ -44,8 +44,8 @@ def interp2d(np.ndarray[np.float32, ndim=2, mode="c"] data not None,
     """
     cdef int i, j, n, m
     cdef int q
-    cdef np.float32 n1, n2
-    cdef np.float32 m1, m2
+    cdef float n1, n2
+    cdef float m1, m2
     cdef int lenM, lenN
     cdef int w, h
     lenM = M.shape[0]
@@ -54,7 +54,7 @@ def interp2d(np.ndarray[np.float32, ndim=2, mode="c"] data not None,
     h = data.shape[1]
     
     output = np.zeros((lenN, lenM), dtype=np.float32)
-    cdef np.ndarray[np.float32, ndim=2] out = output
+    cdef np.ndarray[float, ndim=2] out = output
     
     for i in range(lenN):
         for j in range(lenM):
