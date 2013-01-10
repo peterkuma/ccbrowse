@@ -6,9 +6,9 @@ from scipy.interpolate import Rbf, interp1d
 
 import ccloud
 import cctk
-import ccext
 import calipso_constants
 from ccloud.hdf import HDF
+from ccloud.algorithms import interp2d
 
 from .product import Product
 
@@ -155,9 +155,9 @@ class Calipso(Product):
                          bounds_error=False, fill_value=m1-1)
             M = f(np.arange(z1, z2, (z2-z1)/256.0)[::-1])
             M = np.round(M).astype(np.int) - m1
-            data = ccext.interp2d(raw_data.astype(np.float32).filled(),
-                                  N.astype(np.float32),
-                                  M.astype(np.float32))
+            data = interp2d(raw_data.astype(np.float32).filled(),
+                            N.astype(np.float32),
+                            M.astype(np.float32))
             tile['data'] = data.T.copy()
         
         elif interpolation == 'nearest':
