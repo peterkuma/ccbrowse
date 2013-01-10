@@ -8,6 +8,7 @@ import os
 import ccloud
 import ccloud.config
 from ccloud.storage import MemCacheDriver
+from ccloud.ccimport import PRODUCTS
 from ccloud import utils
 from .rangelist import RangeList, RangeListEncoder
 
@@ -72,6 +73,9 @@ class Profile(object):
     def has_key(self, key):
         return self.__contains__(key)
     
+    def get_root(self):
+        return os.path.abspath(self.config['root'])+'/'
+    
     def layer_for(self, obj):
         if not obj.has_key('layer'):
             raise ValueError('Missing object field: "layer"')
@@ -83,80 +87,108 @@ class Profile(object):
     def deserialize(self, obj):
         """Deserialize obj.raw_data to obj.data by a format-specific method."""
         if not obj.has_key('raw_data') or obj.has_key('data'): return
-        
-        # Nothing to do if data matches raw_data.
-        #if obj.has_key('_data_from') and obj['_data_from'] == obj['raw_data']:
-        #    return
-        
-        layer = self.layer_for(obj)
-        if layer['format'] == 'png':
-            obj['data'] = utils.pngunpack(obj['raw_data'])
-        elif layer['format'] == 'json':
-            obj['data'] = json.loads(obj['raw_data'])
-        
-        #obj['_data_from'] = obj['raw_data']
+
+        if str(obj['raw_data']).startswith('ref: '):
+            obj['ref'] = utils.parse_ref(str(obj['raw_data']))
+        else:
+            layer = self.layer_for(obj)
+            if layer['format'] == 'png':
+                obj['data'] = utils.pngunpack(obj['raw_data'])
+            elif layer['format'] == 'json':
+                obj['data'] = json.loads(str(obj['raw_data']))
+            else:
+                obj['data'] = obj['raw_data']
         
     def serialize(self, obj):
         """Serialize obj.data to obj.raw_data by a format-specific method."""
-        if not obj.has_key('data') or obj.has_key('raw_data'): return
+        if obj.has_key('raw_data'): return
         
-        # Nothing to do if raw_data matches data.
-        #if obj.has_key('_raw_data_from') and obj['_raw_data_from'] == data:
-        #    return
+        if obj.has_key('ref') and obj.has_key('data'):
+            # We have no option but to dereference.
+            self.dereference(obj)
+
+        if obj.has_key('ref'):
+            obj['raw_data'] = utils.dump_ref(obj['ref'])
         
-        layer = self.layer_for(obj)
-        if layer['format'] == 'png':
-            obj['raw_data'] = utils.pngpack(obj['data'])
-        elif layer['format'] == 'json':
-            obj['raw_data'] = json.dumps(obj['data'])
-            
-        #obj['_raw_data_from'] = obj['data']
+        if obj.has_key('data'):
+            if obj['format'] == 'png':
+                obj['raw_data'] = utils.pngpack(obj['data'])
+            elif obj['format'] == 'json':
+                obj['raw_data'] = json.dumps(obj.get('data'), {})
+            else:
+                obj['raw_data'] = json.dumps(obj.get('data'), {})
+        
+    def dereference(self, obj):
+        if not obj.has_key('ref'): return
+        for ref in obj['ref']:
+            filename = ref['filename']
+            if not filename.startswith('/'):
+                filename = os.path.join(self.get_root(), filename)
+            try:
+                cls = PRODUCTS[ref['product']]
+            except KeyError:
+                raise RuntimeError('Unknown product type "%s"' % ref['product'])
+            product = cls(ref['filename'], self)
+            tile = product.tile(obj['layer'], obj['zoom'], obj['x'], obj['z'])
+            if obj.has_key('data'):
+                utils.array_update(obj['data'], tile['data'])
+            else:
+                obj['data'] = tile['data']
+            if obj.has_key('raw_data'): del obj['raw_data']
+        del obj['ref']
     
     def save(self, obj, append=True):
         """Save object to profile.
         
         Object is a dictionary with the following mandatory and optional fields:
         
-            layer   layer name
+            layer   layer name [required]
             data    numpy array (format: png) or dictionary (format: json)
-            zoom    zoom level [optional]
-            x       x-coordinate (type: x or xz), [optional]
-            z       z-coordinate (type: xz) [optional]
+            ref     list of references to product files
+            zoom    zoom level
+            x       x-coordinate (type: x or xz)
+            z       z-coordinate (type: xz)
         
         If append is True, object is merged with the original object.
+        Return the object augmented with layer fields.
         """
-        if not obj.has_key('data'): raise ValueError('Missing object field: "data"')
-        layer = self.layer_for(obj)
-        
         # Insert layer properties to obj.
+        layer = self.layer_for(obj)
         o = layer.copy()
         o.update(obj)
         obj = o
-        from repr import repr
+        
         if append:
-            o = self.load(obj) # Original object.
-            if o != None and o.has_key('data'):
-                # Update all properties but data.
-                data = o['data']
-                o.update(obj)
-                o['data'] = data
-                
+            orig_obj = self.load(obj, dereference=False)
+            if orig_obj is not None:
                 # Update data.
-                if layer['format'] == 'png':
-                    utils.array_update(o['data'], obj['data'])
-                elif layer['format'] == 'json' and layer['type'] == 'geojson':
-                    utils.geojson_update(o['data'], obj['data'])
-                else:
-                    # We don't know how to merge, overwrite the old object data.
-                    pass
-                obj = o
+                if orig_obj.has_key('data') and obj.has_key('data'):
+                    orig_obj['data']
+                    if layer['format'] == 'png':
+                        utils.array_update(orig_obj['data'], obj['data'])
+                    elif layer['format'] == 'json' and layer['type'] == 'geojson':
+                        utils.geojson_update(orig_obj['data'], obj['data'])
+                elif obj.has_key('data'):
+                    orig_obj['data'] = obj['data']
+                
+                # Update ref.
+                if orig_obj.has_key('ref') and obj.has_key('ref'):
+                    utils.ref_update(orig_obj['ref'], obj['ref'])
+                elif obj.has_key('ref'):
+                    orig_obj['ref'] = obj['ref']
+                
+                obj = orig_obj
                 del obj['raw_data']
         
-        self.cache.store(obj)
+        #self.cache.store(obj)
+        self.storage.store(obj)
+        
         if obj.has_key('zoom') and obj.has_key('x'):
             self.update_availability(obj['layer'], obj['zoom'], (obj['x'], obj['x']+1))
+        
+        return obj
     
-    def load(self, obj, exclude=[]):
+    def load(self, obj, exclude=[], dereference=True):
         """Load object from profile."""
         try: layer = self.layer_for(obj)
         except ValueError: return None
@@ -170,9 +202,12 @@ class Profile(object):
         if o is None:
             o = self.storage.retrieve(obj, exclude=exclude)
             if o != None:
+                if dereference and o.has_key('ref'):
+                    self.dereference(o)
+                    self.save(o, append=False)
                 o2 = layer.copy()
                 o2.update(o)
-                self.cache.store(o, dirty=False)
+                self.cache.store(o2, dirty=False)
         return o
     
     def colormap(self, name):
@@ -202,7 +237,7 @@ class Profile(object):
     def parse_availability(self, availability):
         return dict([(k, RangeList(v)) for k,v in availability.items()])
     
-    def write_availability(self):        
+    def write_availability(self):
         for layer, a in self.availability.items():
             if not self['layers'][layer].has_key('availability'): continue
             with open(self['layers'][layer]['availability'], 'w') as fp:
@@ -210,6 +245,6 @@ class Profile(object):
     
     def update_availability(self, layer, level, (start, stop)):
         availability = self.get_availability(layer)
-        
         if availability.has_key(level): availability[level].append(start, stop)
         else: availability[level] = RangeList([(start, stop)])
+

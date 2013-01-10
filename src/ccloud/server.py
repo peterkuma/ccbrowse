@@ -136,14 +136,13 @@ def places(zoom, x, z):
 @route('/layers/geocoding/<zoom>/<x>,<z>.json')
 def geocoding(zoom, x, z):
     try:
-        zoom = int(zoom)
         x = int(x)
     except ValueError: abort(404)
     
     trajectory = profile.load({
         'layer': 'trajectory',
-        'zoom': int(zoom),
-        'x': int(x),
+        'zoom': zoom,
+        'x': x,
         'z': 0,
     })
     geography = profile.load({'layer': 'geography'})
@@ -208,14 +207,23 @@ def serve(layer, zoom=None, x=None, z=None, fmt=None):
         if fmt != None: obj['format'] = fmt
     except ValueError: abort(404)    
     
-    if obj['format'] == 'json':
-        return serve_json(obj)
-    elif obj['format'] == 'png':
-        return serve_tile(obj)
-    else:
-        obj = profile.load(obj)
-        if obj != None and obj.has_key('raw_data'):
-            return obj['raw_data']
+    try:
+        if obj['format'] == 'json':
+            return serve_json(obj)
+        elif obj['format'] == 'png':
+            return serve_tile(obj)
+        else:
+            obj = profile.load(obj)
+            if obj != None and obj.has_key('raw_data'):
+                return obj['raw_data']
+    except RuntimeError as e:
+        logging.error(e)
+    except IOError as e:
+        if e.filename is not None and e.strerror is not None:
+            logging.error('%s: %s' % (e.filename, e.strerror))
+        else:
+            logging.error(e)
+    
     abort(404, 'Object not found')
 
 

@@ -94,12 +94,33 @@ def pngunpack(raw_data):
     return data
 
 
+def parse_ref(s):
+    ref = []
+    pattern = r'^ref: (?P<product>.*):(?P<filename>.*)'
+    p = re.compile(pattern)
+    for l in s.split('\n'):
+        if l == '': continue
+        m = p.match(l)
+        ref.append(m.groupdict())
+    return ref
+
+
+def dump_ref(ref):
+    return ''.join(['ref: %(product)s:%(filename)s\n' % r for r in ref])
+
+
 def array_update(a, b):
     """Update numpy array a with values of b where b is not NaN."""
     if a.shape != b.shape:
         raise ValueError('Shape of arrays not matching: "%s" vs. "%s"' % (a.shape, b.shape))
     mask = np.logical_not(np.isnan(b))
     a[mask] = b[mask]
+
+
+def ref_update(a, b):
+    for ref in b:
+        if any([ref == r for r in a]): continue
+        a.append(ref)
 
 
 def geojson_update(a, b, feature_index=None):

@@ -6,7 +6,7 @@ import codecs
 
 class NaturalEarth(object):
     def __init__(self, filename, profile):
-        self.profile = profile
+        Product.__init__(self, filename, profile)
         
         # Convert shapefile to geojson by ogr2ogr.
         tmpdir = mkdtemp()

@@ -34,7 +34,7 @@ class FilesystemDriver(Driver):
         if not 'modified' in exclude:
             try:
                 stat = os.stat(filename)
-                o['modified'] = stat.st_mtime
+                o['modified'] = int(stat.st_mtime)
             except OSError: return None
         
         if 'raw_data' in exclude: return Driver.retrieve(self, o, exclude)

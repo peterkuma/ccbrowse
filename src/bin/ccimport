@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import getopt
 import logging
@@ -8,7 +9,7 @@ import functools
 import time
 
 import ccloud
-from ccloud.ccimport import Calipso, NaturalEarth
+from ccloud.ccimport import PRODUCTS, Calipso, NaturalEarth
 
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
 
@@ -33,6 +34,7 @@ Optional arguments:
   -c FILE          configuration file (default: config.json)
   -l LAYER         import only specified profile layer
   -s               print statistics
+  --soft           soft import
   -t TYPE          type of FILE or `help' for a list of supported types
   -z ZOOM          import only specified zoom level
   
@@ -53,8 +55,14 @@ def save_decorator(f):
 
 
 @save_decorator
-def save(product, profile, layer=None, zoom=None, statistics=False):
+def save(product, profile, layer=None, zoom=None, statistics=False, soft=False):
     if statistics: stat = dict(n=0, read=0, save=0)
+    
+    if soft:
+        product_name = PRODUCTS.keys()[PRODUCTS.values().index(type(product))]
+        filename = os.path.abspath(product.filename)
+        root = profile.get_root()
+        if filename.startswith(root): filename = filename[len(root):]
     
     for level in sorted(profile['zoom'].keys()):
         if zoom != None and level != zoom: continue
@@ -74,7 +82,20 @@ def save(product, profile, layer=None, zoom=None, statistics=False):
                     
                     if statistics: t1 = time.clock()
                     
-                    tile = product.tile(l, level, x, z)
+                    if not soft:
+                        tile = product.tile(l, level, x, z)
+                    else:
+                        ref = {
+                            'product': product_name,
+                            'filename': filename,
+                        }
+                        tile = {
+                            'layer': l,
+                            'zoom': level,
+                            'x': x,
+                            'z': z,
+                            'ref': [ref],
+                        }
                     
                     if statistics:
                         t2 = time.clock()
@@ -99,7 +120,7 @@ if __name__ == "__main__":
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'c:l:sz:', ['help'])
+        opts, args = getopt.getopt(sys.argv[1:], 'c:l:sz:', ['help', 'soft'])
     except getopt.GetoptError as e:
         logging.error(e)
         usage()
@@ -110,6 +131,7 @@ if __name__ == "__main__":
     layer = None
     zoom = None
     statistics = False
+    soft = False
     
     for opt,value in opts:
         if opt == '--help':
@@ -123,6 +145,8 @@ if __name__ == "__main__":
             statistics = True
         elif opt == '-z':
             zoom = value
+        elif opt == '--soft':
+            soft = True
     
     if len(args) < 2:
         usage()
@@ -144,16 +168,18 @@ if __name__ == "__main__":
                 if file_type == 'calipso':
                     product = Calipso(filename, profile)
                     save(product, profile, layer=layer, zoom=zoom,
-                         statistics=statistics)
+                         statistics=statistics, soft=soft)
                 elif file_type == 'naturalearth':
                     naturalearth = NaturalEarth(filename, profile)
                     naturalearth.save(layer=layer)
                 else:
-                    logging.error('%s: Unrecognized type %s' %
-                                  (program_name, file_type))
+                    logging.error('Unrecognized type %s' % file_type)
                     sys.exit(1)
     except RuntimeError as e:
         logging.error(e)
     except IOError as e:
-        logging.error('%s: %s' % (e.filename, e.strerror))
+        if e.filename is not None and e.strerror is not None:
+            logging.error('%s: %s' % (e.filename, e.strerror))
+        else:
+            logging.error(e)
     except KeyboardInterrupt: pass

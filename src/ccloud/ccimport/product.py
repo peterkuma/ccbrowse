@@ -25,6 +25,7 @@ class Product(object):
     def __init__(self, filename, profile):
         """Product initialization."""
         self.profile = profile
+        self.filename = filename
         # Open the file and save the handler to a member variable.
         
     def layers(self):

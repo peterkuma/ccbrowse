@@ -16,7 +16,6 @@ class Calipso(Product):
     DATASETS = {
         'calipso532': ['Total_Attenuated_Backscatter_532'],
         'calipso532p': ['Perpendicular_Attenuated_Backscatter_532'],
-        'calipso532-newinterp': ['Total_Attenuated_Backscatter_532'],
         'latitude': ['Latitude'],
         'longitude': ['Longitude'],
         'trajectory': ['Latitude', 'Longitude'],
@@ -26,7 +25,7 @@ class Calipso(Product):
     MET_DATA_ALTITUDES = calipso_constants.MET_DATA_ALTITUDES
 
     def __init__(self, filename, profile):
-        self.profile = profile
+        Product.__init__(self, filename, profile)
         self.hdf = HDF(filename)
     
     def layers(self):
