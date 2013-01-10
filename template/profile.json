@@ -56,6 +56,18 @@
             "attribution": "Data courtesy <a href=\"http://eosweb.larc.nasa.gov/PRODOCS/calipso/table_calipso.html\">NASA LARC Atmospheric Science Data Center</a>",
             "colormap": "colormaps/calipso-backscatter.json"
         },
+        "calipso1064":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "xz",
+            "units": "km<sup>-1</sup> sr<sup>-1</sup>",
+            "title": "Attenuated Backscatter 1064nm",
+            "src": "layers/calipso1064/{zoom}/{x},{z}.png",
+            "availability": "layers/calipso1064/availability.json",
+            "attribution": "Data courtesy <a href=\"http://eosweb.larc.nasa.gov/PRODOCS/calipso/table_calipso.html\">NASA LARC Atmospheric Science Data Center</a>",
+            "colormap": "colormaps/calipso-backscatter.json"
+        },
         "longitude":
         {
             "format": "png",

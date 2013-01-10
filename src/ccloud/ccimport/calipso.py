@@ -16,6 +16,7 @@ class Calipso(Product):
     DATASETS = {
         'calipso532': ['Total_Attenuated_Backscatter_532'],
         'calipso532p': ['Perpendicular_Attenuated_Backscatter_532'],
+        'calipso1064': ['Attenuated_Backscatter_1064'],
         'latitude': ['Latitude'],
         'longitude': ['Longitude'],
         'trajectory': ['Latitude', 'Longitude'],
