@@ -131,7 +131,10 @@ class Profile(object):
             product = cls(ref['filename'], self)
             tile = product.tile(obj['layer'], obj['zoom'], obj['x'], obj['z'])
             if obj.has_key('data'):
-                utils.array_update(obj['data'], tile['data'])
+                if obj['format'] == 'png':
+                    utils.array_update(obj['data'], tile['data'])
+                elif obj['format'] == 'json' and obj['type'] == 'geojson':
+                    utils.geojson_update(obj['data'], tile['data'])
             else:
                 obj['data'] = tile['data']
             if obj.has_key('raw_data'): del obj['raw_data']
