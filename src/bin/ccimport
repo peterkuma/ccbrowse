@@ -33,7 +33,9 @@ Positional arguments:
 Optional arguments:
   -c FILE          configuration file (default: config.json)
   -l LAYER         import only specified profile layer
+  --overwrite      overwrite existing tiles
   -s               print statistics
+  --skip           skip tiles that exist
   --soft           soft import
   -t TYPE          type of FILE or `help' for a list of supported types
   -z ZOOM          import only specified zoom level
@@ -55,7 +57,8 @@ def save_decorator(f):
 
 
 @save_decorator
-def save(product, profile, layer=None, zoom=None, statistics=False, soft=False):
+def save(product, profile, layer=None, zoom=None,
+         statistics=False, soft=False, overwrite=False, skip=False):
     if statistics: stat = dict(n=0, read=0, save=0)
     
     if soft:
@@ -79,8 +82,18 @@ def save(product, profile, layer=None, zoom=None, statistics=False, soft=False):
                     line = '%s level %s tiles %d--%d [%d/%d] %.f%%' % \
                            (l, level, X[0], X[-1], i, size, 100.0*i/size)
                     sys.stderr.write(line)
+                    i = i + 1
                     
                     if statistics: t1 = time.clock()
+                    
+                    if skip:
+                        obj = profile.load({
+                            'layer': l,
+                            'zoom': level,
+                            'x': x,
+                            'z': z,
+                        }, exclude=['data'], dereference=False)
+                        if obj is not None: continue
                     
                     if not soft:
                         tile = product.tile(l, level, x, z)
@@ -101,13 +114,12 @@ def save(product, profile, layer=None, zoom=None, statistics=False, soft=False):
                         t2 = time.clock()
                         stat['read'] += t2 - t1
                     
-                    profile.save(tile)
+                    profile.save(tile, append=(not overwrite))
                     
                     if statistics:
                         stat['save'] += time.clock() - t2
                         stat['n'] += 1
 
-                    i += 1
             profile.write_availability()
             if line: print '\r\033[K%s level %s tiles %d--%d' % \
                            (l, level, X[0], X[-1])
@@ -120,7 +132,8 @@ if __name__ == "__main__":
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'c:l:sz:', ['help', 'soft'])
+        opts, args = getopt.getopt(sys.argv[1:], 'c:l:sz:',
+                                   ['help', 'overwrite', 'skip', 'soft'])
     except getopt.GetoptError as e:
         logging.error(e)
         usage()
@@ -130,8 +143,13 @@ if __name__ == "__main__":
     file_type = None
     layer = None
     zoom = None
-    statistics = False
-    soft = False
+    
+    options = {
+        'statistics': False,
+        'overwrite': False,
+        'skip': False,
+        'soft': False,
+    }
     
     for opt,value in opts:
         if opt == '--help':
@@ -142,11 +160,15 @@ if __name__ == "__main__":
         elif opt == '-l':
             layer = value
         elif opt == '-s':
-            statistics = True
+            options['statistics'] = True
         elif opt == '-z':
             zoom = value
+        elif opt == '--overwrite':
+            options['overwrite'] = True
+        elif opt == '--skip':
+            options['skip'] = True
         elif opt == '--soft':
-            soft = True
+            options['soft'] = True
     
     if len(args) < 2:
         usage()
@@ -167,8 +189,7 @@ if __name__ == "__main__":
             for filename in filenames:
                 if file_type == 'calipso':
                     product = Calipso(filename, profile)
-                    save(product, profile, layer=layer, zoom=zoom,
-                         statistics=statistics, soft=soft)
+                    save(product, profile, layer=layer, zoom=zoom, **options)
                 elif file_type == 'naturalearth':
                     naturalearth = NaturalEarth(filename, profile)
                     naturalearth.save(layer=layer)
