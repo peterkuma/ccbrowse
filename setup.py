@@ -33,7 +33,7 @@ setup(
     package_dir={'': 'src'},
     packages=[
         'ccloud',
-        'ccloud.ccfetch',
+        'ccloud.fetch',
         'ccloud.ccimport',
         'ccloud.storage'
     ],

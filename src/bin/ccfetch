@@ -7,7 +7,7 @@ import json
 import logging
 
 import ccloud
-from ccloud.ccfetch import Calipso
+from ccloud.fetch import Calipso
 
 
 def usage():
