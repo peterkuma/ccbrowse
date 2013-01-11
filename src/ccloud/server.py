@@ -280,8 +280,9 @@ def serve_tile(obj):
             return buf.getvalue()
     
     #print 'Cache miss'
-    obj = profile.load(obj)
-    if obj is None: abort(404, 'Object not found')
+    if not obj.has_key('data'):
+        obj = profile.load(obj)
+        if obj is None: abort(404, 'Object not found')
     data = obj['data']
     
     if request.query.q:
