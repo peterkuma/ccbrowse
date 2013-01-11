@@ -296,7 +296,7 @@ def serve_tile(obj):
     
     m = re.match('colormaps/(.+)', profile['layers'][obj['layer']]['colormap'])
     colormap = profile.colormap(m.group(1))
-    img = Image.fromarray(ccloud.utils.colorize(data, colormap))
+    img = Image.fromarray(ccloud.algorithms.colorize(data, colormap))
     buf = io.BytesIO()
     img.save(buf, 'png')
     out = buf.getvalue()
