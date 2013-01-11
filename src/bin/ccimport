@@ -14,14 +14,14 @@ from ccloud.ccimport import PRODUCTS, Calipso, NaturalEarth
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
 
 def usage():
-    sys.stderr.write('''Usage: {program_name} [-s] [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE...
+    sys.stderr.write('''Usage: {program_name} [option]... TYPE FILE...
        {program_name} --help
 Try `{program_name} --help' for more information.
 '''.format(program_name=program_name))
 
 
 def print_help():
-    sys.stdout.write('''Usage: {program_name} [-s] [-l LAYER] [-z ZOOM] [-c FILE] TYPE FILE...
+    sys.stdout.write('''Usage: {program_name} [option]... TYPE FILE...
        {program_name} --help
 
 Import data from FILE into profile specified in configuration file CONFIG.
@@ -36,7 +36,7 @@ Optional arguments:
   --overwrite      overwrite existing tiles
   -s               print statistics
   --skip           skip tiles that exist
-  --soft           soft import
+  --hard           hard import
   -t TYPE          type of FILE or `help' for a list of supported types
   -z ZOOM          import only specified zoom level
   
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'c:l:sz:',
-                                   ['help', 'overwrite', 'skip', 'soft'])
+                                   ['help', 'overwrite', 'skip', 'hard'])
     except getopt.GetoptError as e:
         logging.error(e)
         usage()
@@ -148,7 +148,7 @@ if __name__ == "__main__":
         'statistics': False,
         'overwrite': False,
         'skip': False,
-        'soft': False,
+        'soft': True,
     }
     
     for opt,value in opts:
@@ -167,8 +167,8 @@ if __name__ == "__main__":
             options['overwrite'] = True
         elif opt == '--skip':
             options['skip'] = True
-        elif opt == '--soft':
-            options['soft'] = True
+        elif opt == '--hard':
+            options['soft'] = False
     
     if len(args) < 2:
         usage()
