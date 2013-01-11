@@ -1,6 +1,7 @@
 cimport cython
 cimport numpy as np
 import numpy as np
+import ImageColor
 
 cdef extern from "math.h":
     double floor(double)
@@ -79,3 +80,90 @@ def interp2d(np.ndarray[float, ndim=2, mode="c"] data not None,
             out[i,j] /= q
     
     return output
+    
+
+#@cython.boundscheck(False)
+#@cython.wraparound(False)
+def colorize(np.ndarray[float, ndim=2, mode="c"] data not None,
+             colormap):
+    
+    cdef int i, j, k, l
+    
+    cdef np.ndarray[unsigned char, ndim=1] missing, under, over
+    cdef np.ndarray[unsigned char, ndim=2] colors
+    cdef np.ndarray[float, ndim=2] bounds
+    cdef np.ndarray[int, ndim=1] cindex
+    cdef np.ndarray[unsigned char, ndim=3] out
+    
+    cdef int w = data.shape[0]
+    cdef int h = data.shape[1]
+    cdef int n = len(colormap['bounds'])
+    
+    out = np.zeros((w, h, 4), np.uint8)
+    
+    missing = np.zeros(4, np.uint8)
+    over = np.zeros(4, np.uint8)
+    under = np.zeros(4, np.uint8)
+        
+    if colormap.has_key('missing'):
+        missing = np.array(ImageColor.getrgb(colormap['missing'])+(255,), np.uint8)
+    
+    if colormap.has_key('under'):
+        under = np.array(ImageColor.getrgb(colormap['under'])+(255,), np.uint8)
+    
+    if colormap.has_key('over'):
+        over = np.array(ImageColor.getrgb(colormap['over'])+(255,), np.uint8)
+    
+    colors = np.array([ImageColor.getrgb(c)+(255,) for c in colormap['colors']],
+                      np.uint8)
+    
+    bounds = np.array(
+        [(b['start'], b['end'], 1.0*(b['end'] - b['start'])/b['steps'])
+         for b in colormap['bounds']],
+        np.float32
+    )
+    
+    cindex = np.zeros(n, np.int32)
+    i = 0
+    for b in colormap['bounds'][:-1]:
+        cindex[i+1] = cindex[i] + b['steps']
+        i += 1
+    
+    for i in range(w):
+        for j in range(h):
+            for k in range(n):
+                if data[i,j] >= bounds[k,0] and data[i,j] < bounds[k,1]:
+                    l = <int>(cindex[k]+(data[i,j]-bounds[k,0])/bounds[k,2])
+                    out[i,j,0] = colors[l,0]
+                    out[i,j,1] = colors[l,1]
+                    out[i,j,2] = colors[l,2]
+                    out[i,j,3] = colors[l,3]
+                    break
+    
+    for i in range(w):
+        for j in range(h):
+            if isnan(data[i,j]):
+                out[i,j,0] = missing[0]
+                out[i,j,1] = missing[1]
+                out[i,j,2] = missing[2]
+                out[i,j,3] = missing[3]
+    
+    if n == 0: return out
+    
+    for i in range(w):
+        for j in range(h):    
+            if data[i,j] < bounds[0,0]:
+                out[i,j,0] = under[0]
+                out[i,j,1] = under[1]
+                out[i,j,2] = under[2]
+                out[i,j,3] = under[3]
+
+    for i in range(w):
+        for j in range(h):
+            if data[i,j] >= bounds[n-1,1]:
+                out[i,j,0] = over[0]
+                out[i,j,1] = over[1]
+                out[i,j,2] = over[2]
+                out[i,j,3] = over[3]                
+
+    return out
