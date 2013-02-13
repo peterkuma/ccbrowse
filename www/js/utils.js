@@ -17,7 +17,8 @@ function hex2rgb(hex) {
 
 function scientific(v, precision) {
     if (typeof precision == 'undefined') precision = 1;
-    if (Math.abs(v) >= 0.1 && Math.abs(v) < 10000) return v.toFixed(precision);
+    if (v == 0 || Math.abs(v) >= 0.1 && Math.abs(v) < 10000)
+        return v.toFixed(precision);
     var s = v.toExponential(precision);
     if (s.indexOf('e') == -1) return s;
     //return s.replace('e', ' &#x2A09;<span style="margin-left: -2px">10<sup>') + '</sup></span>';
