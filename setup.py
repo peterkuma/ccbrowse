@@ -57,6 +57,11 @@ setup(
                   libraries=['mfhdf', 'df', 'jpeg', 'z'],
                   extra_compile_args=['-march=native'],
         ),
+        Extension('ccloud.hdfeos',
+                  ['src/ccloud/hdfeos.pyx'],
+                  libraries=['hdfeos', 'mfhdf', 'df', 'jpeg', 'z'],
+                  extra_compile_args=['-I/usr/include/hdf', '-march=native'],
+        ),
     ],
     data_files=data_files,
 )
