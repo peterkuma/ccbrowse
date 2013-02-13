@@ -88,25 +88,31 @@ Colormap.prototype.drawTicks = function(el) {
     
     var self = this;
     var n = 0;
-    this.colormap.ticks.forEach(function(range) {
-        for (var i = 0; i < range.steps; i++, n++) {
+    var ticks = this.colormap.ticks;
+    ticks.forEach(function(range) {
+        var steps;
+        if (range == ticks[ticks.length-1])
+            steps = range.steps + 1;
+        else
+            steps = range.steps;
+        for (var i = 0; i < steps; i++, n++) {
             if (n % factor !== 0) continue;
-            var v = range.start + (range.end - range.start)/range.steps*i;
+            var v = range.start + (range.end - range.start)*(i/range.steps);
             var y = (self.colormap.colors.length - self.transform(v))*h;
             var tick = document.createElement('div');
             tick.setStyle('height', 1);
             tick.setStyle('width', 10);
             tick.setStyle('background', 'black');
             tick.setStyle('position', 'absolute');
-            tick.setStyle('top', y-1);
+            tick.setStyle('top', y+1);
             el.appendChild(tick);
             
             
-            var label = document.createElement('span');
+            var label = document.createElement('div');
             el.appendChild(label);
             label.set('html', scientific(v));
             label.setStyle('position', 'absolute');
-            label.setStyle('top', y-1 - label.getSize().y/2);
+            label.setStyle('top', y+1 - label.getSize().y/2);
             label.setStyle('left', 18);
             label.setStyle('color', 'white');
         }
