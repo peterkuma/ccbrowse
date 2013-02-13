@@ -25,6 +25,7 @@ First, make sure you have the following dependencies installed:
   * [Cython](http://www.cython.org/)
   * [SQLite](http://www.sqlite.org/)
   * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
+  * [HDF-EOS2 library](http://www.hdfeos.org/software/library.php#HDF-EOS2)
   * [numpy](http://numpy.scipy.org/)
   * [scipy](http://www.scipy.org/)
   * [PIL](http://www.pythonware.com/products/pil/)
