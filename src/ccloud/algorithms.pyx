@@ -115,14 +115,13 @@ def interp2d_12(np.ndarray[float, ndim=2, mode="c"] data not None,
     cdef np.ndarray[int, ndim=2] q = np.zeros((nx, nz), dtype=np.int32)
     
     for i in range(w):
-        n1 = ((X[i-1] + X[i])/2 - x1)/xs if i-1 >= 0 else 0
-        n2 = ((X[i+1] + X[i])/2 - x1)/xs if i+1 < w else nx-1
+        n1 = ((X[i-1] + X[i])/2 - x1)/xs if i-1 >= 0 else -1
+        n2 = ((X[i+1] + X[i])/2 - x1)/xs if i+1 < w else nx
         if n2 - n1 < 1: n1 = n2 = (X[i] - x1)/xs
         
         for j in range(h):
-            pass
-            m1 = ((Z[i,j-1] + Z[i,j])/2 - z1)/zs if j-1 >= 0 else 0
-            m2 = ((Z[i,j+1] + Z[i,j])/2 - z1)/zs if j+1 < h else nz-1
+            m1 = ((Z[i,j-1] + Z[i,j])/2 - z1)/zs if j-1 >= 0 else -1
+            m2 = ((Z[i,j+1] + Z[i,j])/2 - z1)/zs if j+1 < h else nz
             if m2 - m1 < 1: m1 = m2 = (Z[i,j] - z1)/zs
             
             for n in range(<int>(n1+0.5), <int>(n2+0.5+1)):
