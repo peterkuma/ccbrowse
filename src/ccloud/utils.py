@@ -7,6 +7,10 @@ import io
 import ImageColor, PngImagePlugin
 from contextlib import closing
 import re
+from math import sqrt, cos, radians
+
+
+EARTH_RADIUS = 6371.009
 
 
 def coerce(x, low, high):
@@ -235,3 +239,75 @@ def download(url, name=None, progress=False):
                 buf = f.read(16384)
     
     print >> sys.stderr, '\r\033[K%s' % name
+
+
+def trajectories_distance(traj1, traj2):
+    """Approximate average distance between points of two trajectories.
+    
+    Corresponding points are assumed to be close enough that their
+    latitude is almost identical for the purpose of calculation in
+    spherical geometry.
+    """
+    d = 0
+    for tup1, tup2 in zip(traj1, traj2):
+        lon1, lat1 = tup1
+        lon2, lat2 = tup2
+        dlat = radians(lat2 - lat1)
+        dlon = radians(lon2 - lon1)
+        lat = radians((lat1 + lat2)/2)
+        d += EARTH_RADIUS*sqrt(dlat**2 + cos(lat)*dlon**2)
+    return d/len(traj1)
+
+
+def quadmin((x1, x2, x3), (y1, y2, y3)):
+    """Find the minimum of a quadratic polynomial fitting three points."""
+    w1 = 1.0*(x1-x2)*(x1-x3)
+    w2 = 1.0*(x2-x1)*(x2-x3)
+    w3 = 1.0*(x3-x1)*(x3-x2)
+    a = y1/w1 + y2/w2 + y3/w3
+    mb = y1*(x2+x3)/w1 + y2*(x1+x3)/w2 + y3*(x1+x2)/w3
+    return mb/(2*a)
+
+
+def intoptim_convex(f, low, high):
+    """Constrained integer optimization of a convex function.
+    
+    Find real x from [low, high] for which f(int(x)) attains its minumum value.
+    Note that x could be a more accurate solution than its nearest integer
+    value. This is possible by finding the argument minimizing quadratic
+    approximation by three points at the integer-argument minimum.
+    """
+    x1 = low
+    x3 = high
+    while x3 - x1 > 1:
+        x2 = int((x1 + x3)/2)
+        y1 = f(x1)
+        y2 = f(x2)
+        y3 = f(x3)
+        if y1 >= y2 >= y3:
+            x1 = x2
+        elif y1 <= y2 <= y3:
+            x3 = x2
+        elif y2 < y1 and y2 < y3:
+            x = int(quadmin([x1, x2, x3], [y1, y2, y3]))
+            break
+        else:
+            raise AssertionError('Function not convex')
+    
+    x1 = x - 1
+    x2 = x
+    x3 = x + 1
+    y1 = f(x1)
+    y2 = f(x2)
+    y3 = f(x3)
+    while True:
+        if y2 <= y1 and y2 <= y3:
+            break
+        if y3 < y1:
+            x1, x2, x3 = x2, x3, x3+1
+            y1, y2, y3 = y2, y3, f(x3)
+        else:
+            x1, x2, x3 = x1-1, x1, x2
+            y1, y2, y3 = f(x1), y1, y2
+    
+    return quadmin([x1, x2, x3], [y1, y2, y3])

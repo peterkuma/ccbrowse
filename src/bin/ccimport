@@ -9,7 +9,7 @@ import functools
 import time
 
 import ccloud
-from ccloud.ccimport import PRODUCTS, Calipso, NaturalEarth
+from ccloud.ccimport import PRODUCTS, Calipso, CloudSat, NaturalEarth
 
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
 
@@ -189,6 +189,9 @@ if __name__ == "__main__":
             for filename in filenames:
                 if file_type == 'calipso':
                     product = Calipso(filename, profile)
+                    save(product, profile, layer=layer, zoom=zoom, **options)
+                elif file_type == 'cloudsat':
+                    product = CloudSat(filename, profile)
                     save(product, profile, layer=layer, zoom=zoom, **options)
                 elif file_type == 'naturalearth':
                     naturalearth = NaturalEarth(filename, profile)

@@ -68,6 +68,48 @@
             "attribution": "Data courtesy <a href=\"http://eosweb.larc.nasa.gov/PRODOCS/calipso/table_calipso.html\">NASA LARC Atmospheric Science Data Center</a>",
             "colormap": "colormaps/calipso-backscatter.json"
         },
+        "cloudsat-reflec":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "xz",
+            "units": "dBZe",
+            "title": "Radar Reflectivity Factor",
+            "src": "layers/cloudsat-reflec/{zoom}/{x},{z}.png",
+            "availability": "layers/cloudsat-reflec/availability.json",
+            "attribution": "Data courtesy <a href=\"http://www.cloudsat.cira.colostate.edu\">CloudSat DPC</a>",
+            "colormap": "colormaps/cloudsat-reflectivity.json"
+        },
+        "cloudsat-longitude":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "x",
+            "units": "degree",
+            "title": "CloudSAt Longitude",
+            "src": "layers/cloudsat-longitude/{zoom}/{x},0.png",
+            "availability": "layers/cloudsat-longitude/availability.json"
+        },
+        "cloudsat-latitude":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "x",
+            "units": "degree",
+            "title": "CloudSat Latitude",
+            "src": "layers/cloudsat-latitude/{zoom}/{x},0.png",
+            "availability": "layers/cloudsat-latitude/availability.json"
+        },
+        "cloudsat-trajectory":
+        {
+            "format": "json",
+            "type": "geojson",
+            "dimensions": "x",
+            "units": "degree",
+            "title": "CloudSat Trajectory",
+            "src": "layers/cloudsat-trajectory/{zoom}/{x},0.json",
+            "availability": "layers/cloudsat-trajectory/availability.json"
+        },
         "longitude":
         {
             "format": "png",
