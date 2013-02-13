@@ -39,8 +39,8 @@ class Calipso(Product):
         t1 = self._dt2ms(self._time2dt(time[0,0]) - self.profile['origin'][0])
         t2 = self._dt2ms(self._time2dt(time[-1,0]) - self.profile['origin'][0])
         x1 = int(math.floor(t1 / w))
-        x2 = int(math.ceil(t2 / w))
-        return range(x1, x2)
+        x2 = int(math.floor(t2 / w))
+        return range(x1, x2+1)
 
     def zrange(self, layer, level):
         # One-dimensional layer.
@@ -50,8 +50,8 @@ class Calipso(Product):
         # Two-dimensional layer.
         h = self.profile['zoom'][level]['height']
         z1 = int(math.floor((self.LIDAR_ALTITUDES[-1] - self.profile['origin'][1]) / h))
-        z2 = int(math.ceil((self.LIDAR_ALTITUDES[0] - self.profile['origin'][1]) / h))
-        return range(z1, z2)
+        z2 = int(math.floor((self.LIDAR_ALTITUDES[0] - self.profile['origin'][1]) / h))
+        return range(z1, z2+1)
     
     def tile(self, layer, level, x, z):
         #
