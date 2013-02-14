@@ -2,7 +2,7 @@ import datetime as dt
 import pytz
 import numpy as np
 import math
-from scipy.interpolate import Rbf, interp1d
+from scipy.interpolate import interp1d
 
 import ccloud
 import calipso_constants
