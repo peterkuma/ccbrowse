@@ -19,23 +19,23 @@ ccloud can be installed on Linux or Mac OS X.
 First, make sure you have the following dependencies installed:
 
   * [gcc](http://gcc.gnu.org/)
-  * [libjpeg](http://www.ijg.org/)
   * [zlib](http://www.zlib.net/)
-  * [Python](http://www.python.org) >= 2.6 and < 3.0 (incl. dev files)
-  * [Cython](http://www.cython.org/)
+  * [libjpeg](http://www.ijg.org/)
   * [SQLite](http://www.sqlite.org/)
-  * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
-  * [HDF-EOS2 library](http://www.hdfeos.org/software/library.php#HDF-EOS2)
-  * [numpy](http://numpy.scipy.org/)
-  * [scipy](http://www.scipy.org/)
-  * [PIL](http://www.pythonware.com/products/pil/)
+  * [Python](http://www.python.org) >= 2.6 and < 3.0 (incl. dev files)
   * [pytz](http://pytz.sourceforge.net/)
   * [python-dateutil](http://labix.org/python-dateutil)
+  * [PIL](http://www.pythonware.com/products/pil/)
+  * [numpy](http://numpy.scipy.org/)
+  * [scipy](http://www.scipy.org/)
+  * [Cython](http://www.cython.org/)
   * [Suds](https://fedorahosted.org/suds/)
   * [Shapely](http://pypi.python.org/pypi/Shapely/)
   * [Bottle](http://bottlepy.org/docs/dev/) >= 0.10.11 (`pip install bottle`)
   * [bintrees](http://pypi.python.org/pypi/bintrees/)
     (`pip install bintrees`)
+  * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
+  * [HDF-EOS2 library](http://www.hdfeos.org/software/library.php#HDF-EOS2)
 
 To install ccloud, run:
 
