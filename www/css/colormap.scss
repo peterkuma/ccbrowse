@@ -23,13 +23,13 @@
 .colormap-over {
     width: 20px;
     height: 25px;
-    background: url('../img/over.png') no-repeat;
+    background: inline-image('../img/over.png') no-repeat;
 }
 
 .colormap-under {
     width: 20px;
     height: 25px;
-    background: url('../img/under.png') no-repeat;
+    background: inline-image('../img/under.png') no-repeat;
 }
 
 #colormap canvas {

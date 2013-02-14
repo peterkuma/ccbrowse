@@ -1,0 +1,2 @@
+images_dir = "../img/"
+

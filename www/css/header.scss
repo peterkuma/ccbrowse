@@ -20,7 +20,7 @@ header h1 {
     font-family: "Asap", sans-serif;
     font-size: 32pt;
     margin: 0;
-    background: url('../img/ccloud.png') no-repeat 14px 18px;
+    background: inline-image('../img/ccloud.png') no-repeat 14px 18px;
 }
 
 header h1 sup {
@@ -80,5 +80,5 @@ header h1 a:hover {
 }
 
 #toolbox a[href="/about/"] {
-    background: url('../img/about.png') no-repeat 20px center;
+    background: inline-image('../img/about.png') no-repeat 20px center;
 }

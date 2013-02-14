@@ -1,0 +1,64 @@
+@import "header.scss";
+@import "navigation.scss";
+@import "map.scss";
+@import "colormap.scss";
+@import "location-bar.scss";
+@import "page.scss";
+
+body {
+    margin: 0;
+    background: #333;
+    font-family: Asap, helvetica, sans-serif;
+    overflow-x: hidden;
+}
+
+#overlay {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.context {
+    position: absolute;
+    top: 176px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+}
+
+.tooltip {
+    position: absolute;
+    font-family: helvetica, sans-serif;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 2px 5px;
+    font-size: 10pt;
+    border: 1px solid black;
+    z-index: 500;
+    border-radius: 2px;
+    xbox-shadow: 0 0 5px rgba(0,0,0,0.8);
+    x-webkit-box-shadow: 0 0 5px rgba(0,0,0,0.8);
+}
+
+.tip {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    font-family: helvetica, sans-serif;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 2px 4px;
+    font-size: 8pt;
+    z-index: 500;
+}

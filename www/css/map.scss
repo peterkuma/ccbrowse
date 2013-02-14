@@ -13,7 +13,7 @@
     left: 0;
     right: 130px;
     text-align: center;
-    background: url('../img/bg.png') repeat-x;
+    background: inline-image('../img/bg.png') repeat-x;
 }
 
 #map {
@@ -134,13 +134,13 @@
 }
 
 .leaflet-control-zoom-in {
-    background: url('../img/zoom-in.png') no-repeat;
+    background: inline-image('../img/zoom-in.png') no-repeat;
     float: left;
     border-right: 1px solid #777;
 }
 
 .leaflet-control-zoom-out {
-    background: url('../img/zoom-out.png') no-repeat;
+    background: inline-image('../img/zoom-out.png') no-repeat;
     float: right;
 }
 
@@ -193,7 +193,7 @@
     float: right;
     width: 20px;
     height: 20px;
-    background: black url('../img/layers.png') no-repeat center center;
+    background: black inline-image('../img/layers.png') no-repeat center center;
     margin: 0 10px 0px 10px;
     cursor: pointer;
     position: relative;
@@ -231,15 +231,15 @@
     height: 12px;
     margin: 0 5px;
     display: inline-block;
-    background: url('../img/bulb-disabled.png') no-repeat;
+    background: inline-image('../img/bulb-disabled.png') no-repeat;
 }
 
 .layer-item.active .bulb {
-    background: url('../img/bulb-active.png') no-repeat;
+    background: inline-image('../img/bulb-active.png') no-repeat;
 }
 
 .layer-item.enabled .bulb {
-    background: url('../img/bulb-enabled.png') no-repeat;
+    background: inline-image('../img/bulb-enabled.png') no-repeat;
 }
 
 .popup-content .color-box {
@@ -298,7 +298,7 @@
     left: 4px;
     width: 30px;
     height: 15px;
-    background: rgba(255,255,255,0.8) url('../img/keyboard.png') no-repeat;
+    background: rgba(255,255,255,0.8) inline-image('../img/keyboard.png') no-repeat;
     opacity: 0.5;
     z-index: 1000;
     transition: opacity 200ms;
