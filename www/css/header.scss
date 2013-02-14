@@ -3,8 +3,7 @@ header {
     top: 0;
     left: 0;
     height: 80px;
-    box-shadow: 2px 2px 6px black;
-    -webkit-box-shadow: 2px 2px 6px black;
+    @include box-shadow(2px 2px 6px black);
     position: relative;
     z-index: 200;
     background-color: #111;
@@ -17,7 +16,6 @@ header h1 {
     width: 200px;
     height: 50px;
     color: transparent;
-    font-family: "Asap", sans-serif;
     font-size: 32pt;
     margin: 0;
     background: inline-image('../img/ccloud.png') no-repeat 14px 18px;

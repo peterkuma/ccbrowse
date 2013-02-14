@@ -30,12 +30,10 @@
     color: white;
     border-radius: 6px;
     border: 1px solid #555;
-    box-shadow: 0 0 5px rgba(0,0,0,0.8);
-    -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.8);
+    @include box-shadow(0 0 5px rgba(0,0,0,0.8));
     overflow: hidden;
     text-align: left;
-    transition: opacity 200ms;
-    -webkit-transition: opacity 200ms;
+    @include transition(opacity 200ms);
     opacity: 0.8;
 }
 
@@ -77,16 +75,13 @@
     background-color: rgba(0,0,0,0.6);
     color: white;
     padding: 2px 4px;
-    box-shadow: none;
-    -webkit-box-shadow: none;
+    @include box-shadow(none);
     font-size: 8pt;
     font-family: Tahoma, sans-serif;
     border-radius: 0;
     border: none;
     opacity: 0.5;
-    transition: opacity 200ms;
-    -moz-transition: opacity 200ms;
-    -webkit-transition: opacity 200ms;
+    @include transition(opacity 200ms);
 }
 
 .leaflet-container .leaflet-control-attribution:hover {
@@ -115,12 +110,10 @@
     background: black;
     border-radius: 6px;
     border: 1px solid #555;
-    box-shadow: 0 0 5px rgba(0,0,0,0.8);
-    -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.8);
+    @include box-shadow(0 0 5px rgba(0,0,0,0.8));
     width: 71px;
     padding: 0;
-    transition: opacity 200ms;
-    -webkit-transition: opacity 200ms;
+    @include transition(opacity 200ms);
 }
 
 .leaflet-control a {
@@ -148,8 +141,7 @@
     background: black;
     border-radius: 5px;
     border: 1px solid #999;
-    box-shadow: 2px 2px 10px black;
-    -webkit-box-shadow: 2px 2px 10px black;
+    @include box-shadow(2px 2px 10px black);
     position: relative;
     left: 30%;
 }
@@ -159,8 +151,7 @@
     font-size: 12pt;
     font-family: inherit;
     margin: 5px 10px;
-    box-shadow: 2px 2px 6px black;
-    -webkit-box-shadow: 2px 2px 6px black;
+    @include box-shadow(2px 2px 6px black);
 }
 
 .leaflet-popup-close-button {
@@ -169,8 +160,7 @@
 
 .leaflet-popup-tip {
     background-color: black;
-    box-shadow: 2px 2px 6px black;
-    -webkit-box-shadow: 2px 2px 6px black;
+    @include box-shadow(2px 2px 6px black);
     border: 1px solid #999;
     position: relative;
     top: -1px;
@@ -270,12 +260,9 @@
     padding: 16px 14px 8px 14px;
     font-size: 12pt;
     font-weight: bold;
-    box-shadow: 0 0 10px rgba(0,0,0,0.8);
-    -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.8);
+    @include box-shadow(0 0 10px rgba(0,0,0,0.8));
     text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
-    transition: top 200ms;
-    -moz-transition: top 200ms;
-    -webkit-transition: top 200ms;
+    @include transition(top 200ms);
     color: white;
     border: 1px solid rgba(255,255,255,0.4);
 }
@@ -301,8 +288,7 @@
     background: rgba(255,255,255,0.8) inline-image('../img/keyboard.png') no-repeat;
     opacity: 0.5;
     z-index: 1000;
-    transition: opacity 200ms;
-    -webkit-transition: opacity 200ms;
+    @include transition(opacity 200ms);
 }
 
 .keyboard-legend:hover {

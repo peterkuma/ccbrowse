@@ -1,9 +1,14 @@
+@import "compass/css3";
+
 @import "header.scss";
 @import "navigation.scss";
 @import "map.scss";
 @import "colormap.scss";
 @import "location-bar.scss";
 @import "page.scss";
+
+@import url(http://fonts.googleapis.com/css?family=Asap:400,700);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
 
 body {
     margin: 0;
@@ -47,8 +52,6 @@ a:hover {
     border: 1px solid black;
     z-index: 500;
     border-radius: 2px;
-    xbox-shadow: 0 0 5px rgba(0,0,0,0.8);
-    x-webkit-box-shadow: 0 0 5px rgba(0,0,0,0.8);
 }
 
 .tip {

@@ -1,5 +1,3 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
-
 #location-bar {
     position: absolute;
     z-index: 100;
@@ -9,8 +7,6 @@
     font-size: 18pt;
     font-family: "Open Sans";
     font-weight: bold;
-    xtext-shadow: 0 0 3px #0197fd,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000;
-    xtext-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;
     text-shadow: 2px 2px 0 #000;
 }
 

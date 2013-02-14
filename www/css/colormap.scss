@@ -1,8 +1,7 @@
 #colormap-container {
     background: #111;
     width: 130px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    @include box-shadow(0 0 10px rgba(0,0,0,0.5));
     position: fixed;
     right: 0;
     top: 176px;

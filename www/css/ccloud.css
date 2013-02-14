@@ -1,11 +1,13 @@
+@import url(http://fonts.googleapis.com/css?family=Asap:400,700);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
 header {
   position: absolute;
   top: 0;
   left: 0;
   height: 80px;
-  box-shadow: 2px 2px 6px black;
   -webkit-box-shadow: 2px 2px 6px black;
+  -moz-box-shadow: 2px 2px 6px black;
+  box-shadow: 2px 2px 6px black;
   position: relative;
   z-index: 200;
   background-color: #111; }
@@ -17,7 +19,6 @@ header h1 {
   width: 200px;
   height: 50px;
   color: transparent;
-  font-family: "Asap", sans-serif;
   font-size: 32pt;
   margin: 0;
   background: url('data:image/png;base64,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') no-repeat 14px 18px; }
@@ -79,14 +80,12 @@ header h1 a:hover {
   width: 100%;
   top: 80px;
   min-width: 1200px;
-  font-family: "Asap";
   z-index: 100; }
 
 .nav-panel {
   background: #333;
   height: 84px;
-  padding: 6px 0;
-  xmargin-bottom: 16px; }
+  padding: 6px 0; }
 
 .nav-slider {
   padding: 6px 6px;
@@ -149,8 +148,9 @@ header h1 a:hover {
   position: absolute;
   bottom: 0;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
 
 .nav-pointer {
   width: 21px;
@@ -222,12 +222,15 @@ header h1 a:hover {
   color: white;
   border-radius: 6px;
   border: 1px solid #555555;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
   overflow: hidden;
   text-align: left;
-  transition: opacity 200ms;
   -webkit-transition: opacity 200ms;
+  -moz-transition: opacity 200ms;
+  -o-transition: opacity 200ms;
+  transition: opacity 200ms;
   opacity: 0.8; }
 
 .control:hover, .leaflet-container .leaflet-control:hover {
@@ -261,16 +264,18 @@ header h1 a:hover {
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
   padding: 2px 4px;
-  box-shadow: none;
   -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
   font-size: 8pt;
   font-family: Tahoma, sans-serif;
   border-radius: 0;
   border: none;
   opacity: 0.5;
-  transition: opacity 200ms;
+  -webkit-transition: opacity 200ms;
   -moz-transition: opacity 200ms;
-  -webkit-transition: opacity 200ms; }
+  -o-transition: opacity 200ms;
+  transition: opacity 200ms; }
 
 .leaflet-container .leaflet-control-attribution:hover {
   opacity: 1; }
@@ -293,12 +298,15 @@ header h1 a:hover {
   background: black;
   border-radius: 6px;
   border: 1px solid #555555;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
   width: 71px;
   padding: 0;
-  transition: opacity 200ms;
-  -webkit-transition: opacity 200ms; }
+  -webkit-transition: opacity 200ms;
+  -moz-transition: opacity 200ms;
+  -o-transition: opacity 200ms;
+  transition: opacity 200ms; }
 
 .leaflet-control a {
   background-color: transparent;
@@ -321,8 +329,9 @@ header h1 a:hover {
   background: black;
   border-radius: 5px;
   border: 1px solid #999999;
-  box-shadow: 2px 2px 10px black;
   -webkit-box-shadow: 2px 2px 10px black;
+  -moz-box-shadow: 2px 2px 10px black;
+  box-shadow: 2px 2px 10px black;
   position: relative;
   left: 30%; }
 
@@ -331,16 +340,18 @@ header h1 a:hover {
   font-size: 12pt;
   font-family: inherit;
   margin: 5px 10px;
-  box-shadow: 2px 2px 6px black;
-  -webkit-box-shadow: 2px 2px 6px black; }
+  -webkit-box-shadow: 2px 2px 6px black;
+  -moz-box-shadow: 2px 2px 6px black;
+  box-shadow: 2px 2px 6px black; }
 
 .leaflet-popup-close-button {
   display: none; }
 
 .leaflet-popup-tip {
   background-color: black;
-  box-shadow: 2px 2px 6px black;
   -webkit-box-shadow: 2px 2px 6px black;
+  -moz-box-shadow: 2px 2px 6px black;
+  box-shadow: 2px 2px 6px black;
   border: 1px solid #999999;
   position: relative;
   top: -1px; }
@@ -425,12 +436,14 @@ header h1 a:hover {
   padding: 16px 14px 8px 14px;
   font-size: 12pt;
   font-weight: bold;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
   -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
-  transition: top 200ms;
-  -moz-transition: top 200ms;
   -webkit-transition: top 200ms;
+  -moz-transition: top 200ms;
+  -o-transition: top 200ms;
+  transition: top 200ms;
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.4); }
 
@@ -452,8 +465,10 @@ header h1 a:hover {
   background: rgba(255, 255, 255, 0.8) url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAARCAYAAADKZhx3AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAADgAAAA4AB/Pg+8wAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHfSURBVEiJ5ZExayJREMd/66VViIVYBbawErSQg4WAjc12t6AIko8QUlgcBAsLC7FLIcKW20ggGPALpAlYRlEQsjHZBa9ZtljBINrNNdnlCBeOI5wWNzC8mTf/Nz/mDcA34BmQPfnzG5PFHqGhL5S3gHQ6jWEYiAjX19dks1ny+TxBEHBzc8PZ2RnxeJyHhwdc16VSqQAwGAxQVZVCocDr6yv9fp9qtUoymWQ6nTKfz6nVaiiKwnA4xPM8QhNADMOQ0DRNE8uyRETE8zwBZLfbiYiIaZqi63qk1XVdTNMUEZHdbieAeJ4nIiKWZYmmaZHWMIxo6lhI3263/BqHeXhuNpsoD+Pw/nea933eM6Kv3rcdhUEmk+H8/BwRodPpcHp6SrFYxPd92u02rVaLRCLB3d0ds9mMer0OwNXVFblcjlKpxHq9ptls0mg0SKVS3N/fMxqNuLy8RFEUer0ei8Uigh9kx9HEvu9j2zYiQhAEOI6Dbdssl0sAJpMJx8fHuK4bacN3ruti2zar1QqA2WzGyckJjuMQBAGPj48oioLv+9G0B9tx7M+Sf2NHHxUuLi4ol8ufan57e0u32/07sKqqaJr2KfB4PP6w9v/tOAY8HYD79AX4AXwFknuCvgDffwJ6u54Nsu4HYQAAAABJRU5ErkJggg==') no-repeat;
   opacity: 0.5;
   z-index: 1000;
-  transition: opacity 200ms;
-  -webkit-transition: opacity 200ms; }
+  -webkit-transition: opacity 200ms;
+  -moz-transition: opacity 200ms;
+  -o-transition: opacity 200ms;
+  transition: opacity 200ms; }
 
 .keyboard-legend:hover {
   opacity: 1; }
@@ -473,8 +488,9 @@ header h1 a:hover {
 #colormap-container {
   background: #111;
   width: 130px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   position: fixed;
   right: 0;
   top: 176px;
@@ -514,8 +530,6 @@ header h1 a:hover {
   font-size: 18pt;
   font-family: "Open Sans";
   font-weight: bold;
-  xtext-shadow: 0 0 3px #0197fd, -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black, 2px 2px 0 black;
-  xtext-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
   text-shadow: 2px 2px 0 black; }
 
 #location-bar .center {
@@ -587,8 +601,9 @@ header h1 a:hover {
   background-color: white;
   padding: 10px 20px 20px 20px;
   border-radius: 1px;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.15);
   -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.15);
   color: #333; }
 
 .page article a {
@@ -639,9 +654,7 @@ a:hover {
   font-size: 10pt;
   border: 1px solid black;
   z-index: 500;
-  border-radius: 2px;
-  xbox-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
-  x-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.8); }
+  border-radius: 2px; }
 
 .tip {
   position: absolute;
