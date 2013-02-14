@@ -47,7 +47,6 @@ setup(
     ],
     cmdclass = {'build_ext': build_ext},
     ext_modules=[
-        Extension('cctk', sources=['src/cctkmodule.c']),
         Extension('ccloud.algorithms',
                   ['src/ccloud/algorithms.pyx'],
                   extra_compile_args=['-march=native'],

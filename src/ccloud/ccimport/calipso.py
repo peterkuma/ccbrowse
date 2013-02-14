@@ -5,7 +5,6 @@ import math
 from scipy.interpolate import Rbf, interp1d
 
 import ccloud
-import cctk
 import calipso_constants
 from ccloud.hdf import HDF
 from ccloud.algorithms import interp2d
@@ -179,12 +178,6 @@ class Calipso(Product):
             mesh = np.meshgrid(N.filled(), M.filled())
             data = np.ma.masked_where(mask, raw_data[mesh], copy=False)
             tile['data'] = data.filled(np.nan)
-        
-        elif interpolation == 'nearest-old':
-            Z, N = np.meshgrid(height[m1:m2], np.arange(n1_, n2_, dtype=np.float32))
-            tile['data'] = cctk.interpolate2d(
-                raw_data, Z, N, (z2, z1, 256),
-                (n1, n2, 256), float('nan'), 3, 3)
         
         else:
             raise RuntimeError('Unknown interpolation %s' % interpolation)
