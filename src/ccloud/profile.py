@@ -128,7 +128,10 @@ class Profile(object):
                 cls = PRODUCTS[ref['product']]
             except KeyError:
                 raise RuntimeError('Unknown product type "%s"' % ref['product'])
-            product = cls(ref['filename'], self)
+            if ref.has_key('offset'):
+                product = cls(ref['filename'], self, offset=ref['offset'])
+            else:
+                product = cls(ref['filename'], self)
             tile = product.tile(obj['layer'], obj['zoom'], obj['x'], obj['z'])
             if obj.has_key('data'):
                 if obj['format'] == 'png':
@@ -250,4 +253,3 @@ class Profile(object):
         availability = self.get_availability(layer)
         if availability.has_key(level): availability[level].append(start, stop)
         else: availability[level] = RangeList([(start, stop)])
-

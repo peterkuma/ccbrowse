@@ -23,12 +23,12 @@ class CloudSat(Product):
     OFFSET_LOW = -120 # s
     OFFSET_HIGH = 0 # s
     
-    def __init__(self, filename, profile):
-        Product.__init__(self, filename, profile)
+    def __init__(self, filename, profile, offset=None):
+        Product.__init__(self, filename, profile, offset)
         self.hdfeos = HDFEOS(filename)
         self.swath = self.hdfeos['2B-GEOPROF']
-        self.offset = 0
-        self.offset = self._offset(self.OFFSET_ZOOM)
+        if self._offset is None:
+            self._offset = self._calculate_offset(self.OFFSET_ZOOM)
     
     def layers(self):
         layers = self.profile['layers'].keys()
@@ -40,8 +40,8 @@ class CloudSat(Product):
         start = self.swath.attributes['start_time']
         start = dt.datetime.strptime(start, "%Y%m%d%H%M%S").replace(tzinfo=pytz.utc)
         t_origin = self.profile['origin'][0]
-        t1 = self._dt2ms(self._time(time[0], start) - t_origin) + self.offset
-        t2 = self._dt2ms(self._time(time[-1], start) - t_origin) + self.offset
+        t1 = self._dt2ms(self._time(time[0], start) - t_origin) + self.offset()
+        t2 = self._dt2ms(self._time(time[-1], start) - t_origin) + self.offset()
         x1 = int(math.floor(t1 / w))
         x2 = int(math.floor(t2 / w))
         return range(x1, x2+1)
@@ -100,8 +100,8 @@ class CloudSat(Product):
         m0 = 0
         mm = dataset.shape[1] if len(dataset.shape) == 2 else 0
         time = self.swath['Profile_time']
-        t0 = self._dt2ms(self._time(time[0], start) - t_origin) + self.offset
-        tn = self._dt2ms(self._time(time[-1], start) - t_origin) + self.offset
+        t0 = self._dt2ms(self._time(time[0], start) - t_origin) + self.offset()
+        tn = self._dt2ms(self._time(time[-1], start) - t_origin) + self.offset()
         sampling_interval = (tn - t0)/(nn - n0)
         t1 = x*w
         t2 = t1 + w
@@ -194,7 +194,7 @@ class CloudSat(Product):
     def _time(self, time, start):
         return start + dt.timedelta(0, float(time))
 
-    def _offset(self, level):
+    def _calculate_offset(self, level):
         w = self.profile['zoom'][`level`]['width']
         
         traj1 = []

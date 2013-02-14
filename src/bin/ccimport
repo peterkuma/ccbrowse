@@ -101,6 +101,7 @@ def save(product, profile, layer=None, zoom=None,
                         ref = {
                             'product': product_name,
                             'filename': filename,
+                            'offset': product.offset()
                         }
                         tile = {
                             'layer': l,

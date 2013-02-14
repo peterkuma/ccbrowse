@@ -22,10 +22,11 @@ class Product(object):
     In turn, the save method calls your tile method.
     """
     
-    def __init__(self, filename, profile):
+    def __init__(self, filename, profile, offset=None):
         """Product initialization."""
         self.profile = profile
         self.filename = filename
+        self._offset = offset
         # Open the file and save the handler to a member variable.
         
     def layers(self):
@@ -64,3 +65,6 @@ class Product(object):
         """Save tile (x, z) of layer at specified zoom level to profile."""
         tile = self.tile(layer, zoom, x, z)
         self.profile.save(l, tile)
+
+    def offset(self):
+        return self._offset if self._offset is not None else 0

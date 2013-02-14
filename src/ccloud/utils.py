@@ -100,17 +100,29 @@ def pngunpack(raw_data):
 
 def parse_ref(s):
     ref = []
-    pattern = r'^ref: (?P<product>.*):(?P<filename>.*)'
+    pattern = r'^ref: (?P<product>[^:]*):(?:offset=(?P<offset>-?\d+):)?(?P<filename>.*)'
     p = re.compile(pattern)
     for l in s.split('\n'):
         if l == '': continue
         m = p.match(l)
-        ref.append(m.groupdict())
+        if m is not None:
+            d = m.groupdict()
+            if d['offset'] is not None:
+                d['offset'] = int(d['offset'])
+            else:
+                del d['offset']
+            ref.append(d)
     return ref
 
 
 def dump_ref(ref):
-    return ''.join(['ref: %(product)s:%(filename)s\n' % r for r in ref])
+    s = ''
+    for r in ref:
+        if r.has_key('offset'):
+            s += 'ref: %(product)s:offset=%(offset)d:%(filename)s\n' % r
+        else:
+            s += 'ref: %(product)s:%(filename)s\n' % r
+    return s
 
 
 def array_update(a, b):

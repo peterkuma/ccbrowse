@@ -24,8 +24,8 @@ class Calipso(Product):
     LIDAR_ALTITUDES = calipso_constants.LIDAR_ALTITUDES
     MET_DATA_ALTITUDES = calipso_constants.MET_DATA_ALTITUDES
 
-    def __init__(self, filename, profile):
-        Product.__init__(self, filename, profile)
+    def __init__(self, filename, profile, offset=None):
+        Product.__init__(self, filename, profile, offset)
         self.hdf = HDF(filename)
     
     def layers(self):
@@ -35,8 +35,9 @@ class Calipso(Product):
     def xrange(self, layer, level):
         w = self.profile['zoom'][level]['width']
         time = self.hdf['Profile_UTC_Time']
-        t1 = self._dt2ms(self._time2dt(time[0,0]) - self.profile['origin'][0])
-        t2 = self._dt2ms(self._time2dt(time[-1,0]) - self.profile['origin'][0])
+        t_origin = self.profile['origin'][0]
+        t1 = self._dt2ms(self._time2dt(time[0,0]) - t_origin) + self.offset()
+        t2 = self._dt2ms(self._time2dt(time[-1,0]) - t_origin) + self.offset()
         x1 = int(math.floor(t1 / w))
         x2 = int(math.floor(t2 / w))
         return range(x1, x2+1)
@@ -83,17 +84,19 @@ class Calipso(Product):
         
         w = self.profile['zoom'][level]['width']
         h = self.profile['zoom'][level]['height']
+        t_origin = self.profile['origin'][0]
+        z_origin = self.profile['origin'][1]
         n0 = 0
         nn = dataset.shape[0]
         m0 = 0
         mm = dataset.shape[1]
         time = self.hdf['Profile_UTC_Time']
-        t0 = self._dt2ms(self._time2dt(time[0,0]) - self.profile['origin'][0])
-        tn = self._dt2ms(self._time2dt(time[-1,0]) - self.profile['origin'][0])
+        t0 = self._dt2ms(self._time2dt(time[0,0]) - t_origin)
+        tn = self._dt2ms(self._time2dt(time[-1,0]) - t_origin)
         sampling_interval = (tn - t0)/(nn - n0)
         t1 = x*w
         t2 = t1 + w
-        z1 = z*h + self.profile['origin'][1]
+        z1 = z*h + z_origin
         z2 = z1 + h
         n1 = (t1 - t0)/sampling_interval
         n2 = (t2 - t0)/sampling_interval
