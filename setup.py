@@ -3,9 +3,6 @@ from distutils.core import setup, Extension
 from glob import glob
 from Cython.Distutils import build_ext
 
-#def find(path):
-#    return [os.path.join(i[0], f) for i in os.walk(path) for f in i[2]]
-
 def find(prefix, path):
     l = []
     for dirpath, dirnames, filenames in os.walk(path):
