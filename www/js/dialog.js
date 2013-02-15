@@ -1,5 +1,5 @@
 var Dialog = new Class({
-    Implements: [Events],
+    Implements: EventEmitter2,
     
     initialize: function(forEl, width, height, url) {
         this.template = $('dialog-template');
@@ -33,6 +33,6 @@ var Dialog = new Class({
    
    close: function() {
         document.body.removeChild(this.el);
-        this.fireEvent('close');
+        this.emit('close');
    }
 });

@@ -21,7 +21,7 @@ var LayerControl = new Class({
             if (this.el.tooltip) this.el.tooltip.update();
         }.bind(this));
         
-        this.nav.addEvent('layerchange', this.update.bind(this));
+        this.nav.on('layerchange', this.update.bind(this));
         this.update();
     },
     

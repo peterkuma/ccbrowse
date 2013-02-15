@@ -6,7 +6,7 @@
  */
 
 var Tooltip = new Class({
-    Implements: [Events],
+    Implements: EventEmitter2,
     
     initialize: function(forEl) {
         this.template = $('tooltip-template');

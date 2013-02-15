@@ -68,13 +68,13 @@ var CCloud = new Class({
         this.nav.setZoom(2);
         this.nav.setCurrent(this.profile.origin[0]);
         
-        this.nav.addEvent('change', function() {
+        this.nav.on('change', function() {
             window.history.pushState({}, '', '/'+document.location.hash);
             document.title = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M') + ' ‧ CCloud';
             this.route();
         }.bind(this));
         
-        this.nav.addEvent('layerchange', function() {
+        this.nav.on('layerchange', function() {
             var layer = this.nav.getLayer();
             if (layer.colormap.colors)
                 this.colormap = new Colormap($('colormap'), this.nav.getLayer().colormap);
@@ -92,7 +92,7 @@ var CCloud = new Class({
         var layerControl = new LayerControl($('layer-control'), this.nav);
         this.navView = new NavigationView($('nav'), this.nav);
         this.map = new Map($('map'), this.nav, this);
-        this.map.addEvent('error', this.onError.bind(this));
+        this.map.on('error', this.onError.bind(this));
         $('map').focus();
         
         this.locationBar = new LocationBar($('location-bar'), this.map.map, this.profile);

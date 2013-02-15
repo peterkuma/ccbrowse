@@ -7,7 +7,7 @@
  */
 
 var Map = new Class({
-    Implements: Events,
+    Implements: EventEmitter2,
     
     initialize: function(el, nav, app) {
         this.el = el;
@@ -60,8 +60,8 @@ var Map = new Class({
         this.locationLayer.addTo(this.map);
         */
         
-        this.nav.addEvent('change', this.move.bind(this));
-        this.nav.addEvent('layerchange', this.updateLayer.bind(this));
+        this.nav.on('change', this.move.bind(this));
+        this.nav.on('layerchange', this.updateLayer.bind(this));
     },
     
     /*
@@ -193,7 +193,7 @@ var Map = new Class({
                 if(xhr.readyState != 4) return;
                 if (xhr.status != 200) {
                     console.log(url+' '+xhr.status+' '+xhr.statusText);
-                    this.fireEvent('error', {
+                    this.emit('error', {
                         message: 'No information available for this point'
                     });
                     return;

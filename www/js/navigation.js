@@ -7,7 +7,7 @@
  */
 
 var Navigation = new Class({
-    Implements: [Events],
+    Implements: EventEmitter2,
     
     initialize: function(profile) {
         this.profile = profile;
@@ -21,7 +21,7 @@ var Navigation = new Class({
         var date = new Date().parse(window.location.hash.substring(1) + ' +0000');
         if (!date.isValid()) return;
         this.current = date;
-        this.fireEvent('change');
+        this.emit('change');
     },
     
     getLayers: function() { return this.profile.layers; },
@@ -35,8 +35,8 @@ var Navigation = new Class({
                 'url': this.profile.prefix+'/'+this.layer.colormap,
                 onSuccess: function(json) {
                     this.layer.colormap = json;
-                    this.fireEvent('change');
-                    this.fireEvent('layerchange');
+                    this.emit('change');
+                    this.emit('layerchange');
                 }.bind(this)
             }).get();
         }
@@ -46,27 +46,27 @@ var Navigation = new Class({
                 'url': this.profile.prefix+'/'+this.layer.availability,
                 onSuccess: function(json) {
                     this.layer.availability = json;
-                    this.fireEvent('change');
-                    this.fireEvent('layerchange');
+                    this.emit('change');
+                    this.emit('layerchange');
                 }.bind(this)
             }).get();
         }
         
-        this.fireEvent('change');
-        this.fireEvent('layerchange');
+        this.emit('change');
+        this.emit('layerchange');
     },
     
     getCurrent: function() { return new Date(this.current); },
     setCurrent: function(date) {
         this.current = date;
         window.location.replace('#'+date.formatUTC('%Y-%b-%d,%H:%M:%S'));
-        this.fireEvent('change');
+        this.emit('change');
     },
     
     getZoom: function() { return this.zoom; },
     setZoom: function(zoom) {
         this.zoom = zoom;
-        this.fireEvent('change');
+        this.emit('change');
     },
     
     getMaxZoom: function() {

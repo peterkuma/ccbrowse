@@ -23,7 +23,7 @@ var NavigationView = new Class({
         this.initMonthSlider(this.nav.profile.origin[0], new Date());
         this.initDaySlider();
         
-        this.nav.addEvent('change', this.update.bind(this));
+        this.nav.on('change', this.update.bind(this));
     },
     
     initProgress: function() {
