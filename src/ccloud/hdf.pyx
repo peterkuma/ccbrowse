@@ -1,7 +1,7 @@
 cimport cython
 cimport numpy as np
 import numpy as np
-from contextlib import contextmanager
+from UserDict import DictMixin
 
 cdef extern from "errno.h":
     cdef extern int errno
@@ -9,17 +9,27 @@ cdef extern from "errno.h":
 cdef extern from "string.h":
     char *strerror(int)
 
+cdef extern from "hdf/hntdefs.h":
+    cdef enum:
+        DFNT_UCHAR = 3
+        DFNT_CHAR = 4
+        DFNT_FLOAT32 = 5
+        DFNT_FLOAT64 = 6
+        DFNT_INT8 = 20
+        DFNT_UINT8 = 21
+        DFNT_INT16 = 22
+        DFNT_UINT16 = 23
+        DFNT_INT32 = 24
+        DFNT_UINT32 = 25
+        DFNT_INT64 = 26
+        DFNT_UINT64 = 27
+
 cdef extern from "hdf/hdf.h":
     cdef enum:
         FAIL = -1
         DFACC_READ = 1
         MAX_VAR_DIMS = 32
         FIELDNAMELENMAX = 128
-        
-    cdef enum:
-        DFNT_INT32 = 24
-        DFNT_FLOAT32 = 5
-        DFNT_FLOAT64 = 6
     
     ctypedef np.npy_int16 int16
     ctypedef np.npy_int32 int32
@@ -36,22 +46,36 @@ cdef extern from "hdf/hdf.h":
     intn SDattrinfo(int32, int32, char *, int32 *, int32 *)
     intn SDreadattr(int32, int32, void *)
     int32 SDfindattr(int32, char *)
+    intn SDfileinfo(int32, int32 *, int32 *)
     int16 HEvalue(int32)
     char *HEstring(hdf_err_code_t)
 
 DTYPE = {
-    DFNT_INT32: np.int32,
+    DFNT_UCHAR: np.ubyte,
+    DFNT_CHAR: np.byte,
     DFNT_FLOAT32: np.float32,
     DFNT_FLOAT64: np.float64,
+    DFNT_INT8: np.int8,
+    DFNT_UINT8: np.uint8,
+    DFNT_INT16: np.int16,
+    DFNT_UINT16: np.uint16,
+    DFNT_INT32: np.int32,
+    DFNT_UINT32: np.uint32,
+    DFNT_INT64: np.int64,
+    DFNT_UINT64: np.uint64,
 }
 
-class Attributes(object):
-    def __init__(self, hdf, dataset):
+
+class Attributes(DictMixin):
+    def __init__(self, hdf, dataset=None):
         self.hdf = hdf
         self.dataset = dataset
     
     def __getitem__(self, key):
         return self.hdf._readattr(self.dataset, key)
+
+    def keys(self):
+        return self.hdf._attributes(self.dataset)
 
 
 class Dataset(object):
@@ -101,27 +125,71 @@ class Dataset(object):
         if len(shape) == 0: return data.ravel()[0]
         else: return data.reshape(shape)
 
-class HDF(object):
+
+class SDS(object):
+    def __init__(self, hdf, name):
+        self.hdf = hdf
+        self.name = name
+
+    def __enter__(self):
+        errno = 0
+        index = SDnametoindex(self.hdf.sd, self.name)
+        if index == FAIL: raise KeyError(self.name)
+        self.sds = SDselect(self.hdf.sd, index)
+        if self.sds == FAIL:
+            self.hdf._error('HDF: SDselect of dataset "%s" failed' % self.name)
+        return self.sds
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        SDendaccess(self.sds)
+
+
+class HDF(DictMixin):
     def __init__(self, filename):
         self.filename = filename
         self.sd = SDstart(filename, DFACC_READ);
         if self.sd == FAIL: self._error('HDF: SDstart failed', from_errno=True)
+        self.attributes = Attributes(self)
     
     def __enter__(self):
-        pass
+        return self
     
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+    def close(self):
         SDend(self.sd)
+        self.sd = None
 
     def __getitem__(self, key):
-        sds = self._sds(key)
-        self._sds_close(sds)
+        #with SDS(self, key) as sds: pass # Ensure SDS exists.
         return Dataset(self, key)
+
+    def keys(self):
+        cdef int32 rank, data_type, num_datasets, num_global_attrs, num_attrs
+        cdef np.ndarray[int32, ndim=1] dims
+        cdef np.ndarray[char, ndim=1] tmp
+
+        dims = np.zeros(MAX_VAR_DIMS, dtype=np.int32)
+
+        res = SDfileinfo(self.sd, &num_datasets, &num_global_attrs)
+        if res == FAIL: self._error('HDF: SDfileinfo failed')
+
+        datasets = []
+        for i in range(num_datasets):
+            tmp = np.zeros(FIELDNAMELENMAX, dtype=np.byte)
+            sds = SDselect(self.sd, i)
+            res = SDgetinfo(sds, <char *>tmp.data, &rank, <int32 *>dims.data, &data_type, &num_attrs)
+            if res == FAIL: self._error('HDF: SDgetinfo failed')
+            sds_name = bytearray(tmp).decode('ascii').rstrip('\0')
+            datasets.append(sds_name)
+        return datasets
 
     def _error(self, errmsg=None, from_errno=False):
         errcode = HEvalue(1)
         if errcode != 0:
-            raise IOError(errcode, HEstring(errcode), self.filename)
+            msg = '%s: %s' % (errmsg, HEstring(errcode))
+            raise IOError(errcode, msg, self.filename)
         elif errno != 0 and from_errno:
             raise IOError(errno, strerror(errno), self.filename)
         elif errmsg is not None:
@@ -129,29 +197,46 @@ class HDF(object):
         else:
             raise IOError(0, 'HDF: Unknown error', self.filename)
 
-    def _sds(self, name):
-        errno = 0
-        index = SDnametoindex(self.sd, name)
-        if index == FAIL: self._error('File has no dataset "%s"' % name)
-        sds = SDselect(self.sd, index)
-        if sds == FAIL: self._error('HDF: SDselect of dataset "%s" failed' % name)
-        return sds
+    def _attributes(self, dataset=None):
+        cdef int32 num_datasets, num_global_attrs
+
+        if dataset is None:
+            res = SDfileinfo(self.sd, &num_datasets, &num_global_attrs)
+            if res == FAIL: self._error('HDF: SDfileinfo failed')
+            return self._attributes2(self.sd, num_global_attrs)
+        else:
+            info = self._getinfo(dataset)
+            with SDS(self, dataset) as sds:
+                return self._attributes2(sds, info['num_attrs'])
     
-    def _sds_close(self, sds):
-        SDendaccess(sds)
-        
+    def _attributes2(self, obj_id, n):
+        cdef np.ndarray[char, ndim=1] tmp
+        cdef int32 data_type, count
+
+        attrs = []
+        for i in range(n):
+            tmp = np.zeros(FIELDNAMELENMAX, dtype=np.byte)
+            res = SDattrinfo(obj_id, i, <char *>tmp.data, &data_type, &count)
+            if res == FAIL: self._error('HDF: SDattrinfo failed')
+            attr_name = bytearray(tmp).decode('ascii').rstrip('\0')
+            attrs.append(attr_name)
+        return attrs
+   
     def _getinfo(self, name):
-        cdef int32 rank, data_type
+        cdef int32 rank, data_type, num_attrs
         cdef np.ndarray[int32, ndim=1] dims
         dims = np.zeros(MAX_VAR_DIMS, dtype=np.int32)
-        sds = self._sds(name)
-        res = SDgetinfo(sds, NULL, &rank, <int32 *>dims.data, &data_type, NULL)
-        self._sds_close(sds)
+        with SDS(self, name) as sds:
+            res = SDgetinfo(sds, NULL, &rank, <int32 *>dims.data, &data_type, &num_attrs)
         if res == FAIL: self._error('HDF: SDgetinfo on dataset "%s" failed' % name)
         try: dtype = DTYPE[data_type]
         except KeyError: raise NotImplementedError('%s: %s: Data type %s not implemented'
                                               % (self.filename, name, data_type))
-        return dict(shape=dims[:rank], dtype=dtype)
+        return {
+            'shape': dims[:rank],
+            'dtype': dtype,
+            'num_attrs': num_attrs,
+        }
     
     def _normalize(self, index, dims, default=0, incl=False):
         if len(index) > len(dims):
@@ -182,39 +267,40 @@ class HDF(object):
         cdef np.ndarray[int32, ndim=1] cedges = np.array(edges, dtype=np.int32)
         data = np.zeros(edges, dtype=dtype)
         cdef np.ndarray[char, ndim=1] buf = data.view(dtype=np.int8).ravel()
-        sds = self._sds(name)
-        res = SDreaddata(sds, <int32 *>cstart.data, NULL, <int32 *>cedges.data, <void *>buf.data);
-        self._sds_close(sds)
+        with SDS(self, name) as sds:
+            res = SDreaddata(sds, <int32 *>cstart.data, NULL, <int32 *>cedges.data, <void *>buf.data);
         data = buf.view(dtype=dtype).reshape(edges)
         return data
     
     def _readattr(self, dataset, name):
+        if dataset is not None:
+            with SDS(self, dataset) as sds:
+                return self._readattr2(sds, name)
+        else:
+            return self._readattr2(self.sd, name)
+    
+    def _readattr2(self, obj_id, name):
         cdef int32 data_type, count
-        
-        sds = self._sds(dataset)
-        index = SDfindattr(sds, name)
-        self._sds_close(sds)
-        if index == FAIL:
-            self._error('Dataset "%s" has no attribute "%s"' % (dataset, name))
-        sds = self._sds(dataset)
-        cdef np.ndarray[char, ndim=1] tmp = np.zeros(FIELDNAMELENMAX, dtype=np.byte)
-        res = SDattrinfo(sds, index, <char *>tmp.data, &data_type, &count)
-        self._sds_close(sds)
+        index = SDfindattr(obj_id, name)
+        if index == FAIL: raise KeyError(name)
+        cdef np.ndarray[char, ndim=1] tmp
+        tmp = np.zeros(FIELDNAMELENMAX, dtype=np.byte)
+        res = SDattrinfo(obj_id, index, <char *>tmp.data, &data_type, &count)
         if res == FAIL:
-            self._error('HDF: SDattrinfo on "%s" of dataset "%s" failed' %\
-                        (name, dataset))
+            self._error('HDF: SDattrinfo of "%s" failed' % name)
         
         try: dtype = DTYPE[data_type]
-        except KeyError: raise NotImplementedError('%s: %s: Data type %s not implemented'
-                                              % (self.filename, name, data_type))
+        except KeyError: raise NotImplementedError(
+            '%s: %s: Data type %s not implemented' %\
+            (self.filename, name, data_type))
         
         data = np.zeros(count, dtype=dtype)
         cdef np.ndarray[char, ndim=1] buf = data.view(dtype=np.int8).ravel()
-        sds = self._sds(dataset)
-        res = SDreadattr(sds, index, <void *>buf.data);
-        self._sds_close(sds)
+        res = SDreadattr(obj_id, index, <void *>buf.data);
         if res == FAIL:
-            self._error('HDF: SDreadattr on "%s" of dataset "%s" failed' %\
-                        (name, dataset))
+            self._error('HDF: SDreadattr of "%s" failed' % name)
         
+        if data_type == DFNT_CHAR:
+            return bytearray(data).decode('ascii').rstrip('\0')
+
         return data[0] if count == 1 else data

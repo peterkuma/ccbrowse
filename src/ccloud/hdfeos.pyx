@@ -1,7 +1,8 @@
 cimport cython
 cimport numpy as np
 import numpy as np
-from contextlib import contextmanager
+import hdf
+from UserDict import DictMixin
 
 cdef extern from "errno.h":
     cdef extern int errno
@@ -59,11 +60,13 @@ cdef extern from "hdf/HdfEosDef.h":
     int32 SWattach(int32, char *)
     intn SWfieldinfo(int32, char *, int32 *, int32 [], int32 *, char *)
     intn SWreadattr(int32, char *, VOIDP)
-    intn SWattrinfo(int32, char *attrname, int32 *numbertype, int32 *count)
+    intn SWattrinfo(int32, char *, int32 *, int32 *)
     intn SWreadfield(int32, char *, int32 [], int32 [], int32 [], VOIDP)
     intn SWgetfillvalue(int32, char *, VOIDP)
     intn SWdetach(int32)
     intn SWclose(int32)
+    int32 SWinqmaps(int32, char *, int32 [], int32 [])
+    int32 SWinqattrs(int32, char *, int32 *)
 
 DTYPE = {
     DFNT_UCHAR: np.ubyte,
@@ -81,16 +84,34 @@ DTYPE = {
 }
 
 
-class Attributes(object):
-    def __init__(self, hdfeos, swath, dataset=None):
+class Attributes(DictMixin):
+    def __init__(self, hdfeos, swath=None, dataset=None):
         self.hdfeos = hdfeos
         self.swath = swath
         self.dataset = dataset
     
     def __getitem__(self, key):
+        if self.swath is None:
+            return self.hdfeos.hdf.attributes[key]
+
         try:
             return self.hdfeos._readattr(self.swath, self.dataset, key)
-        except IOError: raise KeyError(key)
+        except KeyError:
+            if self.dataset is not None:
+                try:
+                    return self.hdfeos.hdf[self.dataset].attributes[key]
+                except KeyError: raise KeyError(key)
+            else: raise KeyError(key)
+
+    def keys(self):
+        if self.swath is None:
+            return self.hdfeos.hdf.attributes.keys()
+        
+        attrs = self.hdfeos._attributes(self.swath, self.dataset)
+        if self.dataset is not None:
+            try: attrs += self.hdfeos.hdf[self.dataset].attributes.keys()
+            except KeyError: pass
+        return attrs
 
 
 class Dataset(object):
@@ -101,6 +122,7 @@ class Dataset(object):
         info = self.hdfeos._getinfo(swath, name)
         self.shape = info['shape']
         self.rank = len(self.shape)
+        self.dims = info['dimlist']
         self.attributes = Attributes(self.hdfeos, swath, name)
         
     def __getitem__(self, key):
@@ -142,60 +164,135 @@ class Dataset(object):
         else: return data.reshape(shape)
 
 
-class Swath(object):
+class Swath(DictMixin):
     def __init__(self, hdfeos, name):
         self.hdfeos = hdfeos
         self.name = name
         self.attributes = Attributes(self.hdfeos, self.name)
-    
+        self.maps = self.hdfeos._maps(self.name)
+        
     def __getitem__(self, key):
         return Dataset(self.hdfeos, self.name, key)
 
 
-class HDFEOS(object):
+class SW(object):
+    def __init__(self, hdfeos, name):
+        self.hdfeos = hdfeos
+        self.name = name
+
+    def __enter__(self):
+        self.sw = SWattach(self.hdfeos.id, self.name)
+        if self.sw == FAIL:
+            raise KeyError(self.name)
+        return self.sw
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        res = SWdetach(self.sw)
+        if res == -1:
+            raise IOError(EIO, 'Failed to detach swath %d' %\
+                          self.sw, self.hdfeos.filename)
+
+
+class HDFEOS(DictMixin):
     def __init__(self, filename):
+        self.hdf = hdf.HDF(filename)
         self.filename = filename
         self.id = SWopen(filename, DFACC_RDONLY);
         if self.id == -1:
             raise IOError(EIO, 'Cannot open file', self.filename)
+        self.attributes = Attributes(self)
     
     def __enter__(self):
-        pass
+        return self
     
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.hdf.close()
+        self.close()
+
+    def close(self):
         SWclose(self.id)
+        self.id = None
 
     def __getitem__(self, key):
-        try:
-            sw = self._sw(key)
-            self._sw_close(sw)
-            return Swath(self, key)
-        except IOError: raise KeyError(key)
-    
-    def _sw(self, name):
-        sw = SWattach(self.id, name)
-        if sw == -1:
-            raise IOError(EIO, 'Failed to attach swath "%s"' % name, self.filename)
-        return sw
-    
-    def _sw_close(self, sw):
-        res = SWdetach(sw)
-        if res == -1:
-            raise IOError(EIO, 'Failed to detach swath %d' % sw, self.filename)
+        with SW(self, key) as sw: pass
+        return Swath(self, key)
+
+    def _maps(self, swath):
+        cdef np.ndarray[int32, ndim=1] offset
+        cdef np.ndarray[int32, ndim=1] increment
+
+        offset = np.zeros(MAX_VAR_DIMS, dtype=np.int32)
+        increment = np.zeros(MAX_VAR_DIMS, dtype=np.int32)
+
+        cdef np.ndarray[char, ndim=1] tmp
+        tmp = np.zeros(FIELDNAMELENMAX*(MAX_VAR_DIMS+2)*2, dtype=np.byte)
+
+        with SW(self, swath) as sw:
+            res = SWinqmaps(sw, <char *>tmp.data, <int32 *>offset.data, <int32 *> increment.data)
+
+        dimmap = bytearray(tmp).decode('ascii').rstrip('\0')
+
+        n = 0
+        maps = {}
+        for dm in dimmap.split(','):
+            pair = dm.split('/')
+            if len(pair) != 2 or not n < MAX_VAR_DIMS: continue
+            geofield, datafield = pair
+            maps[(geofield, datafield)] = (offset[n], increment[n])
+            n = n + 1
         
+        return maps
+
+    def _attributes(self, swath=None, dataset=None):
+        cdef int32 strbufsize
+        cdef np.ndarray[char, ndim=1] tmp
+
+        with SW(self, swath) as sw:
+            res = SWinqattrs(sw, NULL, &strbufsize)
+            if res == FAIL:
+                raise IOError(EIO, 'SWinqattrs failed', self.filename)
+
+            tmp = np.zeros(strbufsize+1, dtype=np.byte)
+            res = SWinqattrs(sw, <char *>tmp.data, &strbufsize)
+            if res == FAIL:
+                raise IOError(EIO, 'SWinqattrs failed', self.filename)
+
+        attrlist = bytearray(tmp).decode('ascii').rstrip('\0')
+        if attrlist == '': return []
+        attrlist = attrlist.split(',')
+
+        if dataset is None:
+            return [attr for attr in attrlist if '.' not in attr]
+        else:
+            attrs = []
+            for attr in attrlist:
+                if not attr.startswith(dataset): continue
+                attrs.append(attr[len(dataset)+1:])
+            return attrs
+
     def _getinfo(self, swath, name):
         cdef int32 rank, data_type
         cdef np.ndarray[int32, ndim=1] dims
+        cdef np.ndarray[char, ndim=1] tmp
+
         dims = np.zeros(MAX_VAR_DIMS, dtype=np.int32)
-        sw = self._sw(swath)
-        res = SWfieldinfo(sw, name, &rank, <int32 *>dims.data, &data_type, NULL)
-        self._sw_close(sw)
-        if res == FAIL:
-            raise IOError(EIO, 'Failed to read field "%s/%s"' % (swath, name), self.filename)
+        tmp = np.zeros(FIELDNAMELENMAX*(MAX_VAR_DIMS+2)*2, dtype=np.byte)
+
+        with SW(self, swath) as sw:
+            res = SWfieldinfo(sw, name, &rank, <int32 *>dims.data, &data_type, <char *>tmp.data)
+        if res == FAIL: raise KeyError(name)
         try: dtype = DTYPE[data_type]
         except KeyError: raise NotImplementedError('%s: %s: Data type %s not implemented'
                                               % (self.filename, name, data_type))
-        return dict(shape=dims[:rank], dtype=dtype)
+
+        dimlist = bytearray(tmp).decode('ascii').rstrip('\0')
+        dimlist = dimlist.split(',') if dimlist != "" else []
+
+        return {
+            'shape': dims[:rank],
+            'dtype': dtype,
+            'dimlist': dimlist,
+        }
     
     def _normalize(self, index, dims, default=0, incl=False):
         if len(index) > len(dims):
@@ -226,40 +323,33 @@ class HDFEOS(object):
         cdef np.ndarray[int32, ndim=1] cedges = np.array(edges, dtype=np.int32)
         data = np.zeros(edges, dtype=dtype)
         cdef np.ndarray[char, ndim=1] buf = data.view(dtype=np.int8).ravel()
-        sw = self._sw(swath)
-        res = SWreadfield(sw, name, <int32 *>cstart.data, NULL, <int32 *>cedges.data, <void *>buf.data)
-        self._sw_close(sw)
+        with SW(self, swath) as sw:
+            res = SWreadfield(sw, name, <int32 *>cstart.data, NULL, <int32 *>cedges.data, <void *>buf.data)
         data = buf.view(dtype=dtype).reshape(edges)
         return data
     
     def _readattr(self, swath, dataset, name):
         cdef int32 data_type, count
-        cdef np.ndarray[char, ndim=1] tmp
-        
         attrname = name if dataset is None else '%s.%s' % (dataset, name)
-        
-        tmp = np.zeros(FIELDNAMELENMAX, dtype=np.byte)
-        sw = self._sw(swath)
-        res = SWattrinfo(sw, attrname, &data_type, &count)
-        self._sw_close(sw)
-        if res == FAIL:
-            raise IOError(EIO, 'Cannot read attribute "%s/%s"' %
-                          (swath, attrname), self.filename)
-        
+
+        with SW(self, swath) as sw:
+            res = SWattrinfo(sw, attrname, &data_type, &count)
+        if res == FAIL: raise KeyError(name)
+
         try: dtype = DTYPE[data_type]
         except KeyError: raise NotImplementedError('%s: %s: Data type %s not implemented'
                                               % (self.filename, attrname, data_type))
         count = count/dtype().itemsize
-        
+
         data = np.zeros(count, dtype=dtype)
         cdef np.ndarray[char, ndim=1] buf = data.view(dtype=np.int8).ravel()
-        sw = self._sw(swath)
-        res = SWreadattr(sw, attrname, <void *>buf.data)
-        self._sw_close(sw)
+        with SW(self, swath) as sw:
+            res = SWreadattr(sw, attrname, <void *>buf.data)
         if res == FAIL:
-            self._error(EIO, 'Cannot read attribute "%s/%s"' %
-                        (swath, dataset), self.filename)
-        
-        if data_type == DFNT_CHAR: data = bytearray(data).decode('ascii')
-        
+            raise IOError(EIO, 'Cannot read attribute "%s"' % attrname,
+                          self.filename)
+
+        if data_type == DFNT_CHAR:
+            return bytearray(data).decode('ascii').rstrip('\0')
+
         return data[0] if count == 1 else data
