@@ -4,7 +4,6 @@ ccloud
 ccloud is an open-source web application for browsing data from atmospheric
 profilers. It is comprised of a web application and a backend for importing
 various types of product files.
-<!--You can see an example at [browse.ccplot.org](http://browse.ccplot.org).-->
 
 In the current version, it supports importing two datasets from the
 CALIPSO satellite, but new importing classes can be added as needed.
@@ -15,12 +14,11 @@ You can see an example ccloud application running at
 Installation
 ------------
 
-ccloud can be installed on Linux or Mac OS X.
+ccloud can be installed on Linux and Mac OS X.
 First, make sure you have the following dependencies installed:
 
-  * [gcc](http://gcc.gnu.org/)
-  * [zlib](http://www.zlib.net/)
-  * [libjpeg](http://www.ijg.org/)
+  * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
+  * [HDF-EOS2 library](http://www.hdfeos.org/software/library.php#HDF-EOS2)
   * [SQLite](http://www.sqlite.org/)
   * [Python](http://www.python.org) >= 2.6 and < 3.0 (incl. dev files)
   * [pytz](http://pytz.sourceforge.net/)
@@ -31,11 +29,13 @@ First, make sure you have the following dependencies installed:
   * [Cython](http://www.cython.org/)
   * [Suds](https://fedorahosted.org/suds/)
   * [Shapely](http://pypi.python.org/pypi/Shapely/)
-  * [Bottle](http://bottlepy.org/docs/dev/) >= 0.10.11 (`pip install bottle`)
+  * [Bottle](http://bottlepy.org/docs/dev/) >= 0.10.11
   * [bintrees](http://pypi.python.org/pypi/bintrees/)
-    (`pip install bintrees`)
-  * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
-  * [HDF-EOS2 library](http://www.hdfeos.org/software/library.php#HDF-EOS2)
+
+On Ubuntu or Debian, install dependencies with:
+
+    apt-get install libhdf4-0 libhdf4-dev libhdfeos0 libhdfeos-dev sqlite3 python python-tz python-dateutil python-imaging python-numpy python-scipy cython python-suds python-shapely
+    pip install bottle bintrees
 
 To install ccloud, run:
 
