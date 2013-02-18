@@ -62,6 +62,17 @@ setup(
     license = "MIT",
     platforms='any',
     requires=['numpy', 'bottle', 'suds'],
+    classifiers = [
+        "Programming Language :: Python",
+        "Programming Language :: Cython",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: POSIX",
+        "Development Status :: 4 - Beta",
+        "Environment :: Console",
+        "Environment :: Web Environment",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering :: Atmospheric Science",
+    ],
     package_dir={'': 'src'},
     packages=[
         'ccloud',
