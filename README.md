@@ -34,7 +34,10 @@ First, make sure you have the following dependencies installed:
 
 On Ubuntu or Debian, install dependencies with:
 
-    apt-get install libhdf4-0 libhdf4-dev libhdfeos0 libhdfeos-dev sqlite3 python python-tz python-dateutil python-imaging python-numpy python-scipy cython python-suds python-shapely
+    apt-get install libhdf4-0 libhdf4-dev libhdfeos0 libhdfeos-dev sqlite3 \
+    python python-tz python-dateutil python-imaging python-numpy python-scipy \
+    cython python-suds python-shapely
+    
     pip install bottle bintrees
 
 To install ccloud, run:
