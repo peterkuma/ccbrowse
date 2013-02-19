@@ -1,82 +1,60 @@
+$header-height: 176px;
+
+
 header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 80px;
-    @include box-shadow(2px 2px 6px black);
     position: relative;
+    /* height: defined in ccloud.scss */
     z-index: 200;
     background-color: #111;
 }
 
 header h1 {
     position: absolute;
-    left: 6px;
-    top: 10px;
-    width: 200px;
-    height: 50px;
+    left: 0.1em;
+    top: 0.2em;
+    width: 3.4em;
+    height: 2em;
     color: transparent;
-    font-size: 32pt;
+    font-size: 260%;
     margin: 0;
     background: inline-image('../img/ccloud.png') no-repeat 14px 18px;
-}
+    background-size: 2.8em;
 
-header h1 sup {
-    color: #ccff99;
-    font-size: 50%;
-    position: relative;
-    top: -8px;
-    left: 5px;
-}
+    sup {
+        color: #ccff99;
+        font-size: 50%;
+        position: relative;
+        top: -0.4em;
+        left: 0.2em;
+    }
 
-header h1 a {
-    display: block;
-    padding: 10px;
-}
+    a {
+        display: block;
+        position: absolute;
+        top: 0.25em;
+        left: 0.22em;
+    }
 
-header h1 a:hover {
-    text-decoration: none;
-}
-
-#source-selection {
-    width: 250px;
-    margin: 0 auto;
-    color: #eee;
-    font-size: 18pt;
-}
-
-#source-selection a {
-    cursor: pointer;
-    display: inline-block;
-    margin: 30px 5px 0 5px;
-    padding: 2px 8px;
-    border-radius: 2px;
-}
-
-#source-selection a.active {
-    background-color: #0197fd;
-    color: black;
+    a:hover {
+        text-decoration: none;
+    }
 }
 
 #toolbox {
     position: absolute;
-    right: 5px;
-    bottom: 0;
+    right: 0.1em;
+    top: 0.2em;
     color: #eee;
     font-size: 165%;
-}
 
-.github-ribbon + #toolbox {
-    right: 100px;
-}
+    a {
+        display: block;
+        margin: 0.5em;
+        padding: 0.4em 0.5em 0.4em 1.8em;
+    }
 
-#toolbox a {
-    cursor: pointer;
-    display: block;
-    margin: 10px;
-    padding: 10px 20px 10px 50px;
-}
-
-#toolbox a[href="/about/"] {
-    background: inline-image('../img/about.png') no-repeat 20px center;
+    a[href="/about/"] {
+        background: inline-image('../img/about.png') no-repeat 0.6em center;
+        background-size: 0.8em;
+    }
 }

@@ -76,10 +76,8 @@ var NavigationView = new Class({
         var w = 0;
         
         for (var y = y1; y <= y2; y++) {
-            label = document.createElement('span');
-            label.addClass('nav-label');
+            label = document.createElement('div');
             label.addClass('nav-year');
-            label.addClass('nav-capital');
             label.set('text', y);
             label.store('year', y);
             new Tooltip(label);
