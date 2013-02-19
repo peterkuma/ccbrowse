@@ -8,6 +8,7 @@
 @import "map.scss";
 @import "colormap.scss";
 @import "location-bar.scss";
+@import "tooltip.scss";
 @import "page.scss";
 
 body {
@@ -41,16 +42,4 @@ a:hover {
     right: 0;
     bottom: 0;
     text-align: center;
-}
-
-.tooltip {
-    position: absolute;
-    font-family: helvetica, sans-serif;
-    background-color: rgba(0,0,0,0.8);
-    color: white;
-    padding: 2px 5px;
-    font-size: 80%;
-    border: 1px solid black;
-    z-index: 500;
-    border-radius: 2px;
 }
