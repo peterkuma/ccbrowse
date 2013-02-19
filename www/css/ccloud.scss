@@ -1,3 +1,6 @@
+@import url(http://fonts.googleapis.com/css?family=Asap:400,700);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
+
 @import "compass/css3";
 
 @import "header.scss";
@@ -6,9 +9,6 @@
 @import "colormap.scss";
 @import "location-bar.scss";
 @import "page.scss";
-
-@import url(http://fonts.googleapis.com/css?family=Asap:400,700);
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
 
 body {
     margin: 0;
