@@ -76,7 +76,7 @@
     color: white;
     padding: 2px 4px;
     @include box-shadow(none);
-    font-size: 8pt;
+    font-size: 70%;
     font-family: Tahoma, sans-serif;
     border-radius: 0;
     border: none;
@@ -148,7 +148,7 @@
 
 .leaflet-popup-content {
     color: white;
-    font-size: 12pt;
+    font-size: inherit;
     font-family: inherit;
     margin: 5px 10px;
     @include box-shadow(2px 2px 6px black);
@@ -191,7 +191,7 @@
 }
 
 #layer-control .label {
-    font-size: 16pt;
+    font-size: 150%;
     margin: 0 10px 10px 10px;
 }
 
@@ -258,7 +258,6 @@
     z-index: 80;
     text-align: center;
     padding: 16px 14px 8px 14px;
-    font-size: 12pt;
     font-weight: bold;
     @include box-shadow(0 0 10px rgba(0,0,0,0.8));
     text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
@@ -280,6 +279,7 @@
 }
 
 .keyboard-legend {
+    font-size: 70%;
     position: absolute;
     bottom: 4px;
     left: 4px;
