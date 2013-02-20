@@ -98,8 +98,8 @@ var Navigation = new Class({
     },
     
     isAvailableYear: function(year) {
-        return this.isAvailable(new UTCDate(year, 1, 1),
-                                new UTCDate(year, 1, 1).increment('year', 1));
+        return this.isAvailable(new UTCDate(year, 0, 1),
+                                new UTCDate(year, 0, 1).increment('year', 1));
     },
     
     isAvailableMonth: function(year, month) {
