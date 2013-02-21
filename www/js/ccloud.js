@@ -80,7 +80,6 @@ var CCloud = new Class({
                 this.colormap = new Colormap($('colormap'), this.nav.getLayer().colormap);
             if (this.nav.getCurrent().diff(this.profile.origin[0], 'ms') == 0)
             {
-                console.log('here');
                 this.nav.setCurrent(this.smartCurrent(this.nav.getAvailability()));
             }
         }.bind(this));
@@ -119,7 +118,6 @@ var CCloud = new Class({
         var hour = 3600*1000/width;
         var lower = Math.max(latest[0], latest[1] - hour);
         var upper = latest[1];
-        console.log((upper+lower)*0.5);
         var date = new Date(this.profile.origin[0]);
         return date.increment('ms', (upper+lower)*0.5*width);
     },
