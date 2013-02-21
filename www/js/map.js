@@ -51,6 +51,18 @@ var Map = new Class({
         });
         this.keyboard.activate();
 
+        this.yaxis = new YAxis($$('#yaxis-container .yaxis')[0], [
+            this.getYRange()[0]/1000,
+            this.getYRange()[1]/1000
+        ]);
+
+        this.map.on('move', function() {
+            this.yaxis.setDomain([
+                this.getYRange()[0]/1000,
+                this.getYRange()[1]/1000
+            ]);
+        }.bind(this));
+
         /*
         this.locationLayer = new LocationLayer({
             tileSize: 256,
@@ -102,9 +114,23 @@ var Map = new Class({
     },
     */
     
+    getYRange: function() {
+        return [
+            this.map.getBounds().getSouthWest().lat,
+            this.map.getBounds().getNorthWest().lat
+        ];
+    },
+
+    getXRange: function() {
+        return [
+            this.map.getBounds().getSouthWest().lng,
+            this.map.getBounds().getSouthEast().lng
+        ];
+    },
+
     update: function() {
-        var start = (new Date(this.profile.origin[0])).increment('ms', this.map.getBounds().getSouthWest().lng);
-        var end = (new Date(this.profile.origin[0])).increment('ms', this.map.getBounds().getSouthEast().lng);
+        var start = (new Date(this.profile.origin[0])).increment('ms', this.getXRange()[0]);
+        var end = (new Date(this.profile.origin[0])).increment('ms', this.getXRange()[1]);
         if (!this.nav.isAvailable(start, end)) {
             this.app.showError('No data available here', true);
         } else {

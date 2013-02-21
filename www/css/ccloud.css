@@ -594,6 +594,34 @@ header h1 {
   margin-bottom: 10px;
   font-size: 16pt; }
 
+#yaxis-container {
+  width: 50px;
+  height: 100%;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAAICAYAAABkkNZlAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALQgAAC0IBZOgrXwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAA7SURBVDiNY2RgYHBgYGD4x8DA8JdCGq+a/////2MgEzCRq5GeYNSR1ALUcCQjFczAC0ZMSNIcDAlHAgCeSB0OQtLXGgAAAABJRU5ErkJggg==') repeat-y;
+  text-shadow: 2px 2px 0 black;
+  color: white;
+  font-weight: bold;
+  position: absolute;
+  z-index: 100; }
+
+.yaxis {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; }
+  .yaxis .label {
+    position: absolute;
+    left: 0;
+    padding-left: 0.7em; }
+  .yaxis .tick {
+    position: absolute;
+    left: 0;
+    height: 1px;
+    width: 0.3em;
+    background: rgba(255, 255, 255, 0.8); }
+  .yaxis .tick.minor {
+    width: 0.2em; }
+
 body {
   margin: 0;
   background: #333;
