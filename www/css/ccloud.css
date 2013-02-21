@@ -595,9 +595,10 @@ header h1 {
   font-size: 16pt; }
 
 #yaxis-container {
-  width: 50px;
+  width: 3em;
   height: 100%;
   background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAAICAYAAABkkNZlAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALQgAAC0IBZOgrXwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAA7SURBVDiNY2RgYHBgYGD4x8DA8JdCGq+a/////2MgEzCRq5GeYNSR1ALUcCQjFczAC0ZMSNIcDAlHAgCeSB0OQtLXGgAAAABJRU5ErkJggg==') repeat-y;
+  background-size: 2em;
   text-shadow: 2px 2px 0 black;
   color: white;
   font-weight: bold;
