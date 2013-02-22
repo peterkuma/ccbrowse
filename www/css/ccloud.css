@@ -603,7 +603,8 @@ header h1 {
   color: white;
   font-weight: bold;
   position: absolute;
-  z-index: 100; }
+  z-index: 100;
+  opacity: 0.9; }
 
 .yaxis {
   position: relative;
@@ -619,7 +620,8 @@ header h1 {
     left: 0;
     height: 1px;
     width: 0.3em;
-    background: rgba(255, 255, 255, 0.8); }
+    background: white;
+    border-bottom: 2px solid black; }
   .yaxis .tick.minor {
     width: 0.2em; }
 

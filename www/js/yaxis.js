@@ -36,6 +36,8 @@ var YAxis = new Class({
             .append('div')
             .attr('class', 'tick');
 
-        tick.style('bottom', function(d) { return scale(d) + 'px'; });
+        tick.style('bottom', function(d) {
+            return (scale(d) - 3) + 'px';
+        });
     }
 });
