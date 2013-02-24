@@ -1,60 +1,53 @@
 $header-height: 176px;
 
-
 header {
     position: relative;
     /* height: defined in ccloud.scss */
     z-index: 200;
     background-color: #111;
-}
 
-header h1 {
-    position: absolute;
-    left: 0.1em;
-    top: 0.2em;
-    width: 3.4em;
-    height: 2em;
-    color: transparent;
-    font-size: 260%;
-    margin: 0;
-    background: inline-image('../img/ccloud.png') no-repeat 14px 18px;
-    background-size: 2.8em;
+    heading {
+        h1 {
+            float: left;
+            font-size: 200%;
+            font-weight: bold;
+            color: #eee;
+            margin: 0.2em;
 
-    sup {
-        color: #ccff99;
-        font-size: 50%;
-        position: relative;
-        top: -0.4em;
-        left: 0.2em;
+            a {
+                display: block;
+                padding: 0.1em 0.2em;
+
+                &:hover {
+                    text-decoration: none;
+                }
+            }
+        }
+
+        h2 {
+            display: inline-block;
+            line-height: 2.2em;
+            font-size: 100%;
+            font-weight: bold;
+            color: #ddd;
+            margin-left: 0.2em;
+        }
     }
 
-    a {
-        display: block;
-        position: absolute;
-        top: 0.25em;
-        left: 0.22em;
-    }
+    #toolbox {
+        float: right;
+        color: #eee;
+        font-size: 140%;
 
-    a:hover {
-        text-decoration: none;
-    }
-}
+        a {
+            display: block;
+            margin: 0.5em;
+            padding: 0.4em 0.5em 0.4em 1.8em;
+        }
 
-#toolbox {
-    position: absolute;
-    right: 0.1em;
-    top: 0.2em;
-    color: #eee;
-    font-size: 165%;
-
-    a {
-        display: block;
-        margin: 0.5em;
-        padding: 0.4em 0.5em 0.4em 1.8em;
-    }
-
-    a[href="/about/"] {
-        background: inline-image('../img/about.png') no-repeat 0.6em center;
-        background-size: 0.8em;
+        a[href="/about/"] {
+            background: inline-image('../img/about.png') no-repeat 0.6em center;
+            background-size: 0.8em;
+        }
     }
 }
