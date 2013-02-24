@@ -650,20 +650,20 @@ a:hover:before {
     font-size: 10pt; }
 
   header {
-    height: 145px; }
+    height: 125px; }
 
   .context {
-    top: 145px; } }
+    top: 125px; } }
 /* Small screen. */
 @media screen and (max-width: 1024px) {
   body {
     font-size: 8pt; }
 
   header {
-    height: 120px; }
+    height: 100px; }
 
   .context {
-    top: 120px; } }
+    top: 100px; } }
 /* Large screen. */
 @media screen and (min-width: 1200px) {
   body {
