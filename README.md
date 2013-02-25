@@ -21,12 +21,12 @@ First, make sure you have the following dependencies installed:
   * [HDF-EOS2 library](http://www.hdfeos.org/software/library.php#HDF-EOS2)
   * [SQLite](http://www.sqlite.org/)
   * [Python](http://www.python.org) >= 2.6 and < 3.0 (incl. dev files)
+  * [Cython](http://www.cython.org/)
   * [pytz](http://pytz.sourceforge.net/)
   * [python-dateutil](http://labix.org/python-dateutil)
   * [PIL](http://www.pythonware.com/products/pil/)
   * [numpy](http://numpy.scipy.org/)
   * [scipy](http://www.scipy.org/)
-  * [Cython](http://www.cython.org/)
   * [Suds](https://fedorahosted.org/suds/)
   * [Shapely](http://pypi.python.org/pypi/Shapely/)
   * [Bottle](http://bottlepy.org/docs/dev/) >= 0.10.11
@@ -35,8 +35,8 @@ First, make sure you have the following dependencies installed:
 On Ubuntu or Debian, install dependencies with:
 
     apt-get install libhdf4-0 libhdf4-dev libhdfeos0 libhdfeos-dev sqlite3 \
-    python python-tz python-dateutil python-imaging python-numpy python-scipy \
-    cython python-suds python-shapely
+    python python-dev cython python-tz python-dateutil python-imaging \
+    python-numpy python-scipy python-suds python-shapely python-pip
     
     pip install bottle bintrees
 
