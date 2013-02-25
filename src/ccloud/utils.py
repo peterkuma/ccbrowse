@@ -82,7 +82,7 @@ def pngpack(data):
 
 def pngunpack(raw_data):
     buf = io.BytesIO()
-    buf.write(raw_data)
+    buf.write(bytes(raw_data))
     buf.seek(0)
     im = Image.open(buf)
     typ = im.info.get('type', 'float32')

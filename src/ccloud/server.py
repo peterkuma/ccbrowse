@@ -275,7 +275,7 @@ def serve_tile(obj):
         if o != None and o['modified'] >= obj['modified']:
             #print 'Cache hit'
             buf = io.BytesIO()
-            buf.write(o['raw_data'])
+            buf.write(bytes(o['raw_data']))
             bottle.response.content_type = 'image/png'
             return buf.getvalue()
     
@@ -336,4 +336,3 @@ if __name__ == "__main__":
     program_name = sys.argv[0]
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     os.setpgrp()
-    
