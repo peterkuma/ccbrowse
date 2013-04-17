@@ -1,7 +1,7 @@
-This is a ccloud repository.
+This is a ccbrowse repository.
 
-CCloud is an application for visualizing data from atmospheric profilers.
-See https://github.com/peterkuma/ccloud/ for more information.
+ccbrowse is an application for visualizing data from atmospheric profilers.
+See https://github.com/peterkuma/ccbrowse/ for more information.
 
 Contents:
 
@@ -13,5 +13,5 @@ Contents:
     profile.json        profile specification
     wsgi.py             WSGI module
 
-Try `ccloud --help' for a list of commands that can be performed
+Try `ccbrowse --help' for a list of commands that can be performed
 on the repository.

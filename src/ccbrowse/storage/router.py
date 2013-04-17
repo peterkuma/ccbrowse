@@ -1,4 +1,4 @@
-from ccloud.storage import *
+from ccbrowse.storage import *
 import copy
 import repr as reprlib
 

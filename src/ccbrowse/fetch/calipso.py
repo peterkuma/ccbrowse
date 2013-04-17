@@ -8,13 +8,13 @@ import subprocess
 import urllib2
 from contextlib import closing
 
-from ccloud import utils
+from ccbrowse import utils
 
 logging.getLogger('suds.client').setLevel(logging.CRITICAL)
 
 
 class Calipso(object):
-    CLIENT_ID = 'ccloud'
+    CLIENT_ID = 'ccbrowse'
     AUTHENTICATION_SERVICE = 'http://api.echo.nasa.gov/echo-wsdl/v10/AuthenticationService.wsdl'
     USER_SERVICE = 'http://api.echo.nasa.gov/echo-wsdl/v10/UserService.wsdl'
     CATALOG_SERVICE = 'http://api.echo.nasa.gov/echo-wsdl/v10/CatalogService.wsdl'

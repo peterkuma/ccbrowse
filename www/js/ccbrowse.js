@@ -1,7 +1,7 @@
 /*
- * ccloud.js - CCloud class.
+ * ccbrowse.js - CCBrowse class.
  *
- * The CCloud class is the application class. It is created on DOMContentLoaded,
+ * The CCBrowse class is the application class. It is created on DOMContentLoaded,
  * and initializes other classes.
  *
  * The code loosesly follows the MVC paradigm:
@@ -27,7 +27,7 @@
  * which are part of this project.
  */
 
-var CCloud = new Class({
+var CCBrowse = new Class({
     initialize: function(url) {
         this.error = document.querySelector('.error');
         this.note = document.querySelector('.note');
@@ -70,7 +70,7 @@ var CCloud = new Class({
         
         this.nav.on('change', function() {
             window.history.pushState({}, '', '/'+document.location.hash);
-            document.title = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M') + ' ‧ CCloud';
+            document.title = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M') + ' ‧ CCBrowse';
             this.route();
         }.bind(this));
         
@@ -176,5 +176,5 @@ var CCloud = new Class({
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    var ccloud = new CCloud('/profile.json');
+    var ccbrowse = new CCBrowse('/profile.json');
 });

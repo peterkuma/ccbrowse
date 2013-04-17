@@ -15,7 +15,7 @@
    version="1.1"
    inkscape:version="0.47 r22583"
    sodipodi:docname="over.svg"
-   inkscape:export-filename="/mnt/data1/www/ccloud/www/img/under.png"
+   inkscape:export-filename="/mnt/data1/www/ccbrowse/www/img/under.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -404,7 +404,7 @@
        style="color:#000000;fill:#111111;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="m 601.17753,265.93233 0,25 10,-25 -10,0 z m 10,0 10,25 0,-25 -10,0 z"
        id="rect7870"
-       inkscape:export-filename="/mnt/data1/www/ccloud/www/img/over.png"
+       inkscape:export-filename="/mnt/data1/www/ccbrowse/www/img/over.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
   </g>

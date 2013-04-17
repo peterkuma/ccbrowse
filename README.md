@@ -1,20 +1,20 @@
-ccloud
+ccbrowse
 ======
 
-ccloud is an open-source web application for browsing data from atmospheric
+ccbrowse is an open-source web application for browsing data from atmospheric
 profilers. It is comprised of a web application and a backend for importing
 various types of product files.
 
 In the current version, it supports importing two datasets from the
 CALIPSO satellite, but new importing classes can be added as needed.
 
-You can see an example ccloud application running at
+You can see an example ccbrowse application running at
 [browse.ccplot.org](http://browse.ccplot.org).
 
 Installation
 ------------
 
-ccloud can be installed on Linux and Mac OS X.
+ccbrowse can be installed on Linux and Mac OS X.
 First, make sure you have the following dependencies installed:
 
   * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
@@ -40,7 +40,7 @@ On Ubuntu or Debian, install dependencies with:
     
     pip install bottle bintrees
 
-To install ccloud, run:
+To install ccbrowse, run:
 
     python setup.py install
 
@@ -49,13 +49,13 @@ Getting started
 
 Begin with creating a new repository:
 
-    ccloud create ccloud
-    cd ccloud
+    ccbrowse create ccbrowse
+    cd ccbrowse
 
 This will create a directory containing the profile specification
 and directories where layers and cache will be stored.
 
-Because ccloud does not come with any data in the distribution,
+Because ccbrowse does not come with any data in the distribution,
 you first have to import some. [Create a new account](https://reverb.echo.nasa.gov/reverb/users/new)
 on the NASA ECHO service.
 Open `config.json`, and enter login details for the account you just created
@@ -70,7 +70,7 @@ under `echo` in `providers`:
 
 In order to import data, run:
 
-    ccloud get calipso "2012-01-01 12:00" "2012-01-01 12:30"
+    ccbrowse get calipso "2012-01-01 12:00" "2012-01-01 12:30"
 
 The command will connect the ECHO service, and download
 product files in the specified time interval. When done,
@@ -78,11 +78,11 @@ the files will be processed into tiles and imported into the repository.
 
 Finally, run the server with:
 
-    ccloud server
+    ccbrowse server
     
 Now, open [http://localhost:8080/](http://localhost:8080/) in your browser. That's it!
 
-If you encounter any issues, [file a bug report](https://github.com/peterkuma/ccloud/issues)
+If you encounter any issues, [file a bug report](https://github.com/peterkuma/ccbrowse/issues)
 or post to the [mailing list](mailto:ccplot-general@lists.sourceforge.net).
 
 Server options
@@ -91,11 +91,11 @@ Server options
 By default, the server listens on localhost:8080 for incoming HTTP connections,
 but you can change that by supplying an address and port as an argument, e.g.:
 
-    ccloud server 192.168.0.1:8000
+    ccbrowse server 192.168.0.1:8000
 
 To enable debugging mode, use the -d switch:
 
-    ccloud server -d
+    ccbrowse server -d
     
 This will cause the server to respond with detailed messages should an
 error occur.
@@ -103,29 +103,29 @@ error occur.
 Importing data
 --------------
 
-The command `ccloud get` actually performs two steps: product fetching
+The command `ccbrowse get` actually performs two steps: product fetching
 and importing. If you already have product files available locally,
 you can import them with:
 
-    ccloud import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
+    ccbrowse import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
 
 Similarly, if you want to fetch product files without importing, run:
 
-    cccloud fetch calipso "2012-01-01 12:00" "2012-01-01 12:30"
+    cccbrowse fetch calipso "2012-01-01 12:00" "2012-01-01 12:30"
 
 The product files will be saved under the `products/calipso` directory inside
 the repository.
 
 You can choose to import only a certain layer or zoom level with `-l` and `-z`.
 
-    ccloud import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
+    ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
     
 would generate tiles for the layer calipso532 and zoom level 2.
 
 Deployment
 ----------
 
-The standard server supplied with ccloud is only suitable for small-scale
+The standard server supplied with ccbrowse is only suitable for small-scale
 deployment, as it is single-threaded. For production use, it is recommended
 to use one of the more robust WSGI servers, such as
 [gunicorn](http://gunicorn.org/). For that purpose, the repository
@@ -136,10 +136,10 @@ You can instruct gunicorn to run 4 application workers with:
 
 Some operating systems such as Debian support placing the gunicorn configuration
 in `/etc/gunicorn.d/`, so that it runs automatically on system startup.
-Create a file `/etc/gunicorn.d/ccloud`:
+Create a file `/etc/gunicorn.d/ccbrowse`:
 
     CONFIG = {
-        'working_dir': '/path/to/ccloud/',
+        'working_dir': '/path/to/ccbrowse/',
         'python': '/usr/bin/python',
         'args': (
             '--log-level=DEBUG',
@@ -152,15 +152,15 @@ Create a file `/etc/gunicorn.d/ccloud`:
         ),
     }
 
-replacing path to the ccloud repository and username. In order to
-make ccloud available on a public domain, you can deploy an HTTP server such as
+replacing path to the ccbrowse repository and username. In order to
+make ccbrowse available on a public domain, you can deploy an HTTP server such as
 [nginx](http://nginx.org/), and use this example virtual server configuration:
 
     server {
             listen 80;
             listen [::]:80 default ipv6only=on;
             server_name your.domain;
-            access_log  /var/log/nginx/ccloud.access.log;
+            access_log  /var/log/nginx/ccbrowse.access.log;
     
             location / {
                     proxy_pass http://localhost:8080;
@@ -175,11 +175,11 @@ replacing `your.domain` with the desired domain name.
 Repository
 ----------
 
-The ccloud repository is a directory that holds imported tiles, cache
+The ccbrowse repository is a directory that holds imported tiles, cache
 and downloaded product files. Additionally, it contains information
 necessary for performing operations on the repository,
 such as the configuration file and profile specification. Here is a
-list of files in a typical ccloud repository:
+list of files in a typical ccbrowse repository:
 
     cache               tile cache
     colormaps           custom colormaps
@@ -369,19 +369,19 @@ You can safely change `name`, `prefix`, layer `title`, `units`, and
 `colormap`.
 
 If you were to add a new layer to the profile specification,
-it would not become supported by ccloud without additional effort.
+it would not become supported by ccbrowse without additional effort.
 The web application would display its name in the selection of layers,
 but could not retrieve any data. For that, you have write an import
 class or extend an existing one, which reads the relevant data from product
 files and returns an array of data interpolated on a regular grid of 256x256
 elements for each tile. You can find instructions on how to do that in
-`src/ccloud/ccimport/product.py`, and use the existing import classes
+`src/ccbrowse/ccimport/product.py`, and use the existing import classes
 in the same directory as an example.
 
 Storage
 -------
 
-Internally, ccloud handles tiles as objects, where object
+Internally, ccbrowse handles tiles as objects, where object
 is a simple list of parameters (key-value pairs), e.g.
 
     {
@@ -525,7 +525,7 @@ of the supplied `_id` and `_hash` parameters (respectively).
 Internals
 ---------
 
-ccloud consists of two parts—a backend and a web application.
+ccbrowse consists of two parts—a backend and a web application.
 The backend is responsible for importing product files and serving
 tiles. The interface between the backend and the web application is
 defined by `profile.json`.

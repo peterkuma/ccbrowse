@@ -2,7 +2,7 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
 header {
   position: relative;
-  /* height: defined in ccloud.scss */
+  /* height: defined in ccbrowse.scss */
   z-index: 200;
   background-color: #111; }
   header heading h1 {

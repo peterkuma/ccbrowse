@@ -4,10 +4,10 @@ import numpy as np
 import scipy.optimize
 import math
 
-import ccloud
-from ccloud.hdfeos import HDFEOS
-from ccloud.algorithms import interp2d_12
-import ccloud.utils as utils
+import ccbrowse
+from ccbrowse.hdfeos import HDFEOS
+from ccbrowse.algorithms import interp2d_12
+import ccbrowse.utils as utils
 
 from .product import Product
 
@@ -109,17 +109,17 @@ class CloudSat(Product):
         z2 = z1 + h
         n1 = (t1 - t0)/sampling_interval
         n2 = (t2 - t0)/sampling_interval
-        n1_ = ccloud.utils.coerce(int(math.floor(n1)), n0, nn-1)
-        n2_ = ccloud.utils.coerce(int(math.ceil(n2)+1), n0, nn-1)
+        n1_ = ccbrowse.utils.coerce(int(math.floor(n1)), n0, nn-1)
+        n2_ = ccbrowse.utils.coerce(int(math.ceil(n2)+1), n0, nn-1)
         factor = height.attributes['factor']
         offset = height.attributes['offset']
         height = (height[n1_:n2_,:] - offset)/factor
         height_max = height.max(0)
         height_min = height.min(0)
         m1 = len(height_max) - np.searchsorted(height_max[::-1], z2) - 1
-        m1 = ccloud.utils.coerce(m1, m0, mm-1)
+        m1 = ccbrowse.utils.coerce(m1, m0, mm-1)
         m2 = len(height_min) - np.searchsorted(height_min[::-1], z1) + 1
-        m2 = ccloud.utils.coerce(m2, m0, mm-1)
+        m2 = ccbrowse.utils.coerce(m2, m0, mm-1)
         height = height[:,m1:m2]
         
         # Trajectory - special case.

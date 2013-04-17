@@ -4,10 +4,10 @@
 # inherit from Product.
 # When finished, add handling of the product type to ccimport.
 
-import ccloud
+import ccbrowse
 
 class Product(object):
-    """Import a product file into ccloud profile.
+    """Import a product file into ccbrowse profile.
     
     This is an abstract class. All product importers should inherit from this
     class and implement the following functions:
@@ -47,7 +47,7 @@ class Product(object):
         in the profile and return an instance of tile.
         """
         
-        tile = ccloud.Tile()
+        tile = ccbrowse.Tile()
         tile.level = level
         tile.x = x
         tile.z = z

@@ -17,12 +17,12 @@ def find(prefix, path):
 
 
 data_files = [
-    ('share/doc/ccloud/', ['README.md']),
+    ('share/doc/ccbrowse/', ['README.md']),
 ]
 
-data_files += find('share/ccloud/template/', 'template')
-data_files += find('share/ccloud/www/', 'www')
-data_files += find('share/ccloud/colormaps/', 'colormaps')
+data_files += find('share/ccbrowse/template/', 'template')
+data_files += find('share/ccbrowse/www/', 'www')
+data_files += find('share/ccbrowse/colormaps/', 'colormaps')
 
 
 class build(distutils.command.build.build):
@@ -45,7 +45,7 @@ class build_scss(Command):
         except OSError:
             print >>sys.stderr, 'warning: scss not available, will not rebuild stylesheets'
             return
-        cmd = ['scss', '--compass', '--update', 'ccloud.scss']
+        cmd = ['scss', '--compass', '--update', 'ccbrowse.scss']
         print ' '.join(cmd)
         try:
             call(cmd, cwd='www/css')
@@ -54,11 +54,11 @@ class build_scss(Command):
 
 
 setup(
-    name='ccloud',
+    name='ccbrowse',
     version='0.1',
     author='Peter Kuma',
     author_email='peterkuma@waveland.org',
-    url='https://github.com/peterkuma/ccloud',
+    url='https://github.com/peterkuma/ccbrowse',
     license = "MIT",
     platforms='any',
     requires=['numpy', 'bottle', 'suds'],
@@ -75,16 +75,16 @@ setup(
     ],
     package_dir={'': 'src'},
     packages=[
-        'ccloud',
-        'ccloud.fetch',
-        'ccloud.ccimport',
-        'ccloud.storage'
+        'ccbrowse',
+        'ccbrowse.fetch',
+        'ccbrowse.ccimport',
+        'ccbrowse.storage'
     ],
     scripts=[
         'src/bin/ccfetch',
         'src/bin/ccimport',
         'src/bin/ccinfo',
-        'src/bin/ccloud',
+        'src/bin/ccbrowse',
         'src/bin/ccserver',
         'src/bin/cchtree-clean',
     ],
@@ -94,17 +94,17 @@ setup(
         'build_scss': build_scss,
     },
     ext_modules=[
-        Extension('ccloud.algorithms',
-                  ['src/ccloud/algorithms.pyx'],
+        Extension('ccbrowse.algorithms',
+                  ['src/ccbrowse/algorithms.pyx'],
                   extra_compile_args=['-march=native'],
         ),
-        Extension('ccloud.hdf',
-                  ['src/ccloud/hdf.pyx'],
+        Extension('ccbrowse.hdf',
+                  ['src/ccbrowse/hdf.pyx'],
                   libraries=['mfhdf', 'df', 'jpeg', 'z'],
                   extra_compile_args=['-march=native'],
         ),
-        Extension('ccloud.hdfeos',
-                  ['src/ccloud/hdfeos.pyx'],
+        Extension('ccbrowse.hdfeos',
+                  ['src/ccbrowse/hdfeos.pyx'],
                   libraries=['hdfeos', 'mfhdf', 'df', 'jpeg', 'z'],
                   extra_compile_args=['-I/usr/include/hdf', '-march=native'],
         ),

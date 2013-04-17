@@ -16,8 +16,8 @@ import shapely.geometry
 import socket
 import logging
 
-import ccloud
-from ccloud.config import sharepath
+import ccbrowse
+from ccbrowse.config import sharepath
 
 
 RFC822_TIME = '%a, %d %b %Y %H:%M:%S GMT'
@@ -33,10 +33,10 @@ def init(conf):
     
     bottle.debug(config['debug'])
     
-    profile = ccloud.Profile(config)
+    profile = ccbrowse.Profile(config)
     
-    try: driver = ccloud.storage.DRIVERS[config['cache']['driver']]
-    except KeyError: driver = ccloud.storage.NullDriver
+    try: driver = ccbrowse.storage.DRIVERS[config['cache']['driver']]
+    except KeyError: driver = ccbrowse.storage.NullDriver
     cache = driver(config.get('cache'))
 
 
@@ -192,7 +192,7 @@ def geocoding(zoom, x, z):
 @route('/layers/<layer>/availability.json')
 def availability(layer):
     return json.dumps(profile.get_availability(layer),
-                      cls=ccloud.rangelist.RangeListEncoder)
+                      cls=ccbrowse.rangelist.RangeListEncoder)
 
 
 @route('/layers/<layer>.<fmt>')
@@ -297,7 +297,7 @@ def serve_tile(obj):
     
     m = re.match('colormaps/(.+)', profile['layers'][obj['layer']]['colormap'])
     colormap = profile.colormap(m.group(1))
-    img = Image.fromarray(ccloud.algorithms.colorize(data, colormap))
+    img = Image.fromarray(ccbrowse.algorithms.colorize(data, colormap))
     buf = io.BytesIO()
     img.save(buf, 'png')
     out = buf.getvalue()
@@ -317,7 +317,7 @@ def print_help():
     sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
        {program_name} --help
        
-Run the ccloud HTTP server.
+Run the ccbrowse HTTP server.
 
 Positional arguments:
   HOST              hostname (default: localhost)

@@ -5,11 +5,11 @@ import pytz
 import dateutil
 import os
 
-import ccloud
-import ccloud.config
-from ccloud.storage import MemCacheDriver
-from ccloud.ccimport import PRODUCTS
-from ccloud import utils
+import ccbrowse
+import ccbrowse.config
+from ccbrowse.storage import MemCacheDriver
+from ccbrowse.ccimport import PRODUCTS
+from ccbrowse import utils
 from .rangelist import RangeList, RangeListEncoder
 
 class ProfileJSONDecoder(json.JSONDecoder):
@@ -31,10 +31,10 @@ class ProfileJSONDecoder(json.JSONDecoder):
 
 class Profile(object):
     def __init__(self, config, cache_size=4*1024*1024):
-        self.config = ccloud.config.default_config
+        self.config = ccbrowse.config.default_config
         self.config.update(config)
         
-        self.storage = ccloud.storage.Router(
+        self.storage = ccbrowse.storage.Router(
             self.config['storage'],
             root=self.config['root'],
             on_store=lambda obj: self.serialize(obj),
@@ -222,7 +222,7 @@ class Profile(object):
             with open(filename) as fp:
                 colormap = json.load(fp)
         except IOError:
-            filename = os.path.join(ccloud.config.sharepath, self.config['colormaps'], name)
+            filename = os.path.join(ccbrowse.config.sharepath, self.config['colormaps'], name)
         with open(filename) as fp:
             colormap = json.load(fp)
         return colormap

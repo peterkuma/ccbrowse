@@ -8,8 +8,8 @@ import json
 import functools
 import time
 
-import ccloud
-from ccloud.ccimport import PRODUCTS, Calipso, CloudSat, NaturalEarth
+import ccbrowse
+from ccbrowse.ccimport import PRODUCTS, Calipso, CloudSat, NaturalEarth
 
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
 
@@ -186,7 +186,7 @@ if __name__ == "__main__":
         sys.exit(1)
     
     try:
-        with ccloud.Profile(config, cache_size=0) as profile:
+        with ccbrowse.Profile(config, cache_size=0) as profile:
             for filename in filenames:
                 if file_type == 'calipso':
                     product = Calipso(filename, profile)

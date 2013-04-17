@@ -8,7 +8,7 @@ import subprocess
 import signal
 import logging
 
-from ccloud.config import sharepath
+from ccbrowse.config import sharepath
 
 
 def create(name):
@@ -36,14 +36,14 @@ def print_help():
        {program_name} COMMAND --help
        {program_name} --help
        
-Perform commands on a ccloud repository.
+Perform commands on a ccbrowse repository.
 
 Available commands:
   create        create a new repository
   fetch         fetch product files
   get           fetch and import products
   import        import a product file
-  server        run the ccloud HTTP server
+  server        run the ccbrowse HTTP server
 
 Use `{program_name} COMMAND --help' for more information about a command.
 
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     command = sys.argv[1]
     
     if command != 'create' and not os.path.exists('config.json'):
-        logging.error('This is not a ccloud repository')
+        logging.error('This is not a ccbrowse repository')
         sys.exit(1)
     
     if command == '--help':

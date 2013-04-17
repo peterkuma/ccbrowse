@@ -1,6 +1,6 @@
 import os
 
-sharepath = os.path.join(os.path.dirname(__file__), '../../../../share/ccloud/')
+sharepath = os.path.join(os.path.dirname(__file__), '../../../../share/ccbrowse/')
 
 default_config = {
     'profile': 'profile.json',

@@ -6,8 +6,8 @@ from datetime import datetime
 import json
 import logging
 
-import ccloud
-from ccloud.fetch import Calipso
+import ccbrowse
+from ccbrowse.fetch import Calipso
 
 
 def usage():
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         startdate = None
         stopdate = None
     
-    config = ccloud.config.default_config
+    config = ccbrowse.config.default_config
     
     try:
         with open(filename) as fp:

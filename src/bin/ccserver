@@ -6,7 +6,7 @@ import logging
 import json
 import getopt
 
-import ccloud
+import ccbrowse
 
 def usage():
     sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
@@ -19,7 +19,7 @@ def print_help():
     sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
        {program_name} --help
        
-Run the ccloud HTTP server.
+Run the ccbrowse HTTP server.
 
 Positional arguments:
   HOST              hostname (default: localhost)
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     os.setpgrp()
     
-    config = ccloud.config.default_config
+    config = ccbrowse.config.default_config
     filename = 'config.json'
     debug = False
     
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         logging.error('Invalid port number %s' % args[0][i+1:])
         sys.exit(1)
     
-    try: ccloud.server.run(config)
+    try: ccbrowse.server.run(config)
     except RuntimeError as e:
         logging.error(e)
         sys.exit(1)

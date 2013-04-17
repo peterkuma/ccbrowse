@@ -9,8 +9,8 @@ import logging
 import sqlite3
 import fcntl
 
-import ccloud
-from ccloud import utils
+import ccbrowse
+from ccbrowse import utils
 
 
 terminate = False

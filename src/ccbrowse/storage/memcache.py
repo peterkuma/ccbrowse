@@ -3,7 +3,7 @@ import itertools
 import sys
 
 from .driver import Driver
-from ccloud import utils
+from ccbrowse import utils
 
 class MemCacheDriver(Driver):
     """MemCacheDriver class.

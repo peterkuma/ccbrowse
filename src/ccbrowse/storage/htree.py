@@ -4,7 +4,7 @@ import hashlib
 import subprocess
 import json
 
-from ccloud import utils
+from ccbrowse import utils
 from .driver import Driver
 
 

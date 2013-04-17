@@ -4,10 +4,10 @@ import numpy as np
 import math
 from scipy.interpolate import interp1d
 
-import ccloud
+import ccbrowse
 import calipso_constants
-from ccloud.hdf import HDF
-from ccloud.algorithms import interp2d
+from ccbrowse.hdf import HDF
+from ccbrowse.algorithms import interp2d
 
 from .product import Product
 
@@ -100,12 +100,12 @@ class Calipso(Product):
         z2 = z1 + h
         n1 = (t1 - t0)/sampling_interval
         n2 = (t2 - t0)/sampling_interval
-        n1_ = ccloud.utils.coerce(int(math.floor(n1)), n0, nn-1)
-        n2_ = ccloud.utils.coerce(int(math.ceil(n2)+1), n0, nn-1)
+        n1_ = ccbrowse.utils.coerce(int(math.floor(n1)), n0, nn-1)
+        n2_ = ccbrowse.utils.coerce(int(math.ceil(n2)+1), n0, nn-1)
         m1 = len(height) - np.searchsorted(height[::-1], z2) - 1
-        m1 = ccloud.utils.coerce(m1, m0, mm-1)
+        m1 = ccbrowse.utils.coerce(m1, m0, mm-1)
         m2 = len(height) - np.searchsorted(height[::-1], z1) + 1
-        m2 = ccloud.utils.coerce(m2, m0, mm-1)
+        m2 = ccbrowse.utils.coerce(m2, m0, mm-1)
         
         # Trajectory - special case.
         if layer == 'trajectory':

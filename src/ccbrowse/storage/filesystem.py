@@ -1,6 +1,6 @@
 import os
 
-from ccloud import utils
+from ccbrowse import utils
 from .driver import Driver
 
 class FilesystemDriver(Driver):
