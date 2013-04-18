@@ -70,7 +70,7 @@ var CCBrowse = new Class({
         
         this.nav.on('change', function() {
             window.history.pushState({}, '', '/'+document.location.hash);
-            document.title = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M') + ' ‧ CCBrowse';
+            document.title = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M') + ' ‧ ccbrowse';
             this.route();
         }.bind(this));
         
