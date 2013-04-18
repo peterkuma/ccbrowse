@@ -4,42 +4,36 @@ header {
     z-index: 200;
     background-color: #111;
 
-    heading {
-        h1 {
-            float: left;
+    h1 {
+        float: left;
+        margin-top: 1.1em;
+        margin-left: 0.2em;
+        font-size: 100%;
+
+        a {
+            display: block;
             font-size: 200%;
-            font-weight: bold;
-            color: #eee;
-            margin: 0.2em;
+            font-weight: normal;
+            color: transparent;
+            padding: 0.1em 0.2em;
+            background: inline-image('../img/ccbrowse.png') no-repeat center center;
+            background-size: 4em;
 
-            a {
-                display: block;
-                padding: 0.1em 0.2em;
-
-                &:hover {
-                    text-decoration: none;
-                }
+            &:hover {
+                text-decoration: none;
             }
-        }
-
-        h2 {
-            display: inline-block;
-            line-height: 2.2em;
-            font-size: 100%;
-            font-weight: bold;
-            color: #ddd;
-            margin-left: 0.2em;
         }
     }
 
     #toolbox {
         float: right;
         color: #eee;
-        font-size: 140%;
+        margin-top: 1em;
+        margin-right: 0.5em;
 
         a {
             display: block;
-            margin: 0.5em;
+            font-size: 160%;
             padding: 0.4em 0.5em 0.4em 1.8em;
         }
 
