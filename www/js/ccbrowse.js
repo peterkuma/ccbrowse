@@ -89,7 +89,8 @@ var CCBrowse = new Class({
         }.bind(this));
         
         var layerControl = new LayerControl($('layer-control'), this.nav);
-        this.navView = new NavigationView($('nav'), this.nav);
+        this.navPanel = new NavigationPanel('nav .panel', this.nav);
+        this.navProgress = new NavigationProgress('nav .progress', this.nav);
         this.map = new Map($('map'), this.nav, this);
         this.map.on('error', this.onError.bind(this));
         $('map').focus();

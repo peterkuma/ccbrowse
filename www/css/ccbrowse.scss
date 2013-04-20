@@ -50,20 +50,20 @@ a:hover:before {
 /* Standard screen. */
 @media screen {
     body { font-size: 10pt; }
-    header { height: 130px; }
-    .context { top: 130px; }
+    header { height: 125px; }
+    .context { top: 125px; }
 }
 
 /* Small screen. */
 @media screen and (max-width: 1024px) {
     body { font-size: 8pt; }
-    header { height: 110px; }
-    .context { top: 110px; }
+    header { height: 105px; }
+    .context { top: 105px; }
 }
 
 /* Large screen. */
 @media screen and (min-width: 1200px) {
     body { font-size: 12pt; }
-    header { height: 160px; }
-    .context { top: 160px; }
+    header { height: 150px; }
+    .context { top: 150px; }
 }

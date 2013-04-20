@@ -1,138 +1,142 @@
-#nav {
+nav {
     position: absolute;
     width: 100%;
     bottom: 0;
     font-size: 120%;
     color: #eee;
-    z-index: 100;
     background: #333;
+    padding-top: 0.5em;
     @include box-shadow(inset 2px 2px 6px black);
-}
 
-.nav-panel {
-    margin: 0.6em 0;
-}
+    .years {
+        .year-group {
+            float: left;
+            white-space: nowrap;
 
-.nav-slider {
-    position: relative;
-    margin: 0.4em 0.5em;
-    height: 1.4em;
-    clear: both;
-}
+            .year {
+                display: inline-block;
+                border-left: 1px solid #888;
+                cursor: pointer;
+                font-size: 120%;
+                line-height: 1.2em;
+                color: white;
+                padding: 0 0.3em;
+                margin: 0.1em 0em 0.1em 0.1em;
+                border-radius: 2px;
 
-.nav-year {
-    float: left;
-    height: 100%;
-    cursor: pointer;
-    font-size: 120%;
-    line-height: 1.2em;
-    color: white;
-    border-left: 1px solid #888;
-    padding: 0 0.6em;
+                &.disabled {
+                    cursor: auto;
+                    color: #777;
+                }
+            }
 
-    &:first-child {
-        border-left: none;
-        padding-left: 0.3em;
+            .months {
+                display: inline-block;
+                vertical-align: top;
+                overflow: hidden;
+                white-space: nowrap;
+
+                .month {
+                    display: inline-block;
+                    cursor: pointer;
+                    margin: 0.16em 0.1em;
+                    border-radius: 2px;
+                    padding: 0.1em 0.3em;
+
+                    &.selected {
+                        background-color: #0197fd;
+                        color: black;
+                    }
+
+                    &.disabled {
+                        cursor: auto;
+                        color: #777;
+                    }
+                }
+            }
+
+            &:first-child {
+                .year {
+                    border-left: none;
+                }
+            }
+        }
     }
-}
 
-.nav-months {
-    display: block;
-    height: 100% !important;
-    overflow: hidden;
-    float: left;
-    margin-left: -0.3em;
-    margin-right: 0.3em;
-}
+    .days {
+        clear: both;
+        white-space: nowrap;
 
-.nav-label {
-    display: block;
-    height: 100%;
-    line-height: 1.5em;
-    float: left;
-    margin: 0 0.1em;
-    padding: 0 0.4em;
-    text-decoration: inherit;
-    color: inherit;
-    border-radius: 2px;
-}
+        .day {
+            display: inline-block;
+            cursor: pointer;
+            border-radius: 2px;
+            padding: 0.1em 0.3em;
+            margin: 0.1em;
 
-.nav-label:focus {
-    outline: none;
-    color: #0197fd;
-    text-decoration: underline;
-}
+            &.selected {
+                background-color: #0197fd;
+                color: black;
+            }
 
-.nav-label.nav-active:focus {
-    color: black;
-}
+            &.disabled {
+                cursor: auto;
+                color: #777;
+            }
+        }
+    }
 
-.nav-label:hover {
-    text-decoration: underline;
-}
+    .progress {
+        margin-top: 0.3em;
+        height: 8px;
+        width: 100%;
+        background: black inline-image('../img/progress-unavailable.png') repeat-x;
+        border-top: 1px solid #555;
+        border-bottom: 1px solid #555;
+        position: relative;
+        cursor: pointer;
+        @include box-shadow(0 0 10px rgba(0,0,0,0.5));
 
-.nav-unavailable {
-    color: #777;
-}
+        .indicator {
+            z-index: 1;
+            position: absolute;
+            left: 0;
+            height: 100%;
+            background: #0197fd;
+            width: 0;
+            background: inline-image('../img/progress.png') repeat-x;
+            border-top: 1px solid #555;
+            border-bottom: 1px solid #555;
+            margin-top: -1px;
+        }
 
-.nav-active {
-    background-color: #0197fd;
-    color: black;
-}
+        .thumb {
+            z-index: 1;
+            width: 20px;
+            height: 20px;
+            background: inline-image('../img/thumb.png') no-repeat;
+            position: absolute;
+            margin-left: -10px;
+            margin-top: -6px;
+        }
 
-.nav-progress {
-    height: 8px;
-    width: 100%;
-    background: black inline-image('../img/progress-unavailable.png') repeat-x;
-    border-top: 1px solid #555;
-    border-bottom: 1px solid #555;
-    position: relative;
-    cursor: pointer;
-    @include box-shadow(0 0 10px rgba(0,0,0,0.5));
-}
+        .tooltip {
+            font-family: helvetica, sans-serif;
+            font-size: 74%;
+            z-index: 2;
+            position: absolute;
+            margin-top: 20px;
+            padding: 5px 7px;
+            text-align: center;
+            background: black;
+            border-radius: 4px;
+        }
 
-.nav-pointer {
-    width: 21px;
-    margin-top: -5px;
-    margin-left: -10px;
-    height: 20px;
-    position: absolute;
-}
-
-.nav-availability {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.nav-availability > div {
-    position: absolute;
-    background: inline-image('../img/progress-available.png') repeat-x;
-    border: 1px solid #66fc43;
-    margin-top: -1px;
-    height: 100%;
-}
-
-.nav-progressed {
-    position: absolute;
-    left: 0;
-    height: 100%;
-    background: #0197fd;
-    width: 0;
-    background: inline-image('../img/progress.png') repeat-x;
-    border-top: 1px solid #555;
-    border-bottom: 1px solid #555;
-    margin-top: -1px;
-}
-
-.nav-thumb {
-    width: 20px;
-    height: 20px;
-    background: inline-image('../img/thumb.png') no-repeat;
-    position: absolute;
-    margin-left: -10px;
-    margin-top: -6px;
+        .availability {
+            position: absolute;
+            background: inline-image('../img/progress-available.png') repeat-x;
+            border: 1px solid #66fc43;
+            height: 6px;
+        }
+    }
 }
