@@ -31,9 +31,9 @@ var CCBrowse = new Class({
     initialize: function(url) {
         this.error = document.querySelector('.error');
         this.note = document.querySelector('.note');
-        
+
         window.addEventListener('popstate', this.route.bind(this));
-        
+
         // Initialize toolbox.
         $$('#toolbox a').each(function(link) {
             link.onclick = function(evt) {
@@ -42,7 +42,7 @@ var CCBrowse = new Class({
                 evt.preventDefault();
             }.bind(this);
         }.bind(this));
-        
+
         // Fetch profile specification and call init().
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -58,22 +58,22 @@ var CCBrowse = new Class({
         xhr.open('GET', url);
         xhr.send();
     },
-    
+
     init: function(json) {
         this.profile = json;
         this.profile.origin[0] = new Date.parse(this.profile.origin[0] + ' +0000');
-        
+
         this.nav = new Navigation(this.profile);
         this.nav.setLayer('calipso532');
         this.nav.setZoom(2);
         this.nav.setCurrent(this.profile.origin[0]);
-        
+
         this.nav.on('change', function() {
             window.history.pushState({}, '', '/'+document.location.hash);
             document.title = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M') + ' ‧ ccbrowse';
             this.route();
         }.bind(this));
-        
+
         this.nav.on('layerchange', function() {
             var layer = this.nav.getLayer();
             if (layer.colormap.colors)
@@ -83,28 +83,28 @@ var CCBrowse = new Class({
                 this.nav.setCurrent(this.smartCurrent(this.nav.getAvailability()));
             }
         }.bind(this));
-        
+
         window.addEventListener('resize', function() {
             this.colormap = new Colormap($('colormap'), this.nav.getLayer().colormap);
         }.bind(this));
-        
+
         var layerControl = new LayerControl($('layer-control'), this.nav);
         this.navPanel = new NavigationPanel('nav .panel', this.nav);
         this.navProgress = new NavigationProgress('nav .progress', this.nav);
         this.map = new Map($('map'), this.nav, this);
         this.map.on('error', this.onError.bind(this));
         $('map').focus();
-        
+
         this.locationBar = new LocationBar($('location-bar'), this.map.map, this.profile);
-       
+
         // Add tooltips.
         Array.prototype.forEach.call(document.querySelectorAll('[title]'), function(e) {
             new Tooltip(e);
         });
-        
+
         this.showNote('Double-click to read off values');
     },
-    
+
     smartCurrent: function(availability) {
         var latest = null;
         var max = 0;
@@ -122,12 +122,12 @@ var CCBrowse = new Class({
         var date = new Date(this.profile.origin[0]);
         return date.increment('ms', (upper+lower)*0.5*width);
     },
-    
+
     context: function(name) {
         $$('.context').setStyle('display', 'none');
         $$('.context.'+name).setStyle('display', 'block');
     },
-    
+
     page: function(path) {
         var page = document.querySelector('.page');
         page.set('load', {
@@ -135,18 +135,18 @@ var CCBrowse = new Class({
         });
         page.load(path);
     },
-    
+
     route: function() {
         if (document.location.pathname == '/about/')
             this.page('/about.html');
         else
             this.context('map');
     },
-    
+
     onError: function(evt) {
-        this.showError(evt.message, evt.nohide);  
+        this.showError(evt.message, evt.nohide);
     },
-    
+
     showError: function(message, nohide) {
         console.log(message);
         this.error.set('html', message);
@@ -159,12 +159,12 @@ var CCBrowse = new Class({
         }
         this.note.addClass('hold');
     },
-    
+
     clearError: function() {
         this.error.addClass('collapsed');
         this.note.removeClass('hold');
     },
-    
+
     showNote: function(message) {
         this.note.set('html', message);
         this.note.removeClass('collapsed');
