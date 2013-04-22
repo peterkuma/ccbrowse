@@ -95,6 +95,12 @@ var CCBrowse = new Class({
         this.map.on('error', this.onError.bind(this));
         $('map').focus();
 
+        this.globe = Globe('.map .globe', this.profile);
+        this.globe.center([0, 0]);
+        this.map.on('move', function() {
+            this.globe.center(this.map.center());
+        }.bind(this));
+
         this.locationBar = new LocationBar($('location-bar'), this.map.map, this.profile);
 
         // Add tooltips.
