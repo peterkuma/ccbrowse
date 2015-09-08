@@ -1,6 +1,8 @@
 ccbrowse
 ======
 
+![](screenshot.png)
+
 ccbrowse is an open-source web application for browsing data from atmospheric
 profilers. It is comprised of a web application and a backend for importing
 various types of product files.
@@ -8,8 +10,10 @@ various types of product files.
 In the current version, it supports importing two datasets from the
 CALIPSO satellite, but new importing classes can be added as needed.
 
+<!--
 You can see an example ccbrowse application running at
 [browse.ccplot.org](http://browse.ccplot.org).
+-->
 
 Installation
 ------------
