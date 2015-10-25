@@ -1,13 +1,16 @@
 import Layer from './layer.js';
 
 
-class Profile {
+export default class Profile {
     constructor(source) {
         this.source = source;
     }
 
     get origin() {
-        return new Date.parse(this.source.origin[0] + ' +0000');
+        return [
+            new Date.parse(this.source.origin[0] + ' +0000'),
+            this.source.origin[1]
+        ];
     }
 
     get prefix() {
@@ -26,12 +29,16 @@ class Profile {
         return this.source['z-bounds'];
     }
 
+    get layers() {
+        return this.source.layers;
+    }
+
     async layer(name) {
         if (this.source.layers[name] === undefined) {
             return null;
         }
         let source = this.source.layers[name];
-        let layer = Layer(name, source);
+        let layer = new Layer(this, name);
         return await layer.ready();
     }
 }

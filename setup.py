@@ -50,7 +50,12 @@ class build_js(Command):
         cmd = [
             'browserify',
             '-o', 'www/js/bundle.js',
-            '-t', 'babelify',
+            '-t', '[',
+                'babelify',
+                '--optional', 'runtime',
+                '--optional', 'es7.asyncFunctions',
+            ']',
+            'node_modules/whatwg-fetch',
         ] + glob('www/js/*.js')
         print ' '.join(cmd)
         try:

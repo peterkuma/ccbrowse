@@ -27,31 +27,9 @@ var Navigation = new Class({
     getLayers: function() { return this.profile.layers; },
     
     getLayer: function() { return this.layer; },
-    setLayer: function(name) {
-        this.layer = this.profile.layers[name];
-        
-        if (typeof this.layer.colormap == 'string') {
-            new Request.JSON({
-                'url': this.profile.prefix + this.layer.colormap,
-                onSuccess: function(json) {
-                    this.layer.colormap = json;
-                    this.emit('change');
-                    this.emit('layerchange');
-                }.bind(this)
-            }).get();
-        }
-        
-        if (typeof this.layer.availability == 'string') {
-            new Request.JSON({
-                'url': this.profile.prefix + this.layer.availability,
-                onSuccess: function(json) {
-                    this.layer.availability = json;
-                    this.emit('change');
-                    this.emit('layerchange');
-                }.bind(this)
-            }).get();
-        }
-        
+
+    setLayer: async function(name) {
+        this.layer = await this.profile.layer(name);
         this.emit('change');
         this.emit('layerchange');
     },
@@ -77,7 +55,7 @@ var Navigation = new Class({
     },
     
     getAvailability: function() {
-        if (!this.layer || !this.layer.availability || typeof this.layer.availability == 'string' || !this.layer.availability[this.zoom])
+        if (!this.layer || !this.layer.availability || !this.layer.availability[this.zoom])
             return [];
         return this.layer.availability[this.zoom];
     },

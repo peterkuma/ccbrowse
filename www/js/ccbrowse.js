@@ -36,10 +36,15 @@ import LocationBar from './location-bar.js';
 import LayerControl from './layer-control.js';
 import Colormap from './colormap.js';
 import Tooltip from './tooltip.js';
+import Profile from './profile.js';
 
 
-var CCBrowse = new Class({
-    initialize: function(url) {
+export class Application {
+    constructor(profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
+    async start() {
         this.error = document.querySelector('.error');
         this.note = document.querySelector('.note');
 
@@ -54,37 +59,18 @@ var CCBrowse = new Class({
             }.bind(this);
         }.bind(this));
 
-        // Fetch profile specification and call init().
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState != 4) return;
-            if (xhr.status != 200) {
-                this.showError('Profile specification is not available', true);
-                return;
-            }
-            var json;
-            try {
-                json = JSON.parse(xhr.responseText);
-            } catch(e) {
+        try {
+            let profileSource = await (await fetch('profile.json')).json();
+            this.profile = new Profile(profileSource);
+        } catch(err) {
+            if (err instanceof SyntaxError) {
                 this.showError('Invalid profile specification', true);
+            } else {
+                this.showError('Profile specification is not available', true);
+                console.log(err);
             }
-            this.init(json);
-        }.bind(this);
-        xhr.open('GET', url);
-        xhr.send();
-    },
-
-    init: function(json) {
-        this.profile = json;
-        this.profile.origin[0] = new Date.parse(this.profile.origin[0] + ' +0000');
-
-        if (this.profile.prefix !== '' &&
-            this.profie.prefix[this.profile.prefix.length - 1] !== '/'
-        ) {
-            this.profile.prefix = this.profile.prefix + '/';
+            return;
         }
-
-        console.log(this.profile.prefix);
 
         this.nav = new Navigation(this.profile);
         this.nav.setLayer('calipso532');
@@ -126,9 +112,9 @@ var CCBrowse = new Class({
         });
 
         this.showNote('Double-click to read off values');
-    },
+    }
 
-    smartCurrent: function(availability) {
+    smartCurrent(availability) {
         var latest = null;
         var max = 0;
         Array.prototype.forEach.call(availability, function(range) {
@@ -144,33 +130,33 @@ var CCBrowse = new Class({
         var upper = latest[1];
         var date = new Date(this.profile.origin[0]);
         return date.increment('ms', (upper+lower)*0.5*width);
-    },
+    }
 
-    context: function(name) {
+    context(name) {
         $$('.context').setStyle('display', 'none');
         $$('.context.'+name).setStyle('display', 'block');
-    },
+    }
 
-    page: function(path) {
+    page(path) {
         var page = document.querySelector('.page');
         page.set('load', {
             onSuccess: function() { this.context('page'); }.bind(this)
         });
         page.load(path);
-    },
+    }
 
-    route: function() {
+    route() {
         if (document.location.pathname == '/about/')
             this.page('/about.html');
         else
             this.context('map');
-    },
+    }
 
-    onError: function(evt) {
+    onError(evt) {
         this.showError(evt.message, evt.nohide);
-    },
+    }
 
-    showError: function(message, nohide) {
+    showError(message, nohide) {
         console.log(message);
         this.error.set('html', message);
         this.error.removeClass('collapsed');
@@ -181,14 +167,14 @@ var CCBrowse = new Class({
             }.bind(this), 5000);
         }
         this.note.addClass('hold');
-    },
+    }
 
-    clearError: function() {
+    clearError() {
         this.error.addClass('collapsed');
         this.note.removeClass('hold');
-    },
+    }
 
-    showNote: function(message) {
+    showNote(message) {
         this.note.set('html', message);
         this.note.removeClass('collapsed');
         window.setTimeout(function() {
@@ -197,8 +183,9 @@ var CCBrowse = new Class({
         if (!this.error.hasClass('collapsed'))
             this.note.addClass('hold');
     }
-});
+}
 
 document.addEventListener('DOMContentLoaded', function() {
-    var ccbrowse = new CCBrowse('profile.json');
+    let app = new Application('profile.json');
+    app.start();
 });

@@ -1,13 +1,25 @@
-class Layer {
-    constructor(name, source) {
+export default class Layer {
+    constructor(profile, name) {
         this.name = name;
-        this.source = source;
+        this.profile = profile;
+        this.source = profile.layers[name];
+        this.prototype = profile.source;
     }
 
     async ready() {
-        this.availability = JSON.parse(await fetch(this.source.availability));
-        this.colormap = JSON.parse(await fetch(this.source.colormap));
-        return true;
+        let availabilityUrl = this.profile.prefix + this.source.availability;
+        let colormapUrl = this.profile.prefix + this.source.colormap;
+
+        let availabilityPromise = fetch(availabilityUrl);
+        let colormapPromise = fetch(colormapUrl);
+
+        this.availability = await (await availabilityPromise).json();
+        this.colormap = await (await colormapPromise).json();
+        return this;
+    }
+
+    get src() {
+        return this.source.src;
     }
 
     async tile(x, z, zoom) {
@@ -27,4 +39,6 @@ class Layer {
             data: data
         };
     }
+
+
 }
