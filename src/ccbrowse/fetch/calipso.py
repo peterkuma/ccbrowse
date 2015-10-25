@@ -87,6 +87,8 @@ class Calipso(object):
             else: self.download(tracking_id)
         except suds.WebFault as e:
             print >> sys.stderr, e
+        except urllib2.URLError as e:
+            print >> sys.stderr, e.reason
     
     def do_order(self, startdate, stopdate):        
         sys.stderr.write('Initializing NASA ECHO services... ')
@@ -154,7 +156,7 @@ class Calipso(object):
             with closing(urllib2.urlopen(url)) as f:
                 # TODO: Support white-space in file names.
                 files = [os.path.basename(l.split()[-1]) for l in f.readlines() if l[0] != 'd']
-        except urllib2.URLError as e: print >> sys.stdrerr, "%s: %s" % (url ,e)
+        except urllib2.URLError as e: print >> sys.stderr, "%s: %s" % (url, e)
         
         for name in files:
             if name[0] == '.' or not name.endswith('.hdf'): continue
@@ -175,7 +177,7 @@ class Calipso(object):
         ci.ClientId = self.CLIENT_ID
         ci.UserIpAddress = '127.0.0.1'
         self.token = self.auth.service.Login(self.config['login'], self.config['password'], ci)
-    
+
     def lookup(self, startdate, stopdate):
         ResultType = self.catalog.factory.create('ns2:ResultType')
         aol = self.AOL.format(startdate=startdate, stopdate=stopdate)
