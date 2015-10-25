@@ -28,7 +28,36 @@ data_files += find('share/ccbrowse/colormaps/', 'colormaps')
 class build(distutils.command.build.build):
     def run(self):
         distutils.command.build.build.run(self)
+        self.run_command('build_js')
         self.run_command('build_scss')
+
+
+class build_js(Command):
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        try:
+            with open(os.devnull, 'w') as fp:
+                proc = subprocess.Popen(['browserify', '-v'], stdout=fp, stderr=fp)
+                proc.communicate()
+        except OSError:
+            print >>sys.stderr, 'warning: browserify not available, will not rebuild javascript'
+            return
+        cmd = [
+            'browserify',
+            '-o', 'www/js/bundle.js',
+            '-t', 'babelify',
+        ] + glob('www/js/*.js')
+        print ' '.join(cmd)
+        try:
+            call(cmd)
+        except OSError as e:
+            print >>sys.stderr, e.strerror
+
 
 class build_scss(Command):
     def initialize_options(self):
@@ -78,7 +107,7 @@ setup(
         'ccbrowse',
         'ccbrowse.fetch',
         'ccbrowse.ccimport',
-        'ccbrowse.storage'
+        'ccbrowse.storage',
     ],
     scripts=[
         'src/bin/ccfetch',
@@ -87,11 +116,13 @@ setup(
         'src/bin/ccbrowse',
         'src/bin/ccserver',
         'src/bin/cchtree-clean',
+        'src/bin/ccload',
     ],
     cmdclass = {
         'build': build,
         'build_ext': build_ext,
         'build_scss': build_scss,
+        'build_js': build_js,
     },
     ext_modules=[
         Extension('ccbrowse.algorithms',

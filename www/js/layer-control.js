@@ -63,3 +63,5 @@ var LayerControl = new Class({
         */
     }
 });
+
+module.exports = LayerControl;

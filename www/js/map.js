@@ -6,6 +6,10 @@
  * and position.
  */
 
+
+import YAxis from './yaxis.js';
+
+
 var Map = new Class({
     Implements: EventEmitter2,
 
@@ -150,13 +154,34 @@ var Map = new Class({
         url = url.replace('\{z\}', '\{y\}');
         url = url.replace('{zoom}', '{z}');
 
-        this.tileLayer = new L.TileLayer(url, {
+        this.tileLayer = L.tileLayer.canvas({
             maxZoom: this.nav.getMaxZoom(),
             tileSize: 256,
             continuousWorld: true,
-            tms: true,
-            attribution: layer.attribution
+            attribution: layer.attribution,
+            async: true
         });
+
+        this.tileLayer.drawTile = function(canvas, tilePoint, zoom) {
+            // var src = this.tileLayer.getTileUrl(tilePoint);
+            this.tileLayer._adjustTilePoint(tilePoint);
+            var template_data = {
+                x: tilePoint.x,
+                y: Math.pow(2, zoom) - tilePoint.y - 1,
+                z: zoom
+            };
+            var src = L.Util.template(url, template_data);
+            var cb = this.tileLayer.tileDrawn.bind(this.tileLayer);
+            drawTile(src, canvas, this.nav.getLayer().colormap, cb);
+        }.bind(this);
+
+        // this.tileLayer = new L.TileLayer(url, {
+        //     maxZoom: this.nav.getMaxZoom(),
+        //     tileSize: 256,
+        //     continuousWorld: true,
+        //     tms: true,
+        //     attribution: layer.attribution
+        // });
 
         this.layerGroup.addLayer(this.tileLayer);
 
@@ -275,3 +300,5 @@ var Map = new Class({
         this.map.openPopup(popup);
     }
 });
+
+module.exports = Map;

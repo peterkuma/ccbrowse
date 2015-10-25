@@ -67,3 +67,5 @@ var Tooltip = new Class({
         this.stick = stick ? true : false;
     }
 });
+
+module.exports = Tooltip;

@@ -1,0 +1,15 @@
+{
+    "name": "ccbrowse",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/peterkuma/ccbrowse"
+    },
+    "devDependencies": {
+        "browserify": "*",
+        "babelify": "*",
+        "source-map": "*",
+        "regenerator": "*",
+        "babel-runtime": "*",
+        "whatwg-fetch": "*"
+    }
+}

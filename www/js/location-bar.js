@@ -28,7 +28,7 @@ var LocationBar = new Class({
         var x2 = Math.floor(bounds.max.x/256);
         var x = Math.round((x1+x2)/2);
         
-        var url = this.profile.prefix + '/' + this.profile.layers.geocoding.src;
+        var url = this.profile.prefix + this.profile.layers.geocoding.src;
         url = L.Util.template(url, {
                 'zoom': zoom,
                 'x': x
@@ -57,3 +57,5 @@ var LocationBar = new Class({
         this.xhr.send();
     }
 });
+
+module.exports = LocationBar;

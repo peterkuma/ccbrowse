@@ -6,6 +6,10 @@
  * display, such as data availability and current position and layer.
  */
 
+
+import Tooltip from './tooltip.js';
+
+
 var NavigationPanel = new Class({
     initialize: function(el, nav) {
         this.el = d3.select(el);
@@ -153,3 +157,5 @@ var NavigationPanel = new Class({
                 .attr('title', 'Unavailable');
     }
 });
+
+module.exports = NavigationPanel;

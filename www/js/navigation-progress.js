@@ -97,3 +97,5 @@ var NavigationProgress = new Class({
             .text(t.formatUTC('%H:%M'));
     }
 });
+
+module.exports = NavigationProgress;

@@ -62,7 +62,7 @@ Colormap.prototype.drawColors = function(el) {
     var h = height/this.colormap.colors.length;
     var n = 1;
     this.colormap.colors.forEach(function(color) {
-        div = document.createElement('div');
+        var div = document.createElement('div');
         div.setStyle('position', 'absolute');
         div.setStyle('top', height-n*h);
         div.setStyle('width', width);
@@ -129,3 +129,5 @@ Colormap.prototype.transform = function(value) {
     });
     return result ? result : 0;
 };
+
+module.exports = Colormap;

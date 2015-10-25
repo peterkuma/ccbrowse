@@ -32,7 +32,7 @@ var Navigation = new Class({
         
         if (typeof this.layer.colormap == 'string') {
             new Request.JSON({
-                'url': this.profile.prefix+'/'+this.layer.colormap,
+                'url': this.profile.prefix + this.layer.colormap,
                 onSuccess: function(json) {
                     this.layer.colormap = json;
                     this.emit('change');
@@ -43,7 +43,7 @@ var Navigation = new Class({
         
         if (typeof this.layer.availability == 'string') {
             new Request.JSON({
-                'url': this.profile.prefix+'/'+this.layer.availability,
+                'url': this.profile.prefix + this.layer.availability,
                 onSuccess: function(json) {
                     this.layer.availability = json;
                     this.emit('change');
@@ -135,3 +135,5 @@ var Navigation = new Class({
         return intervals;
     }
 });
+
+module.exports = Navigation;

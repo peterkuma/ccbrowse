@@ -27,6 +27,17 @@
  * which are part of this project.
  */
 
+
+import Map from './map.js';
+import Navigation from './navigation.js';
+import NavigationPanel from './navigation-panel.js';
+import NavigationProgress from './navigation-progress.js';
+import LocationBar from './location-bar.js';
+import LayerControl from './layer-control.js';
+import Colormap from './colormap.js';
+import Tooltip from './tooltip.js';
+
+
 var CCBrowse = new Class({
     initialize: function(url) {
         this.error = document.querySelector('.error');
@@ -51,8 +62,12 @@ var CCBrowse = new Class({
                 this.showError('Profile specification is not available', true);
                 return;
             }
-            try { json = JSON.parse(xhr.responseText); }
-            catch(e) { this.showError('Invalid profile specification', true); }
+            var json;
+            try {
+                json = JSON.parse(xhr.responseText);
+            } catch(e) {
+                this.showError('Invalid profile specification', true);
+            }
             this.init(json);
         }.bind(this);
         xhr.open('GET', url);
@@ -63,13 +78,21 @@ var CCBrowse = new Class({
         this.profile = json;
         this.profile.origin[0] = new Date.parse(this.profile.origin[0] + ' +0000');
 
+        if (this.profile.prefix !== '' &&
+            this.profie.prefix[this.profile.prefix.length - 1] !== '/'
+        ) {
+            this.profile.prefix = this.profile.prefix + '/';
+        }
+
+        console.log(this.profile.prefix);
+
         this.nav = new Navigation(this.profile);
         this.nav.setLayer('calipso532');
         this.nav.setZoom(2);
         this.nav.setCurrent(this.profile.origin[0]);
 
         this.nav.on('change', function() {
-            window.history.pushState({}, '', '/'+document.location.hash);
+            window.history.pushState({}, '', document.location.hash);
             document.title = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M') + ' ‧ ccbrowse';
             this.route();
         }.bind(this));
@@ -177,5 +200,5 @@ var CCBrowse = new Class({
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    var ccbrowse = new CCBrowse('/profile.json');
+    var ccbrowse = new CCBrowse('profile.json');
 });
