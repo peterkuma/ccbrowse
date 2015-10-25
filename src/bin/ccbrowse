@@ -85,13 +85,14 @@ if __name__ == "__main__":
         sys.exit(1)
     
     command = sys.argv[1]
+
+    if command == '--help':
+        print_help()
+        sys.exit(0)
     
     if command != 'create' and not os.path.exists('config.json'):
         logging.error('This is not a ccbrowse repository')
         sys.exit(1)
-    
-    if command == '--help':
-        print_help()
     
     elif command == 'create':
         try: opts, args = getopt.getopt(sys.argv[2:], '', ['help'])
