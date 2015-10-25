@@ -6,61 +6,70 @@
  * changes. The class is independent from other classes.
  */
 
-var Navigation = new Class({
-    Implements: EventEmitter2,
-    
-    initialize: function(profile) {
+
+import EventEmitter from 'events';
+
+
+export default class Navigation extends EventEmitter {
+    constructor(profile) {
+        super();
         this.profile = profile;
         this.zoom = 0;
         window.addEventListener('hashchange', this.update.bind(this));
         this.update();
-    },
+    }
     
-    update: function() {
+    update() {
         if (window.location.hash === '') return;
         var date = new Date().parse(window.location.hash.substring(1) + ' +0000');
         if (!date.isValid()) return;
         this.current = date;
         this.emit('change');
-    },
+    }
     
-    getLayers: function() { return this.profile.layers; },
+    getLayers() { return this.profile.layers; }
     
-    getLayer: function() { return this.layer; },
+    getLayer() { return this.layer; }
 
-    setLayer: async function(name) {
+    async setLayer(name) {
         this.layer = await this.profile.layer(name);
         this.emit('change');
         this.emit('layerchange');
-    },
+    }
     
-    getCurrent: function() { return new Date(this.current); },
-    setCurrent: function(date) {
+    getCurrent() {
+        return new Date(this.current);
+    }
+
+    setCurrent(date) {
         this.current = date;
         window.location.replace('#'+date.formatUTC('%Y-%b-%d,%H:%M:%S'));
         this.emit('change');
-    },
+    }
     
-    getZoom: function() { return this.zoom; },
-    setZoom: function(zoom) {
+    getZoom() {
+        return this.zoom;
+    }
+
+    setZoom(zoom) {
         this.zoom = zoom;
         this.emit('change');
-    },
+    }
     
-    getMaxZoom: function() {
+    getMaxZoom() {
         var i = 0;
         while (this.profile.zoom[i.toString()])
             i++;
         return i-1;
-    },
+    }
     
-    getAvailability: function() {
+    getAvailability() {
         if (!this.layer || !this.layer.availability || !this.layer.availability[this.zoom])
             return [];
         return this.layer.availability[this.zoom];
-    },
+    }
     
-    isAvailable: function(start, end) {
+    isAvailable(start, end) {
         var availability = this.getAvailability()
         
         var x1  = (start - this.profile.origin[0])/this.profile.zoom[this.zoom].width;
@@ -73,24 +82,24 @@ var Navigation = new Class({
             if (range[0] <= x1 && range[1] >= x2) return true;
         }
         return false;
-    },
+    }
     
-    isAvailableYear: function(year) {
+    isAvailableYear(year) {
         return this.isAvailable(new UTCDate(year, 0, 1),
                                 new UTCDate(year, 0, 1).increment('year', 1));
-    },
+    }
     
-    isAvailableMonth: function(year, month) {
+    isAvailableMonth(year, month) {
         return this.isAvailable(new UTCDate(year, month, 1),
                                 new UTCDate(year, month, 1).increment('month', 1));
-    },
+    }
     
-    isAvailableDay: function(year, month, day) {
+    isAvailableDay(year, month, day) {
         return this.isAvailable(new UTCDate(year, month, day),
                                 new UTCDate(year, month, day).increment('day', 1));
-    },
+    }
     
-    availableBetween: function(start, end) {
+    availableBetween(start, end) {
         if (!this.layer || !this.layer.availability || typeof this.layer.availability == 'string' || !this.layer.availability[this.zoom])
             return [];
         var availability = this.layer.availability[this.zoom];
@@ -112,6 +121,4 @@ var Navigation = new Class({
         }
         return intervals;
     }
-});
-
-module.exports = Navigation;
+}
