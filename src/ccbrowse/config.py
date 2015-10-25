@@ -1,4 +1,6 @@
 import os
+import json
+
 
 sharepath = os.path.join(os.path.dirname(__file__), '../../../../share/ccbrowse/')
 
@@ -27,3 +29,20 @@ default_config = {
         },
     ],
 }
+
+
+def load_config(filename='config.json'):
+    config = default_config
+
+    try:
+        with open(filename) as fp:
+            config.update(json.load(fp))
+    except IOError as e:
+        raise e
+    except ValueError as e:
+        e2 = IOError()
+        e2.filename = filename
+        e2.strerror = e.message
+        raise e2
+
+    return config
