@@ -110,5 +110,5 @@ if __name__ == "__main__":
             print
         #finally: calipso.cleanup()
     else:
-        loggig.error('Unrecognized type "%s"' % type)
+        logging.error('Unrecognized type "%s"' % type)
         sys.exit(1)
