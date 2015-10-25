@@ -1,0 +1,11 @@
+pytz
+python-dateutil
+pillow
+numpy
+scipy
+suds
+shapely
+bottle
+bintrees
+jinja2
+boto
