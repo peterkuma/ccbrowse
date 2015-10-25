@@ -86,23 +86,26 @@ class Profile(object):
     
     def deserialize(self, obj):
         """Deserialize obj.raw_data to obj.data by a format-specific method."""
-        if not obj.has_key('raw_data') or obj.has_key('data'): return
+        if not ('raw_data' in obj or 'data' in obj):
+            return
 
         if str(obj['raw_data']).startswith('ref: '):
             obj['ref'] = utils.parse_ref(str(obj['raw_data']))
         else:
             layer = self.layer_for(obj)
-            if layer['format'] == 'png':
+            format = obj.get('format', layer.get('format', None))
+            if format == 'png':
                 obj['data'] = utils.pngunpack(obj['raw_data'])
-            elif layer['format'] == 'json':
+            elif format == 'json':
                 obj['data'] = json.loads(str(obj['raw_data']))
             else:
                 obj['data'] = obj['raw_data']
-        
+
     def serialize(self, obj):
         """Serialize obj.data to obj.raw_data by a format-specific method."""
-        if obj.has_key('raw_data'): return
-        
+        if 'raw_data' in obj:
+            return
+
         if obj.has_key('ref') and obj.has_key('data'):
             # We have no option but to dereference.
             self.dereference(obj)
@@ -226,30 +229,53 @@ class Profile(object):
         with open(filename) as fp:
             colormap = json.load(fp)
         return colormap
-    
+
     def get_availability(self, layer):
-        if self.availability.has_key(layer):
+        if layer in self.availability:
             return self.availability[layer]
-        
-        if not self['layers'][layer].has_key('availability'): return {}
-        filename = self['layers'][layer]['availability']
-        try:
-            with open(filename) as fp:
-                self.availability[layer] = self.parse_availability(json.load(fp))
-        except IOError:
+
+        if not 'availability' in self['layers'][layer]:
+            return {}
+
+        obj = {
+            'layer': layer,
+            'name': 'availability',
+            'format': 'json',
+        }
+        obj = self.storage.retrieve(obj)
+
+        if obj is not None:
+            self.availability[layer] = self.parse_availability(obj['data'])
+        else:
             self.availability[layer] = {}
+
         return self.availability[layer]
-    
+
     def parse_availability(self, availability):
-        return dict([(k, RangeList(v)) for k,v in availability.items()])
-    
+        if type(availability) is not dict:
+            raise ValueError('Invalid availability data: dictionary expected')
+
+        return dict([
+            (k, RangeList(v))
+            for k, v
+            in availability.items()
+        ])
+
     def write_availability(self):
         for layer, a in self.availability.items():
-            if not self['layers'][layer].has_key('availability'): continue
-            with open(self['layers'][layer]['availability'], 'w') as fp:
-                json.dump(a, fp, cls=RangeListEncoder, indent=True)
-    
+            if not 'availability' in self['layers'][layer]:
+                continue
+            obj = {
+                'layer': layer,
+                'name': 'availability',
+                'format': 'json',
+                'raw_data': json.dumps(a, cls=RangeListEncoder, indent=True)
+            }
+            self.storage.store(obj)
+
     def update_availability(self, layer, level, (start, stop)):
         availability = self.get_availability(layer)
-        if availability.has_key(level): availability[level].append(start, stop)
-        else: availability[level] = RangeList([(start, stop)])
+        if level in availability:
+            availability[level].append(start, stop)
+        else:
+            availability[level] = RangeList([(start, stop)])
