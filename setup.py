@@ -54,9 +54,12 @@ class build_js(Command):
         ] + glob('www/js/*.js')
         print ' '.join(cmd)
         try:
-            call(cmd)
+            ret = call(cmd)
+            if ret != 0:
+                sys.exit(1)
         except OSError as e:
             print >>sys.stderr, e.strerror
+            sys.exit(1)
 
 
 class build_scss(Command):
@@ -77,9 +80,12 @@ class build_scss(Command):
         cmd = ['scss', '--compass', '--update', 'ccbrowse.scss']
         print ' '.join(cmd)
         try:
-            call(cmd, cwd='www/css')
+            ret = call(cmd, cwd='www/css')
+            if ret != 0:
+                sys.exit(1)
         except OSError as e:
             print >>sys.stderr, e.strerror
+            sys.exit(1)
 
 
 setup(
