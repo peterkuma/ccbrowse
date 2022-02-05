@@ -28,7 +28,7 @@ var Map = new Class({
             worldCopyJump: false,
             fadeAnimation: true,
             doubleClickZoom: false,
-            keyboardPanOffset: 150
+            keyboardPanDelta: 150
         });
 
         this.map.attributionControl.setPrefix('');
