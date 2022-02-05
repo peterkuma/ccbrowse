@@ -7,10 +7,7 @@
  */
 
 
-import EventEmitter from 'events';
-
-
-export default class Navigation extends EventEmitter {
+export default class Navigation extends EventEmitter2 {
     constructor(profile) {
         super();
         this.profile = profile;

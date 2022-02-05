@@ -130,4 +130,4 @@ Colormap.prototype.transform = function(value) {
     return result ? result : 0;
 };
 
-module.exports = Colormap;
+export default Colormap;

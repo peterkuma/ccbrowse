@@ -68,4 +68,4 @@ var Tooltip = new Class({
     }
 });
 
-module.exports = Tooltip;
+export default Tooltip;

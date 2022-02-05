@@ -158,4 +158,4 @@ var NavigationPanel = new Class({
     }
 });
 
-module.exports = NavigationPanel;
+export default NavigationPanel;

@@ -42,4 +42,4 @@ var YAxis = new Class({
     }
 });
 
-module.exports = YAxis;
+export default YAxis;

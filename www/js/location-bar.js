@@ -58,4 +58,4 @@ var LocationBar = new Class({
     }
 });
 
-module.exports = LocationBar;
+export default LocationBar;

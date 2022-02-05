@@ -301,4 +301,4 @@ var Map = new Class({
     }
 });
 
-module.exports = Map;
+export default Map;

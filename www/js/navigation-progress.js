@@ -98,4 +98,4 @@ var NavigationProgress = new Class({
     }
 });
 
-module.exports = NavigationProgress;
+export default NavigationProgress;

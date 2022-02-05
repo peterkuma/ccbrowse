@@ -28,11 +28,13 @@ data_files += find('share/ccbrowse/colormaps/', 'colormaps')
 class build(distutils.command.build.build):
     def run(self):
         distutils.command.build.build.run(self)
-        self.run_command('build_js')
+        #self.run_command('build_js')
         self.run_command('build_scss')
 
 
 class build_js(Command):
+    user_options = []
+
     def initialize_options(self):
         pass
 
