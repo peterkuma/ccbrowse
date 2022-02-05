@@ -284,7 +284,7 @@ A sample `profile.json`:
             "0":
             {
                 "width": 131072,
-                "height": 65636
+                "height": 65536
             },
             [...]
         },
@@ -318,7 +318,7 @@ We can see a number of things in this profile specification:
   * It defines a profile called `A-Train`.
   * The x-axis begins at midnight 1st Jan 2006, and the z-axis begins at
     an altitude of 0m.
-  * The lowest zoom level (`0`) has tiles of 131072s in width and 65636m in
+  * The lowest zoom level (`0`) has tiles of 131072s in width and 65536m in
     height (remember that tiles always have a fixed size of 256x256px,
     so this determines the zoom factor and aspect ratio).
   * There is a two-dimensional (`xz`) layer called `calipso532`.
