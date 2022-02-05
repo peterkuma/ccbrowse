@@ -154,6 +154,7 @@ var Map = new Class({
         url = url.replace('\{z\}', '\{y\}');
         url = url.replace('{zoom}', '{z}');
 
+        /*
         this.tileLayer = L.tileLayer.canvas({
             maxZoom: this.nav.getMaxZoom(),
             tileSize: 256,
@@ -174,14 +175,15 @@ var Map = new Class({
             var cb = this.tileLayer.tileDrawn.bind(this.tileLayer);
             drawTile(src, canvas, this.nav.getLayer().colormap, cb);
         }.bind(this);
+        */
 
-        // this.tileLayer = new L.TileLayer(url, {
-        //     maxZoom: this.nav.getMaxZoom(),
-        //     tileSize: 256,
-        //     continuousWorld: true,
-        //     tms: true,
-        //     attribution: layer.attribution
-        // });
+        this.tileLayer = new L.TileLayer(url, {
+            maxZoom: this.nav.getMaxZoom(),
+            tileSize: 256,
+            continuousWorld: true,
+            tms: true,
+            attribution: layer.attribution
+        });
 
         this.layerGroup.addLayer(this.tileLayer);
 
