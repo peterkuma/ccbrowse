@@ -1,10 +1,10 @@
 import sys
 import os
-import Image
+from PIL import Image
 import numpy as np
 import json
 import io
-import ImageColor, PngImagePlugin
+from PIL import ImageColor, PngImagePlugin
 from contextlib import closing
 import re
 from math import sqrt, cos, radians
