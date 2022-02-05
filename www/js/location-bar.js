@@ -42,7 +42,7 @@ var LocationBar = new Class({
             this.center.set('text', '…');
             this.center.title = 'No information about place available';
             if (this.xhr.status == 200) {
-                json = JSON.decode(this.xhr.responseText);
+                let json = JSON.decode(this.xhr.responseText);
                 if (json && json.features.length) {
                     this.center.set('text', json.features[0].properties.name);
                     this.center.title = '';
