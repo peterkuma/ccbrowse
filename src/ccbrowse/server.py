@@ -28,13 +28,13 @@ def init(conf):
     global config
     global cache
     global profile
-    
+
     config = conf
-    
+
     bottle.debug(config['debug'])
-    
+
     profile = ccbrowse.Profile(config)
-    
+
     try: driver = ccbrowse.storage.DRIVERS[config['cache']['driver']]
     except KeyError: driver = ccbrowse.storage.NullDriver
     cache = driver(config.get('cache'))
@@ -54,7 +54,7 @@ def run(config):
         raise RuntimeError('[%s:%s]: %s' % (config['host'], config['port'], e.strerror))
     global cache
     del cache
-    
+
 
 def last_modified(modified):
     if type(modified) == int: modified = datetime.utcfromtimestamp(modified)
@@ -64,7 +64,7 @@ def last_modified(modified):
             m = datetime.strptime(modified_since, RFC822_TIME)
             if m >= modified: abort(304, 'Not Modified')
         except ValueError:pass
-    
+
     bottle.response.set_header('Last-Modified', modified.strftime(RFC822_TIME))
 
 
@@ -100,26 +100,26 @@ def places(zoom, x, z):
         'x': x,
     })
     geography = profile.load({'layer': 'geography'})
-    
+
     if trajectory is None or geography is None:
         return json.dumps({'places': []})
-    
+
     points = np.array(trajectory['data']['features'][0]['geometry']['coordinates'])
-    
+
     # Downsample.
     if request.query.reduce:
         try: factor = int(request.query.reduce)
         except ValueError: factor = 1
         if factor <= 0: factor = 1
         points = points[np.arange(0, points.shape[0]) % factor == 0,:]
-    
+
     t = shapely.geometry.shape({
         'type': 'LineString',
         'coordinates': points,
     })
-    
+
     out = np.zeros(points.shape[0], np.int)
-    
+
     for i in range(len(geography['data']['features'])):
         s = shapely.geometry.shape(geography['data']['features'][i]['geometry'])
         intersection = s.intersection(t)
@@ -128,7 +128,7 @@ def places(zoom, x, z):
             for j in range(len(points)):
                 if points[j][0] == point[0] and points[j][1] == point[1]:
                     out[j] = i
-    
+
     return json.dumps({'places': list(out)}, indent=True)
 
 
@@ -138,7 +138,7 @@ def geocoding(zoom, x, z):
     try:
         x = int(x)
     except ValueError: abort(404)
-    
+
     trajectory = profile.load({
         'layer': 'trajectory',
         'zoom': zoom,
@@ -149,11 +149,11 @@ def geocoding(zoom, x, z):
 
     if trajectory is None or geography is None:
         abort(404, 'Geocoding support not available')
-    
+
     geom = {}
     geom['type'] = trajectory['data']['features'][0]['geometry']['type']
     geom['coordinates'] = trajectory['data']['features'][0]['geometry']['coordinates']
-    
+
     # Downsample.
     if request.query.reduce:
         try: factor = int(request.query.reduce)
@@ -163,17 +163,17 @@ def geocoding(zoom, x, z):
         coords = np.array(geom['coordinates'])
         coords = coords[np.arange(0, n) % factor == 0,:]
         geom['coordinates'] = coords
-    
+
     t = shapely.geometry.shape(geom)
-    
+
     features = []
-    
+
     for f in geography['data']['features']:
         s = shapely.geometry.shape(f['geometry'])
         i = s.intersection(t)
         if type(i) != shapely.geometry.linestring.LineString:
             continue
-        
+
         features.append({
             'type': 'Feature',
             'properties': f['properties'],
@@ -205,8 +205,8 @@ def serve(layer, zoom=None, x=None, z=None, fmt=None):
         if x != None: obj['x'] = int(x)
         if z != None: obj['z'] = int(z)
         if fmt != None: obj['format'] = fmt
-    except ValueError: abort(404)    
-    
+    except ValueError: abort(404)
+
     try:
         if obj['format'] == 'json':
             return serve_json(obj)
@@ -223,25 +223,25 @@ def serve(layer, zoom=None, x=None, z=None, fmt=None):
             logging.error('%s: %s' % (e.filename, e.strerror))
         else:
             logging.error(e)
-    
+
     abort(404, 'Object not found')
 
 
 # Everything else.
 @route('<filename:path>')
 def default(filename):
-    return bottle.static_file(filename, root=os.path.join(sharepath, 'www'))
+    return bottle.static_file(filename, root=os.path.realpath(os.path.join(sharepath, 'www')))
 
 
 def serve_json(obj):
     obj = profile.load(obj)
     if obj is None: abort(404, 'Object not found')
-    
+
     if not request.query.q:
         bottle.response.content_type = 'application/json'
         if obj.has_key('data'): return obj['data']
         else: abort(404, 'Object has no data')
-    
+
     q = request.query.q
     m = re.match('^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', q)
     if not m: abort(404, 'Invalid query coordinates')
@@ -249,27 +249,27 @@ def serve_json(obj):
         lat = float(m.group(1))
         lon = float(m.group(2))
     except ValueError: abort(404, 'Invalid query coordinates')
-    
+
     point = shapely.geometry.Point(lon, lat)
-    
+
     for f in obj['data']['features']:
         s = shapely.geometry.shape(f['geometry'])
         if s.contains(point):
             bottle.response.content_type = 'application/json'
             return json.dumps(f['properties'])
-    
+
     bottle.response.content_type = 'application/json'
     return json.dumps({})
 
 
-def serve_tile(obj):  
+def serve_tile(obj):
     if not request.query.q:
         # Retrieve date of last modification.
         obj = profile.load(obj, exclude=['data'])
         if obj is None: abort(404, 'Object not found')
-        
+
         last_modified(obj['modified'])
-        
+
         # Attempt to retrieve from cache.
         o = cache.retrieve(obj)
         if o != None and o['modified'] >= obj['modified']:
@@ -278,13 +278,13 @@ def serve_tile(obj):
             buf.write(bytes(o['raw_data']))
             bottle.response.content_type = 'image/png'
             return buf.getvalue()
-    
+
     #print 'Cache miss'
     if not obj.has_key('data'):
         obj = profile.load(obj)
         if obj is None: abort(404, 'Object not found')
     data = obj['data']
-    
+
     if request.query.q:
         q = request.query.q
         m = re.match('^(\d+),(\d+)$', q)
@@ -294,7 +294,7 @@ def serve_tile(obj):
             try: return unicode(data[y, x])
             except ValueError: pass
         abort(404, 'Invalid query coordinates')
-    
+
     m = re.match('colormaps/(.+)', profile['layers'][obj['layer']]['colormap'])
     colormap = profile.colormap(m.group(1))
     img = Image.fromarray(ccbrowse.algorithms.colorize(data, colormap))
@@ -316,7 +316,7 @@ Try `{program_name} --help' for more information.
 def print_help():
     sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
        {program_name} --help
-       
+
 Run the ccbrowse HTTP server.
 
 Positional arguments:
@@ -325,7 +325,7 @@ Positional arguments:
 
 Optional arguments:
   -c FILE           configuration file (default: config.json)
-  -d                print debugging information    
+  -d                print debugging information
   --help            print this help information
 
 Report bugs to <ccplot-general@lists.sourceforge.net>.
