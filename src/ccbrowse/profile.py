@@ -16,7 +16,7 @@ class ProfileJSONDecoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
         kwargs.update(object_hook=self.object_hook)
         json.JSONDecoder.__init__(self, *args, **kwargs)
-    
+
     def object_hook(self, d):
         if type(d) == dict: i = d.items()
         else: i = enumerate(d)
@@ -33,21 +33,21 @@ class Profile(object):
     def __init__(self, config, cache_size=4*1024*1024):
         self.config = ccbrowse.config.default_config
         self.config.update(config)
-        
+
         self.storage = ccbrowse.storage.Router(
             self.config['storage'],
             root=self.config['root'],
             on_store=lambda obj: self.serialize(obj),
             on_retrieve=lambda obj: self.deserialize(obj),
         )
-        
+
         filename = os.path.join(self.config['root'], self.config['profile'])
         try:
             with open(filename) as fp:
                 self.json = json.load(fp, cls=ProfileJSONDecoder)
         except ValueError as e:
             raise RuntimeError('%s: %s' % (filename, e))
-        
+
         self.cache = MemCacheDriver({
             'size': cache_size,
             'key': ['layer', 'zoom', 'x', 'z'],
@@ -62,20 +62,20 @@ class Profile(object):
         self.cache.empty()
 
     def __contains__(self, item):
-        return self.json.has_key(item)    
+        return self.json.has_key(item)
 
     def __getitem__(self, key):
         return self.json[key]
-    
+
     def __setitem__(self, key, value):
         self.json[key] = value
 
     def has_key(self, key):
         return self.__contains__(key)
-    
+
     def get_root(self):
         return os.path.abspath(self.config['root'])+'/'
-    
+
     def layer_for(self, obj):
         if not obj.has_key('layer'):
             raise ValueError('Missing object field: "layer"')
@@ -83,7 +83,7 @@ class Profile(object):
         if not self['layers'].has_key(name):
             raise ValueError('No such layer %s' % name)
         return self['layers'][name]
-    
+
     def deserialize(self, obj):
         """Deserialize obj.raw_data to obj.data by a format-specific method."""
         if not ('raw_data' in obj or 'data' in obj):
@@ -112,7 +112,7 @@ class Profile(object):
 
         if obj.has_key('ref'):
             obj['raw_data'] = utils.dump_ref(obj['ref'])
-        
+
         if obj.has_key('data'):
             if obj['format'] == 'png':
                 obj['raw_data'] = utils.pngpack(obj['data'])
@@ -120,7 +120,7 @@ class Profile(object):
                 obj['raw_data'] = json.dumps(obj.get('data'), {})
             else:
                 obj['raw_data'] = json.dumps(obj.get('data'), {})
-        
+
     def dereference(self, obj):
         if not obj.has_key('ref'): return
         for ref in obj['ref']:
@@ -145,19 +145,19 @@ class Profile(object):
                 obj['data'] = tile['data']
             if obj.has_key('raw_data'): del obj['raw_data']
         del obj['ref']
-    
+
     def save(self, obj, append=True):
         """Save object to profile.
-        
+
         Object is a dictionary with the following mandatory and optional fields:
-        
+
             layer   layer name [required]
             data    numpy array (format: png) or dictionary (format: json)
             ref     list of references to product files
             zoom    zoom level
             x       x-coordinate (type: x or xz)
             z       z-coordinate (type: xz)
-        
+
         If append is True, object is merged with the original object.
         Return the object augmented with layer fields.
         """
@@ -166,7 +166,7 @@ class Profile(object):
         o = layer.copy()
         o.update(obj)
         obj = o
-        
+
         if append:
             orig_obj = self.load(obj, dereference=False)
             if orig_obj is not None:
@@ -179,34 +179,34 @@ class Profile(object):
                         utils.geojson_update(orig_obj['data'], obj['data'])
                 elif obj.has_key('data'):
                     orig_obj['data'] = obj['data']
-                
+
                 # Update ref.
                 if orig_obj.has_key('ref') and obj.has_key('ref'):
                     utils.ref_update(orig_obj['ref'], obj['ref'])
                 elif obj.has_key('ref'):
                     orig_obj['ref'] = obj['ref']
-                
+
                 obj = orig_obj
                 del obj['raw_data']
-        
+
         #self.cache.store(obj)
         self.storage.store(obj)
-        
+
         if obj.has_key('zoom') and obj.has_key('x'):
             self.update_availability(obj['layer'], obj['zoom'], (obj['x'], obj['x']+1))
-        
+
         return obj
-    
+
     def load(self, obj, exclude=[], dereference=True):
         """Load object from profile."""
         try: layer = self.layer_for(obj)
         except ValueError: return None
-        
+
         o = layer.copy()
         o.update(obj)
         obj = o
         if obj.has_key('data'): del obj['data']
-        
+
         o = self.cache.retrieve(obj, exclude=exclude)
         if o is None:
             o = self.storage.retrieve(obj, exclude=exclude)
@@ -218,7 +218,7 @@ class Profile(object):
                 o2.update(o)
                 self.cache.store(o2, dirty=False)
         return o
-    
+
     def colormap(self, name):
         try:
             filename = os.path.join(self.config['root'], self.config['colormaps'], name)

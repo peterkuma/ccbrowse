@@ -35,7 +35,7 @@ def coerce(x, low, high):
 
 def substitute(s, variables):
     """Substitute variables in string s.
-    
+
     Variables are in format "{var}", where var is a key in the dictionary
     variables. Substitution is performed by eval(var, variables).
     Unrecognized variables are replaced by an empty string.
@@ -49,7 +49,7 @@ def substitute(s, variables):
 
 def substitute_sql(s, variables):
     """Substitute variables in SQL query s.
-    
+
     Variables are in format "{var}", where var is a key in the dictionary
     variables. Substitution is performed by eval(var, variables).
     Returns tuple (q, params), where q is a parametric query derived from s
@@ -62,7 +62,7 @@ def substitute_sql(s, variables):
             params.append(eval(m.group(1), variables))
             return '?'
         except: return 'NULL'
-    
+
     q = re.sub('\{(.+?)\}', repl, s)
     return q, params
 
@@ -141,9 +141,9 @@ def ref_update(a, b):
 
 def geojson_update(a, b, feature_index=None):
     """Update GeoJSON a with features of b.
-    
+
     Features with matching "type" and "name" properties are overwritten.
-    
+
     feature_index is a dictionary mapping (type,name) pairs of a's features
     to the feature objects. If supplied, the operation can be done significantly
     faster. feature_index, if present, is updated to reflect the new state of a.
@@ -157,10 +157,10 @@ def geojson_update(a, b, feature_index=None):
                 key = (f['properties']['type'],f['properties']['name'])
                 feature_index[key] = f
             except KeyError: pass
-    
+
     for f in b['features']:
         try:
-            key = (f['properties']['type'],f['properties']['name'])            
+            key = (f['properties']['type'],f['properties']['name'])
             if not feature_index.has_key(key):
                 a['features'].append(f)
             feature_index[key] = f
@@ -173,16 +173,16 @@ def colorize(data, colormap):
     out = np.zeros((256, 256, 4), dtype=np.uint8)
     tmp = np.zeros((256, 256), dtype=np.uint32)
     tmp.data = out.data
-    
+
     c = np.zeros(4, dtype=np.uint8)
     d = np.zeros(1, dtype=np.uint32)
     d.data = c.data
-    
+
     if colormap['missing']: c[0:3] = ImageColor.getrgb(colormap['missing'])
     else: c[0:3] = 0
     c[3] = 255
     tmp[...] = d
-    
+
     n = 0
     for b in colormap['bounds']:
         step = 1.0*(b['end'] - b['start'])/b['steps']
@@ -193,7 +193,7 @@ def colorize(data, colormap):
             c[0:3] = ImageColor.getrgb(colormap['colors'][n + i])
             tmp[mask] = d
         n += b['steps']
-    
+
     return out
 
 
@@ -220,22 +220,22 @@ def dehumanize_size(s):
 def download(url, name=None, progress=False):
     if name is None: name = os.path.basename(url)
     if name == '': raise ValueError
-    
+
     # Only output progress if attached to a terminal.
     progress = progress and sys.stderr.isatty()
-    
+
     import urllib2
     with closing(urllib2.urlopen(url)) as f:
         size = int(f.info()['Content-Length'])
-        
+
         with open(name, 'w') as g:
             if not progress: # Take a shortcut.
                 import shutil
                 shutil.copyfileobj(f, g)
                 return
-            
+
             sys.stderr.write('%s [0B/%s] 0%%' % (humanize_size(size), name))
-            
+
             buf = f.read(65536)
             i = 0
             while buf != '':
@@ -249,13 +249,13 @@ def download(url, name=None, progress=False):
                 ))
                 sys.stderr.flush()
                 buf = f.read(16384)
-    
+
     print >> sys.stderr, '\r\033[K%s' % name
 
 
 def trajectories_distance(traj1, traj2):
     """Approximate average distance between points of two trajectories.
-    
+
     Corresponding points are assumed to be close enough that their
     latitude is almost identical for the purpose of calculation in
     spherical geometry.
@@ -283,7 +283,7 @@ def quadmin((x1, x2, x3), (y1, y2, y3)):
 
 def intoptim_convex(f, low, high):
     """Constrained integer optimization of a convex function.
-    
+
     Find real x from [low, high] for which f(int(x)) attains its minumum value.
     Note that x could be a more accurate solution than its nearest integer
     value. This is possible by finding the argument minimizing quadratic
@@ -305,7 +305,7 @@ def intoptim_convex(f, low, high):
             break
         else:
             raise AssertionError('Function not convex')
-    
+
     x1 = x - 1
     x2 = x
     x3 = x + 1
@@ -321,5 +321,5 @@ def intoptim_convex(f, low, high):
         else:
             x1, x2, x3 = x1-1, x1, x2
             y1, y2, y3 = f(x1), y1, y2
-    
+
     return quadmin([x1, x2, x3], [y1, y2, y3])

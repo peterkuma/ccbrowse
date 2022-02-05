@@ -6,35 +6,35 @@ var LocationBar = new Class({
         this.left = this.bar.querySelector('.left');
         this.center = this.bar.querySelector('.center');
         this.right = this.bar.querySelector('.right');
-        
+
         this.requests = [];
-        
+
         this.map.on('moveend', this.update.bind(this));
         this.update();
     },
-    
+
     update: function() {
         if (this.xhr) return;
-        
+
         var bounds = this.map.getBounds();
         var zoom = this.map.getZoom();
-        
+
         var t1 = bounds.getSouthWest().lon;
         var t3 = bounds.getSouthEast().lon;
         var t2 = (t3-t2)/2;
-        
+
         var bounds = this.map.getPixelBounds();
         var x1 = Math.ceil(bounds.min.x/256);
         var x2 = Math.floor(bounds.max.x/256);
         var x = Math.round((x1+x2)/2);
-        
+
         var url = this.profile.prefix + this.profile.layers.geocoding.src;
         url = L.Util.template(url, {
                 'zoom': zoom,
                 'x': x
         });
         url += '?reduce=128';
-        
+
         this.xhr = new XMLHttpRequest();
         this.xhr.open('GET', url);
         this.xhr.onreadystatechange = function() {

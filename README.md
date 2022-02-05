@@ -41,7 +41,7 @@ On Ubuntu or Debian, install dependencies with:
     apt-get install libhdf4-0 libhdf4-dev libhdfeos0 libhdfeos-dev sqlite3 \
     python python-dev cython python-tz python-dateutil python-imaging \
     python-numpy python-scipy python-suds python-shapely python-pip
-    
+
     pip install bottle bintrees
 
 To install ccbrowse, run:
@@ -83,7 +83,7 @@ the files will be processed into tiles and imported into the repository.
 Finally, run the server with:
 
     ccbrowse server
-    
+
 Now, open [http://localhost:8080/](http://localhost:8080/) in your browser. That's it!
 
 If you encounter any issues, [file a bug report](https://github.com/peterkuma/ccbrowse/issues)
@@ -100,7 +100,7 @@ but you can change that by supplying an address and port as an argument, e.g.:
 To enable debugging mode, use the -d switch:
 
     ccbrowse server -d
-    
+
 This will cause the server to respond with detailed messages should an
 error occur.
 
@@ -123,7 +123,7 @@ the repository.
 You can choose to import only a certain layer or zoom level with `-l` and `-z`.
 
     ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
-    
+
 would generate tiles for the layer calipso532 and zoom level 2.
 
 Deployment
@@ -165,7 +165,7 @@ make ccbrowse available on a public domain, you can deploy an HTTP server such a
             listen [::]:80 default ipv6only=on;
             server_name your.domain;
             access_log  /var/log/nginx/ccbrowse.access.log;
-    
+
             location / {
                     proxy_pass http://localhost:8080;
                     proxy_set_header Host $host;
@@ -173,7 +173,7 @@ make ccbrowse available on a public domain, you can deploy an HTTP server such a
                     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             }
     }
-    
+
 replacing `your.domain` with the desired domain name.
 
 Repository
@@ -262,7 +262,7 @@ The configuration options are:
             driver          storage driver name
             [option]...     storage configuration options
         [storage]...
-      
+
 The storage configuration options are documented in a later section.
 
 Profile specification
@@ -423,7 +423,7 @@ Example:
         "driver": "filesystem",
         "src": "layers/{layer}/{zoom}/{x},{z}.png"
     }
-    
+
 Configuration options:
 
     driver          "filesystem"
@@ -452,7 +452,7 @@ Configuration options:
     src             filesystem path of the database file
     select          SQL query to retrieve object by its coordinates
     insert          SQL query to insert object
-    init            list of SQL queries for initialization of an empty database 
+    init            list of SQL queries for initialization of an empty database
 
 ### HTree storage
 
@@ -507,7 +507,7 @@ When the database grows over 128MB, the database is split into two chunks:
 
     01:00000.tiles
     01:80000.tiles
-    
+
 The first is filled with objects whose first bit of hash is 0 (hash < 80000),
 and the second with those whose first bit of hash is 1 (hash >= 80000).
 

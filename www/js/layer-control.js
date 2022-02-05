@@ -2,12 +2,12 @@ var LayerControl = new Class({
     initialize: function(el, nav) {
         this.el = el;
         this.nav = nav;
-        
+
         this.contentWrapper = this.el.querySelector('.content-wrapper');
         this.content = this.el.querySelector('.content');
         this.icon = this.el.querySelector('.icon');
         this.items = this.el.querySelector('.items');
-        
+
         this.icon.addEventListener('click', function() {
             this.el.toggleClass('collapsed');
             if (this.el.hasClass('collapsed')) {
@@ -20,14 +20,14 @@ var LayerControl = new Class({
             if (this.icon.tooltip) this.icon.tooltip.update();
             if (this.el.tooltip) this.el.tooltip.update();
         }.bind(this));
-        
+
         this.nav.on('layerchange', this.update.bind(this));
         this.update();
     },
-    
+
     update: function() {
         this.items.innerHTML = '';
-        var layers = this.nav.getLayers();   
+        var layers = this.nav.getLayers();
         Object.each(layers, function(layer, name) {
             if (layer.dimensions != 'xz' || !layer.colormap) return;
             var item = document.createElement('a');
@@ -48,7 +48,7 @@ var LayerControl = new Class({
             item.appendChild(label);
             this.items.appendChild(item);
         }.bind(this));
-        
+
         /*
         var newel = this.el.clone();
         newel.removeClass('collapsed');

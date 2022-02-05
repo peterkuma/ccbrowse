@@ -27,7 +27,6 @@
  * which are part of this project.
  */
 
-
 import Map from './map.js';
 import Navigation from './navigation.js';
 import NavigationPanel from './navigation-panel.js';

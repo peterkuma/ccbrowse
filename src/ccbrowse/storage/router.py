@@ -15,7 +15,7 @@ class Router(Driver):
         Driver.__init__(self, config,
                         on_store=on_store, on_retrieve=on_retrieve,
                         *args, **kwargs)
-    
+
     def storage_for(self, obj):
         for storage in self.storage:
             config, driver = storage
@@ -29,7 +29,7 @@ class Router(Driver):
                     continue
             return driver
         return None
-    
+
     def store(self, obj):
         if self.on_store: self.on_store(obj)
         storage = self.storage_for(obj)
@@ -37,7 +37,7 @@ class Router(Driver):
             raise RuntimeError('No suitable storage for object: %s' %
                                reprlib.repr(obj))
         storage.store(obj)
-    
+
     def retrieve(self, obj, exclude=[]):
         storage = self.storage_for(obj)
         if storage is None: return None

@@ -7,12 +7,12 @@
 var Colormap = function(el, colormap) {
     this.el = typeof el == 'string' ? $(el) : el;
     this.colormap = colormap;
-    
+
     this.el.innerHTML = '';
-    
+
     var height = this.el.getSize().y;
     var yoffset = 0;
-    
+
     if (this.colormap.over) {
         var over = document.createElement('div');
         over.addClass('colormap-over');
@@ -24,7 +24,7 @@ var Colormap = function(el, colormap) {
         height -= over.getSize().y;
         yoffset += over.getSize().y;
     }
-    
+
     if (this.colormap.under) {
         var under = document.createElement('div');
         under.addClass('colormap-under');
@@ -35,7 +35,7 @@ var Colormap = function(el, colormap) {
         under.setStyle('left', 0);
         under.setStyle('background-color', this.colormap.under);
     }
-    
+
     var colors = document.createElement('div');
     this.el.appendChild(colors);
     colors.setStyle('position', 'absolute');
@@ -44,7 +44,7 @@ var Colormap = function(el, colormap) {
     colors.setStyle('left', 0);
     colors.setStyle('height', height);
     this.drawColors(colors);
-    
+
     var ticks =  document.createElement('div');
     this.el.appendChild(ticks);
     ticks.setStyle('width', 80);
@@ -79,13 +79,13 @@ Colormap.prototype.drawTicks = function(el) {
     var min = this.colormap.ticks[0];
     var max = this.colormap.ticks[this.colormap.ticks.length - 1];
     var h = height/this.colormap.colors.length;
-    
+
     // Reduce the number of ticks to fit height.
     var nticks = 0;
     this.colormap.ticks.forEach(function(range) { nticks += range.steps; });
     var factor = Math.ceil(15/height*nticks);
     if (factor <= 1) factor = 1;
-    
+
     var self = this;
     var n = 0;
     var ticks = this.colormap.ticks;
@@ -106,8 +106,8 @@ Colormap.prototype.drawTicks = function(el) {
             tick.setStyle('position', 'absolute');
             tick.setStyle('top', y+1);
             el.appendChild(tick);
-            
-            
+
+
             var label = document.createElement('div');
             el.appendChild(label);
             label.set('html', scientific(v));
