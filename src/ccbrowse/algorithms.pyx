@@ -1,7 +1,7 @@
 cimport cython
 cimport numpy as np
 import numpy as np
-import ImageColor
+from PIL import ImageColor
 
 cdef extern from "math.h":
     double floor(double)

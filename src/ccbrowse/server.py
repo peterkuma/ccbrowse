@@ -10,7 +10,7 @@ from bottle import route, request, abort
 import StringIO
 import json
 import numpy as np
-import Image
+from PIL import Image
 from datetime import datetime
 import shapely.geometry
 import socket
@@ -72,23 +72,23 @@ def last_modified(modified):
 @route('/')
 @route('/about/')
 def index():
-    return bottle.static_file('index.html', root=os.path.join(sharepath, 'www'))
+    return bottle.static_file('index.html', root=os.path.realpath(os.path.join(sharepath, 'www')))
 
 
 # Profile.
 @route('<filename:re:/profile\.json>')
 def profile(filename):
-    return bottle.static_file(filename, root=config['root'])
+    return bottle.static_file(filename, root=os.path.realpath(config['root']))
 
 
 # Colormaps
 @route('/colormaps/<name>')
 def colormap(name):
     profile.colormap(name)
-    
+
     if os.path.exists(os.path.join(config['colormaps'], name)):
-        return bottle.static_file(name, root=config['colormaps'])
-    return bottle.static_file(name, root=os.path.join(sharepath, 'colormaps'))
+        return bottle.static_file(name, root=os.path.realpath(config['colormaps']))
+    return bottle.static_file(name, root=os.path.realpath(os.path.join(sharepath, 'colormaps')))
 
 
 # Places.
