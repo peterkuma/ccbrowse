@@ -36,3 +36,5 @@ Query.prototype.perform = function(profile, layer, level, t, h) {
     req.open('GET', url);
     req.send()
 }
+
+export default Query;

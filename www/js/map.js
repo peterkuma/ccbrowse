@@ -8,6 +8,7 @@
 
 
 import YAxis from './yaxis.js';
+import Query from './query.js';
 
 
 var Map = new Class({
@@ -251,6 +252,7 @@ var Map = new Class({
                     });
                     return;
                 }
+                let json;
                 try { json = JSON.parse(xhr.responseText); }
                 catch(e) { json = {}; }
                 var name = json.name ? json.name : '';
