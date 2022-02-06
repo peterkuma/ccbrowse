@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -35,11 +35,11 @@ if __name__ == "__main__":
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ['help'])
-    except getopt.GetoptError, err:
-        print unicode(err)
+    except getopt.GetoptError as err:
+        print(str(err))
         usage()
         sys.exit(1)
-    
+
     dirname = '.'
     if len(args) == 1: dirname = args[0]
     if len(args) > 1:
@@ -49,18 +49,18 @@ if __name__ == "__main__":
     filename = os.path.join(dirname, 'profile.json')
 
     try: profile = ccbrowse.Profile(filename)
-    except IOError, e:
-        print >> sys.stderr, u'%s: %s: %s' % (program_name, filename, e.strerror)
+    except IOError as e:
+        print('%s: %s: %s' % (program_name, filename, e.strerror), file=sys.stderr)
         sys.exit(1)
 
-    try: print 'Name: %s' % profile['name']
+    try: print('Name: %s' % profile['name'])
     except KeyError: pass
-    try: print 'Origin-X: %s' % profile['origin'][0].strftime('%Y-%m-%d %H:%M:%S')
+    try: print('Origin-X: %s' % profile['origin'][0].strftime('%Y-%m-%d %H:%M:%S'))
     except KeyError: pass
-    try: print 'Origin-Z: %d' % profile['origin'][1]
+    try: print('Origin-Z: %d' % profile['origin'][1])
     except KeyError: pass
 
-    if profile.has_key('zoom'):
+    if 'zoom' in profile:
         sys.stdout.write('Zoom-Levels:')
         i = 0
         for level,zoom in [(k, profile['zoom'][k]) for k in sorted(profile['zoom'])]:
@@ -72,15 +72,15 @@ if __name__ == "__main__":
                 zoom.get('height',''),
             ))
             i += 1
-        print ''
+        print('')
 
-    if profile.has_key('layers'):
-        print 'Layers:'
+    if 'layers' in profile:
+        print('Layers:')
         for name,layer in [(k, profile['layers'][k]) for k in sorted(profile['layers'])]:
             sys.stdout.write('    %s (%s;%s)' % (
                 name,
                 layer.get('dimensions',''),
                 layer.get('format',''),
             ))
-            if layer.has_key('title'): print ' - %s' % layer['title']
-            else: print ''
+            if 'title' in layer: print(' - %s' % layer['title'])
+            else: print('')

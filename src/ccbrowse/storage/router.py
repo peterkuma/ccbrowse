@@ -1,15 +1,15 @@
 from ccbrowse.storage import *
 import copy
-import repr as reprlib
+import reprlib as reprlib
 
 class Router(Driver):
     def __init__(self, config, root='.', on_store=None, on_retrieve=None, *args, **kwargs):
         self.config = copy.deepcopy(config)
         self.storage = []
         for c in self.config:
-            if c.has_key('src'): c['src'] = os.path.join(root, c['src'])
+            if 'src' in c: c['src'] = os.path.join(root, c['src'])
             driver = c.get('driver', 'filesystem')
-            if DRIVERS.has_key(driver):
+            if driver in DRIVERS:
                 d = DRIVERS[driver](c, *args, **kwargs)
                 self.storage.append((c, d))
         Driver.__init__(self, config,
@@ -19,10 +19,10 @@ class Router(Driver):
     def storage_for(self, obj):
         for storage in self.storage:
             config, driver = storage
-            if config.has_key('requires'):
-                if not set(config['requires']).issubset(obj.keys()):
+            if 'requires' in config:
+                if not set(config['requires']).issubset(list(obj.keys())):
                     continue
-            if config.has_key('predicate'):
+            if 'predicate' in config:
                 try: result = eval(config['predicate'], obj)
                 except: result = False
                 if not result:

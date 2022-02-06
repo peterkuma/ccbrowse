@@ -13,7 +13,7 @@ class FilesystemDriver(Driver):
     """
     
     def __init__(self, config, *args, **kwargs):
-        if not config.has_key('src'):
+        if 'src' not in config:
             ValueError('Filesystem driver: "src" configuration field is required')
         self.config = config
         Driver.__init__(self, config, *args, **kwargs)

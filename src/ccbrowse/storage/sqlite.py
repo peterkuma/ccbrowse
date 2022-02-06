@@ -9,7 +9,7 @@ from .driver import Driver
 class SQLiteDriver(Driver):
     def __init__(self, config, *args, **kwargs):
         def require(field):
-            if not config.has_key(field):
+            if field not in config:
                 raise ValueError('SQLite driver: "%s" configuraiton field is required' % field)
         require('src')
         require('insert')
@@ -70,7 +70,7 @@ class SQLiteDriver(Driver):
         row = rows.fetchone()
         if row is None: return None
         o = obj.copy()
-        o.update(dict(zip(row.keys(), row)))
+        o.update(dict(list(zip(list(row.keys()), row))))
         conn.close()
         return Driver.retrieve(self, o, exclude)
     

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -7,7 +7,7 @@ import getopt
 import re
 import bottle
 from bottle import route, request, abort
-import StringIO
+import io
 import json
 import numpy as np
 from PIL import Image
@@ -214,7 +214,7 @@ def serve(layer, zoom=None, x=None, z=None, fmt=None):
             return serve_tile(obj)
         else:
             obj = profile.load(obj)
-            if obj != None and obj.has_key('raw_data'):
+            if obj != None and 'raw_data' in obj:
                 return obj['raw_data']
     except RuntimeError as e:
         logging.error(e)
@@ -239,7 +239,7 @@ def serve_json(obj):
 
     if not request.query.q:
         bottle.response.content_type = 'application/json'
-        if obj.has_key('data'): return obj['data']
+        if 'data' in obj: return obj['data']
         else: abort(404, 'Object has no data')
 
     q = request.query.q
@@ -280,7 +280,7 @@ def serve_tile(obj):
             return buf.getvalue()
 
     #print 'Cache miss'
-    if not obj.has_key('data'):
+    if 'data' not in obj:
         obj = profile.load(obj)
         if obj is None: abort(404, 'Object not found')
     data = obj['data']
@@ -291,7 +291,7 @@ def serve_tile(obj):
         if m:
             x, y = int(m.group(1)), int(m.group(2))
             bottle.response.content_type = 'text/plain'
-            try: return unicode(data[y, x])
+            try: return str(data[y, x])
             except ValueError: pass
         abort(404, 'Invalid query coordinates')
 
@@ -301,7 +301,7 @@ def serve_tile(obj):
     buf = io.BytesIO()
     img.save(buf, 'png')
     out = buf.getvalue()
-    cache.store(dict(obj, raw_data=buffer(out)))
+    cache.store(dict(obj, raw_data=out))
     bottle.response.content_type = 'image/png'
     return out
 

@@ -43,9 +43,9 @@ class NaturalEarth(object):
         for feature in self.geojson['features']:
             try:
                 p = feature['properties']
-                if p.has_key('featurecla'): featurecla = p['featurecla']
+                if 'featurecla' in p: featurecla = p['featurecla']
                 else: featurecla = p['FeatureCla']
-                if p.has_key('name'): name = p['name']
+                if 'name' in p: name = p['name']
                 else: name = p['Name']
                 geometry = feature['geometry']
             except KeyError: continue

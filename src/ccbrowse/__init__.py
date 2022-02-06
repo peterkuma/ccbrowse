@@ -1,3 +1,3 @@
-import utils
-import server
+from . import utils
+from . import server
 from .profile import *

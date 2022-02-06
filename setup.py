@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import os
 import sys
 from glob import glob
@@ -47,7 +49,7 @@ class build_js(Command):
                 proc = subprocess.Popen(['browserify', '-v'], stdout=fp, stderr=fp)
                 proc.communicate()
         except OSError:
-            print >>sys.stderr, 'warning: browserify not available, will not rebuild javascript'
+            print('warning: browserify not available, will not rebuild javascript', file=sys.stderr)
             return
         cmd = [
             'browserify',
@@ -59,13 +61,13 @@ class build_js(Command):
             ']',
             'node_modules/whatwg-fetch',
         ] + glob('www/js/*.js')
-        print ' '.join(cmd)
+        print(' '.join(cmd))
         try:
             ret = call(cmd)
             if ret != 0:
                 sys.exit(1)
         except OSError as e:
-            print >>sys.stderr, e.strerror
+            print(e.strerror, file=sys.stderr)
             sys.exit(1)
 
 
@@ -84,16 +86,16 @@ class build_scss(Command):
                 proc = subprocess.Popen(['sass', '-v'], stdout=fp, stderr=fp)
                 proc.communicate()
         except OSError:
-            print >>sys.stderr, 'warning: sass not available, will not rebuild stylesheets'
+            print('warning: sass not available, will not rebuild stylesheets', file=sys.stderr)
             return
         cmd = ['sass', '--update', 'ccbrowse.scss', 'ccbrowse.css']
-        print ' '.join(cmd)
+        print(' '.join(cmd))
         try:
             ret = call(cmd, cwd='www/css')
             if ret != 0:
                 sys.exit(1)
         except OSError as e:
-            print >>sys.stderr, e.strerror
+            print(e.strerror, file=sys.stderr)
             sys.exit(1)
 
 
@@ -105,9 +107,10 @@ setup(
     url='https://github.com/peterkuma/ccbrowse',
     license = "MIT",
     platforms='any',
-    requires=['numpy', 'bottle', 'suds'],
     classifiers = [
         "Programming Language :: Python",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3",
         "Programming Language :: Cython",
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX",

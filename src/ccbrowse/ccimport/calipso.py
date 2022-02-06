@@ -5,7 +5,7 @@ import math
 from scipy.interpolate import interp1d
 
 import ccbrowse
-import calipso_constants
+from . import calipso_constants
 from ccbrowse.hdf import HDF
 from ccbrowse.algorithms import interp2d
 
@@ -29,8 +29,8 @@ class Calipso(Product):
         self.hdf = HDF(filename)
     
     def layers(self):
-        layers = self.profile['layers'].keys()
-        return set(layers).intersection(self.DATASETS.keys())
+        layers = list(self.profile['layers'].keys())
+        return set(layers).intersection(list(self.DATASETS.keys()))
         
     def xrange(self, layer, level):
         w = self.profile['zoom'][level]['width']
@@ -40,7 +40,7 @@ class Calipso(Product):
         t2 = self._dt2ms(self._time2dt(time[-1,0]) - t_origin) + self.offset()
         x1 = int(math.floor(t1 / w))
         x2 = int(math.floor(t2 / w))
-        return range(x1, x2+1)
+        return list(range(x1, x2+1))
 
     def zrange(self, layer, level):
         # One-dimensional layer.
@@ -51,7 +51,7 @@ class Calipso(Product):
         h = self.profile['zoom'][level]['height']
         z1 = int(math.floor((self.LIDAR_ALTITUDES[-1] - self.profile['origin'][1]) / h))
         z2 = int(math.floor((self.LIDAR_ALTITUDES[0] - self.profile['origin'][1]) / h))
-        return range(z1, z2+1)
+        return list(range(z1, z2+1))
     
     def tile(self, layer, level, x, z):
         #
@@ -124,7 +124,7 @@ class Calipso(Product):
                     'type': 'Feature',
                     'geometry': {
                         'type': 'LineString',
-                        'coordinates': zip(lon, lat)                        
+                        'coordinates': list(zip(lon, lat))                        
                     },
                 }]      
             }
@@ -148,7 +148,7 @@ class Calipso(Product):
         try:
             fillvalue = dataset.attributes['fillvalue']
             raw_data = np.ma.masked_equal(raw_data, fillvalue, copy=False)    
-        except KeyError, IndexError: pass
+        except KeyError as IndexError: pass
         
         if interpolation == 'smart':
             N = np.arange(n1, n2, (n2-n1)/256.0)

@@ -38,7 +38,7 @@ class MemCacheDriver(Driver):
         Driver.__init__(self, config, *args, **kwargs)
         
     def sizeof(self, obj):
-        return sys.getsizeof(obj) + sum([sys.getsizeof(v) for v in obj.values()])
+        return sys.getsizeof(obj) + sum([sys.getsizeof(v) for v in list(obj.values())])
     
     def keyof(self, obj):
         return tuple([obj.get(k,None) for k in self.config['key']])

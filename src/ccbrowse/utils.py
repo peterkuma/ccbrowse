@@ -42,7 +42,7 @@ def substitute(s, variables):
     """
     params = []
     def repl(m):
-        try: return unicode(eval(m.group(1), variables))
+        try: return str(eval(m.group(1), variables))
         except: return ''
     return re.sub('\{(.+?)\}', repl, s)
 
@@ -77,7 +77,8 @@ def pngpack(data):
     meta.add_text('type', data.dtype.name)
     buf = io.BytesIO()
     im.save(buf, 'png', pnginfo=meta)
-    return buffer(buf.getvalue())
+    #return buffer(buf.getvalue())
+    return buf.getvalue()
 
 
 def pngunpack(raw_data):
@@ -92,8 +93,8 @@ def pngunpack(raw_data):
     w, h = im.size
     if w % nbytes != 0:
         raise IOError('Invalid PNG packing')
-    tmp = np.array(im)
-    data = np.zeros((h, w/nbytes), dtype=dtype)
+    tmp = np.asarray(im)
+    data = np.zeros((h, w//nbytes), dtype=dtype)
     data.data = tmp.data
     return data
 
@@ -118,7 +119,7 @@ def parse_ref(s):
 def dump_ref(ref):
     s = ''
     for r in ref:
-        if r.has_key('offset'):
+        if 'offset' in r:
             s += 'ref: %(product)s:offset=%(offset)d:%(filename)s\n' % r
         else:
             s += 'ref: %(product)s:%(filename)s\n' % r
@@ -148,7 +149,7 @@ def geojson_update(a, b, feature_index=None):
     to the feature objects. If supplied, the operation can be done significantly
     faster. feature_index, if present, is updated to reflect the new state of a.
     """
-    if not b.has_key('features'): return
+    if 'features' not in b: return
     if feature_index is None:
         # Build a temporary index.
         feature_index = {}
@@ -161,7 +162,7 @@ def geojson_update(a, b, feature_index=None):
     for f in b['features']:
         try:
             key = (f['properties']['type'],f['properties']['name'])
-            if not feature_index.has_key(key):
+            if key not in feature_index:
                 a['features'].append(f)
             feature_index[key] = f
         except KeyError: pass
@@ -224,8 +225,8 @@ def download(url, name=None, progress=False):
     # Only output progress if attached to a terminal.
     progress = progress and sys.stderr.isatty()
 
-    import urllib2
-    with closing(urllib2.urlopen(url)) as f:
+    import urllib.request, urllib.error, urllib.parse
+    with closing(urllib.request.urlopen(url)) as f:
         size = int(f.info()['Content-Length'])
 
         with open(name, 'w') as g:
@@ -250,7 +251,7 @@ def download(url, name=None, progress=False):
                 sys.stderr.flush()
                 buf = f.read(16384)
 
-    print >> sys.stderr, '\r\033[K%s' % name
+    print('\r\033[K%s' % name, file=sys.stderr)
 
 
 def trajectories_distance(traj1, traj2):
@@ -271,8 +272,10 @@ def trajectories_distance(traj1, traj2):
     return d/len(traj1)
 
 
-def quadmin((x1, x2, x3), (y1, y2, y3)):
+def quadmin(xxx_todo_changeme, xxx_todo_changeme1):
     """Find the minimum of a quadratic polynomial fitting three points."""
+    (x1, x2, x3) = xxx_todo_changeme
+    (y1, y2, y3) = xxx_todo_changeme1
     w1 = 1.0*(x1-x2)*(x1-x3)
     w2 = 1.0*(x2-x1)*(x2-x3)
     w3 = 1.0*(x3-x1)*(x3-x2)

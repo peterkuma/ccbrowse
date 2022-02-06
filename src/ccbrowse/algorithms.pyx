@@ -162,13 +162,13 @@ def colorize(np.ndarray[float, ndim=2, mode="c"] data not None,
     over = np.zeros(4, np.uint8)
     under = np.zeros(4, np.uint8)
 
-    if colormap.has_key('missing'):
+    if 'missing' in colormap:
         missing = np.array(ImageColor.getrgb(colormap['missing'])+(255,), np.uint8)
 
-    if colormap.has_key('under'):
+    if 'under' in colormap:
         under = np.array(ImageColor.getrgb(colormap['under'])+(255,), np.uint8)
 
-    if colormap.has_key('over'):
+    if 'over' in colormap:
         over = np.array(ImageColor.getrgb(colormap['over'])+(255,), np.uint8)
 
     colors = np.array([ImageColor.getrgb(c)+(255,) for c in colormap['colors']],

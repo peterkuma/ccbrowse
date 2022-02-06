@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -18,7 +18,7 @@ Try `{program_name} --help' for more information.
 def print_help():
     sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
        {program_name} --help
-       
+
 Run the ccbrowse HTTP server.
 
 Positional arguments:
@@ -27,7 +27,7 @@ Positional arguments:
 
 Optional arguments:
   -c FILE           configuration file (default: config.json)
-  -d                print debugging information    
+  -d                print debugging information
   --help            print this help information
 
 Report bugs to <ccplot-general@lists.sourceforge.net>.
@@ -38,18 +38,18 @@ if __name__ == "__main__":
     program_name = sys.argv[0]
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     os.setpgrp()
-    
+
     config = ccbrowse.config.default_config
     filename = 'config.json'
     debug = False
-    
+
     # Command line arguments.
     try: opts, args = getopt.getopt(sys.argv[1:], 'c:d', ['help'])
     except getopt.GetoptError as e:
         logging.error(e)
         usage()
         sys.exit(1)
-    
+
     for opt,value in opts:
         if opt == '-d':
             debug = True
@@ -58,11 +58,11 @@ if __name__ == "__main__":
         elif opt == '--help':
             print_help()
             sys.exit(0)
-    
+
     if len(args) > 1:
         usage()
         sys.exit(1)
-    
+
     try:
         with open(filename) as fp:
             config.update(json.load(fp))
@@ -72,9 +72,9 @@ if __name__ == "__main__":
     except IOError as e:
         logging.error('%s: %s' % (e.filename, e.strerror))
         sys.exit(1)
-        
+
     config['debug'] = debug
-    
+
     host = None
     port = None
     if len(args) == 1:
@@ -83,14 +83,14 @@ if __name__ == "__main__":
         else:
             host = args[0][:i]
             port = args[0][(i+1):]
-    
+
     if host != None: config['host'] = host
     try:
         if port != None: config['port'] = int(port)
     except ValueError:
         logging.error('Invalid port number %s' % args[0][i+1:])
         sys.exit(1)
-    
+
     try: ccbrowse.server.run(config)
     except RuntimeError as e:
         logging.error(e)

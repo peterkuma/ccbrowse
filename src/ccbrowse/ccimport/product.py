@@ -31,8 +31,8 @@ class Product(object):
         
     def layers(self):
         """Return a list of all layers contained within the file."""
-        layers = self.profile['layers'].keys()
-        return set(layers).intersection(self.DATASETS.keys())
+        layers = list(self.profile['layers'].keys())
+        return set(layers).intersection(list(self.DATASETS.keys()))
         
     def xrange(self, layer, level):
         """Return a list of valid x coordinates."""

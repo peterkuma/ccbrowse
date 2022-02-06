@@ -41,10 +41,10 @@ class RangeList(object):
         self.tree = RBTree(sequence)
         
     def __iter__(self):
-        return iter(self.tree.items())
+        return iter(list(self.tree.items()))
     
     def __repr__(self):
-        return `list(self.tree.items())`
+        return repr(list(self.tree.items()))
     
     def append(self, start, stop):
         """Append range (start, stop) to the list."""
@@ -53,7 +53,7 @@ class RangeList(object):
             raise ValueError('stop has to be greater than start')
         
         delete = []
-        for nextstart, nextstop in self.tree[start:].items():
+        for nextstart, nextstop in list(self.tree[start:].items()):
             if nextstart <= stop:
                 stop = max(nextstop, stop)
                 delete.append(nextstart)
@@ -76,7 +76,7 @@ class RangeList(object):
         """Remove range (start, stop) from the list."""
         
         delete = []
-        for nextstart, nextstop in self.tree[start:].items():
+        for nextstart, nextstop in list(self.tree[start:].items()):
             if nextstart < stop:
                 if nextstop > stop: self.tree[stop] = nextstop
                 delete.append(nextstart)

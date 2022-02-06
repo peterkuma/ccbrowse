@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -34,7 +34,7 @@ Report bugs to <ccplot-general@lists.sourceforge.net>
 
 
 def put(storage, filename, name, context=None):
-    print '%s -> %s' % (filename, name)
+    print('%s -> %s' % (filename, name))
     try:
         with open(filename, 'rb') as f:
             contents = f.read()
@@ -73,8 +73,8 @@ if __name__ == "__main__":
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ['help'])
-    except getopt.GetoptError, err:
-        print unicode(err)
+    except getopt.GetoptError as err:
+        print(str(err))
         usage()
         sys.exit(1)
 

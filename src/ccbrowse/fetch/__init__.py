@@ -1,1 +1,1 @@
-from calipso import *
+from .calipso import *

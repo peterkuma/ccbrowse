@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -52,7 +52,7 @@ def save_decorator(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         try: f(*args, **kwargs)
-        except KeyboardInterrupt: print
+        except KeyboardInterrupt: print()
     return wrapper
 
 
@@ -62,7 +62,7 @@ def save(product, profile, layer=None, zoom=None,
     if statistics: stat = dict(n=0, read=0, save=0)
 
     if soft:
-        product_name = PRODUCTS.keys()[PRODUCTS.values().index(type(product))]
+        product_name = list(PRODUCTS.keys())[list(PRODUCTS.values()).index(type(product))]
         filename = os.path.abspath(product.filename)
         root = profile.get_root()
         if filename.startswith(root): filename = filename[len(root):]
@@ -122,11 +122,11 @@ def save(product, profile, layer=None, zoom=None,
                         stat['n'] += 1
 
             profile.write_availability()
-            if line: print '\r\033[K%s level %s tiles %d--%d' % \
-                           (l, level, X[0], X[-1])
+            if line: print('\r\033[K%s level %s tiles %d--%d' % \
+                           (l, level, X[0], X[-1]))
     if statistics and stat['n'] > 0:
-        print 'Statistics: read and processing %.2f ms/tile, save %.2f ms/tile' % \
-              (1000*stat['read']/stat['n'], 1000*stat['save']/stat['n'])
+        print('Statistics: read and processing %.2f ms/tile, save %.2f ms/tile' % \
+              (1000*stat['read']/stat['n'], 1000*stat['save']/stat['n']))
 
 if __name__ == "__main__":
     program_name = sys.argv[0]

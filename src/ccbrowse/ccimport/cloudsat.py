@@ -31,8 +31,8 @@ class CloudSat(Product):
             self._offset = self._calculate_offset(self.OFFSET_ZOOM)
     
     def layers(self):
-        layers = self.profile['layers'].keys()
-        return set(layers).intersection(self.DATASETS.keys())
+        layers = list(self.profile['layers'].keys())
+        return set(layers).intersection(list(self.DATASETS.keys()))
         
     def xrange(self, layer, level):
         w = self.profile['zoom'][level]['width']
@@ -44,7 +44,7 @@ class CloudSat(Product):
         t2 = self._dt2ms(self._time(time[-1], start) - t_origin) + self.offset()
         x1 = int(math.floor(t1 / w))
         x2 = int(math.floor(t2 / w))
-        return range(x1, x2+1)
+        return list(range(x1, x2+1))
 
     def zrange(self, layer, level):
         # One-dimensional layer.
@@ -58,7 +58,7 @@ class CloudSat(Product):
         high = max(height[:,0])
         z1 = int(math.floor((low - self.profile['origin'][1])/h))
         z2 = int(math.floor((high - self.profile['origin'][1])/h))
-        return range(z1, z2+1)
+        return list(range(z1, z2+1))
     
     def tile(self, layer, level, x, z):
         #
@@ -139,7 +139,7 @@ class CloudSat(Product):
                     'type': 'Feature',
                     'geometry': {
                         'type': 'LineString',
-                        'coordinates': zip(lon, lat)                        
+                        'coordinates': list(zip(lon, lat))                        
                     },
                 }]      
             }
@@ -162,14 +162,14 @@ class CloudSat(Product):
         try:
             fillvalue = dataset.attributes['_FillValue']
             raw_data = np.ma.masked_equal(raw_data, fillvalue, copy=False)    
-        except KeyError, IndexError: pass
+        except KeyError as IndexError: pass
         
         try:
             valid_range = dataset.attributes['valid_range']
             low = valid_range[0]
             high = valid_range[1]
             raw_data = np.ma.masked_outside(raw_data, low, high, copy=False)
-        except KeyError, IndexError: pass
+        except KeyError as IndexError: pass
         
         factor = dataset.attributes['factor']
         offset = dataset.attributes['offset']
@@ -195,18 +195,18 @@ class CloudSat(Product):
         return start + dt.timedelta(0, float(time))
 
     def _calculate_offset(self, level):
-        w = self.profile['zoom'][`level`]['width']
+        w = self.profile['zoom'][repr(level)]['width']
         
         traj1 = []
         traj2 = []
         
-        for x in self.xrange('longitude', `level`):
-            lon2 = self.tile('cloudsat-longitude', `level`, x, 0)['data']
-            lat2 = self.tile('cloudsat-latitude', `level`, x, 0)['data']
+        for x in self.xrange('longitude', repr(level)):
+            lon2 = self.tile('cloudsat-longitude', repr(level), x, 0)['data']
+            lat2 = self.tile('cloudsat-latitude', repr(level), x, 0)['data']
             
             obj = self.profile.load({
                 'layer': 'longitude',
-                'zoom': `level`,
+                'zoom': repr(level),
                 'x': x,
                 'z': 0,
             })
@@ -215,14 +215,14 @@ class CloudSat(Product):
             
             obj = self.profile.load({
                 'layer': 'latitude',
-                'zoom': `level`,
+                'zoom': repr(level),
                 'x': x,
                 'z': 0,
             })
             if obj is None: continue
             lat1 = obj['data']
-            traj1 += zip(lon1[0,::8], lat1[0,::8])
-            traj2 += zip(lon2[0,::8], lat2[0,::8])
+            traj1 += list(zip(lon1[0,::8], lat1[0,::8]))
+            traj2 += list(zip(lon2[0,::8], lat2[0,::8]))
         
         if len(traj1) == 0: return 0
         

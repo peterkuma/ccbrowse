@@ -5,7 +5,7 @@ import suds
 from xml.etree import ElementTree
 import logging
 import subprocess
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from contextlib import closing
 
 from ccbrowse import utils
@@ -86,38 +86,38 @@ class Calipso(object):
             if not tracking_id: self.do_order(startdate, stopdate)
             else: self.download(tracking_id)
         except suds.WebFault as e:
-            print >> sys.stderr, e
-        except urllib2.URLError as e:
-            print >> sys.stderr, e.reason
+            print(e, file=sys.stderr)
+        except urllib.error.URLError as e:
+            print(e.reason, file=sys.stderr)
     
     def do_order(self, startdate, stopdate):        
         sys.stderr.write('Initializing NASA ECHO services... ')
         sys.stderr.flush()
         self.init_wsdl_services()
-        print >> sys.stderr, 'DONE'
+        print('DONE', file=sys.stderr)
         
         sys.stderr.write('Authenticating... ')
         sys.stderr.flush()
         if not self.token: self.authenticate()
-        print >> sys.stderr, 'DONE'
+        print('DONE', file=sys.stderr)
         
         sys.stderr.write('Looking up items... ')
         sys.stderr.flush()
         guids = self.lookup(startdate, stopdate)
-        print >> sys.stderr, 'DONE'
+        print('DONE', file=sys.stderr)
         
         if len(guids) == 0:
-            print >> sys.stderr, 'No items found'
+            print('No items found', file=sys.stderr)
             return
         
-        print >> sys.stderr, 'Found items ' + ', '.join(guids)
+        print('Found items ' + ', '.join(guids), file=sys.stderr)
         
         sys.stderr.write('Creating order... ')
         sys.stderr.flush()
         oguid = self.create_order(guids)
-        print >> sys.stderr, 'DONE'
+        print('DONE', file=sys.stderr)
         
-        print >> sys.stderr, 'Order GUID is %s' % oguid
+        print('Order GUID is %s' % oguid, file=sys.stderr)
         
         sys.stderr.write('Requesting order quotation... ')
         sys.stderr.flush()
@@ -126,13 +126,13 @@ class Calipso(object):
             sys.stderr.write('.')
             sys.stderr.flush()
             time.sleep(15)
-        print >> sys.stderr, 'DONE'
+        print('DONE', file=sys.stderr)
         
         price = self.get_order_price(oguid)
-        print >> sys.stderr, 'Price for the order is $%d' % price
+        print('Price for the order is $%d' % price, file=sys.stderr)
         
         if price != 0:
-            print >> sys.stderr, 'Order price is not 0, not submitting the order'
+            print('Order price is not 0, not submitting the order', file=sys.stderr)
             return
         
         sys.stderr.write('Submitting order (this may take a while)... ')
@@ -142,10 +142,10 @@ class Calipso(object):
             sys.stderr.write('.')
             sys.stderr.flush()
             time.sleep(15)
-        print >> sys.stderr, 'DONE'
+        print('DONE', file=sys.stderr)
         
         tracking_id = self.get_tracking_id(oguid)
-        print >> sys.stderr, 'Tracking ID is %s' % tracking_id
+        print('Tracking ID is %s' % tracking_id, file=sys.stderr)
         
         self.download(tracking_id)
         
@@ -153,18 +153,18 @@ class Calipso(object):
         url = 'ftp://%s/%s/' % (self.FTP_SERVER, tracking_id)
         
         try:
-            with closing(urllib2.urlopen(url)) as f:
+            with closing(urllib.request.urlopen(url)) as f:
                 # TODO: Support white-space in file names.
                 files = [os.path.basename(l.split()[-1]) for l in f.readlines() if l[0] != 'd']
-        except urllib2.URLError as e: print >> sys.stderr, "%s: %s" % (url, e)
+        except urllib.error.URLError as e: print("%s: %s" % (url, e), file=sys.stderr)
         
         for name in files:
             if name[0] == '.' or not name.endswith('.hdf'): continue
             filename = os.path.join(self.path, name)
             try:
                 utils.download(url+name, filename, progress=True)
-                print name
-            except urllib2.URLError as e: print >> sys.stderr, "%s: %s" % (url+name ,e)
+                print(name)
+            except urllib.error.URLError as e: print("%s: %s" % (url+name ,e), file=sys.stderr)
 
     def init_wsdl_services(self):
         self.auth = suds.client.Client(self.AUTHENTICATION_SERVICE)

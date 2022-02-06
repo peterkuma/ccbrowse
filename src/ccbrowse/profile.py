@@ -18,12 +18,12 @@ class ProfileJSONDecoder(json.JSONDecoder):
         json.JSONDecoder.__init__(self, *args, **kwargs)
 
     def object_hook(self, d):
-        if type(d) == dict: i = d.items()
+        if type(d) == dict: i = list(d.items())
         else: i = enumerate(d)
         for k, v in i:
             if type(v) == list:
                 self.object_hook(v)
-            if type(v) == unicode:
+            if type(v) == str:
                 try: d[k] = datetime.strptime(v, '%Y-%m-%d %H:%M:%S').replace(tzinfo=pytz.utc)
                 except ValueError: pass
         else: return d
@@ -62,7 +62,7 @@ class Profile(object):
         self.cache.empty()
 
     def __contains__(self, item):
-        return self.json.has_key(item)
+        return item in self.json
 
     def __getitem__(self, key):
         return self.json[key]
@@ -77,10 +77,10 @@ class Profile(object):
         return os.path.abspath(self.config['root'])+'/'
 
     def layer_for(self, obj):
-        if not obj.has_key('layer'):
+        if 'layer' not in obj:
             raise ValueError('Missing object field: "layer"')
         name = obj['layer']
-        if not self['layers'].has_key(name):
+        if name not in self['layers']:
             raise ValueError('No such layer %s' % name)
         return self['layers'][name]
 
@@ -106,23 +106,23 @@ class Profile(object):
         if 'raw_data' in obj:
             return
 
-        if obj.has_key('ref') and obj.has_key('data'):
+        if 'ref' in obj and 'data' in obj:
             # We have no option but to dereference.
             self.dereference(obj)
 
-        if obj.has_key('ref'):
+        if 'ref' in obj:
             obj['raw_data'] = utils.dump_ref(obj['ref'])
 
-        if obj.has_key('data'):
+        if 'data' in obj:
             if obj['format'] == 'png':
                 obj['raw_data'] = utils.pngpack(obj['data'])
             elif obj['format'] == 'json':
-                obj['raw_data'] = json.dumps(obj.get('data'), {})
+                obj['raw_data'] = json.dumps(obj.get('data'))
             else:
-                obj['raw_data'] = json.dumps(obj.get('data'), {})
+                obj['raw_data'] = json.dumps(obj.get('data'))
 
     def dereference(self, obj):
-        if not obj.has_key('ref'): return
+        if 'ref' not in obj: return
         for ref in obj['ref']:
             filename = ref['filename']
             if not filename.startswith('/'):
@@ -131,19 +131,19 @@ class Profile(object):
                 cls = PRODUCTS[ref['product']]
             except KeyError:
                 raise RuntimeError('Unknown product type "%s"' % ref['product'])
-            if ref.has_key('offset'):
+            if 'offset' in ref:
                 product = cls(ref['filename'], self, offset=ref['offset'])
             else:
                 product = cls(ref['filename'], self)
             tile = product.tile(obj['layer'], obj['zoom'], obj['x'], obj['z'])
-            if obj.has_key('data'):
+            if 'data' in obj:
                 if obj['format'] == 'png':
                     utils.array_update(obj['data'], tile['data'])
                 elif obj['format'] == 'json' and obj['type'] == 'geojson':
                     utils.geojson_update(obj['data'], tile['data'])
             else:
                 obj['data'] = tile['data']
-            if obj.has_key('raw_data'): del obj['raw_data']
+            if 'raw_data' in obj: del obj['raw_data']
         del obj['ref']
 
     def save(self, obj, append=True):
@@ -171,19 +171,19 @@ class Profile(object):
             orig_obj = self.load(obj, dereference=False)
             if orig_obj is not None:
                 # Update data.
-                if orig_obj.has_key('data') and obj.has_key('data'):
+                if 'data' in orig_obj and 'data' in obj:
                     orig_obj['data']
                     if layer['format'] == 'png':
                         utils.array_update(orig_obj['data'], obj['data'])
                     elif layer['format'] == 'json' and layer['type'] == 'geojson':
                         utils.geojson_update(orig_obj['data'], obj['data'])
-                elif obj.has_key('data'):
+                elif 'data' in obj:
                     orig_obj['data'] = obj['data']
 
                 # Update ref.
-                if orig_obj.has_key('ref') and obj.has_key('ref'):
+                if 'ref' in orig_obj and 'ref' in obj:
                     utils.ref_update(orig_obj['ref'], obj['ref'])
-                elif obj.has_key('ref'):
+                elif 'ref' in obj:
                     orig_obj['ref'] = obj['ref']
 
                 obj = orig_obj
@@ -192,7 +192,7 @@ class Profile(object):
         #self.cache.store(obj)
         self.storage.store(obj)
 
-        if obj.has_key('zoom') and obj.has_key('x'):
+        if 'zoom' in obj and 'x' in obj:
             self.update_availability(obj['layer'], obj['zoom'], (obj['x'], obj['x']+1))
 
         return obj
@@ -205,13 +205,13 @@ class Profile(object):
         o = layer.copy()
         o.update(obj)
         obj = o
-        if obj.has_key('data'): del obj['data']
+        if 'data' in obj: del obj['data']
 
         o = self.cache.retrieve(obj, exclude=exclude)
         if o is None:
             o = self.storage.retrieve(obj, exclude=exclude)
             if o != None:
-                if dereference and o.has_key('ref'):
+                if dereference and 'ref' in o:
                     self.dereference(o)
                     self.save(o, append=False)
                 o2 = layer.copy()
@@ -258,11 +258,11 @@ class Profile(object):
         return dict([
             (k, RangeList(v))
             for k, v
-            in availability.items()
+            in list(availability.items())
         ])
 
     def write_availability(self):
-        for layer, a in self.availability.items():
+        for layer, a in list(self.availability.items()):
             if not 'availability' in self['layers'][layer]:
                 continue
             obj = {
@@ -273,7 +273,8 @@ class Profile(object):
             }
             self.storage.store(obj)
 
-    def update_availability(self, layer, level, (start, stop)):
+    def update_availability(self, layer, level, xxx_todo_changeme):
+        (start, stop) = xxx_todo_changeme
         availability = self.get_availability(layer)
         if level in availability:
             availability[level].append(start, stop)

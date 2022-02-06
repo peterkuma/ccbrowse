@@ -47,6 +47,6 @@ class Driver(object):
         if obj is None: return None
         o = obj.copy()
         for field in exclude:
-            if o.has_key(field): del o[field]
+            if field in o: del o[field]
         if self.on_retrieve: self.on_retrieve(o)
         return o
