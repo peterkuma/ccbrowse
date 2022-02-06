@@ -74,16 +74,6 @@ function time(t, profile) {
     return date.toUTCString().replace('GMT', 'UTC');
 }
 
-function format_latitude(lat, precision) {
-    var text = scientific(Math.abs(lat), precision) + '° '; //'&#x00B0; ';
-    return text + (lat < 0 ? 'S' : 'N');
-}
-
-function format_longitude(lon, precision) {
-    var text = scientific(Math.abs(lon), precision) + '° '; //'&#x00B0; ';
-    return text + (lon < 0 ? 'W' : 'E');
-}
-
 function ordinal(n) {
     if (n == 1) return n + '<span class="ordinal">st</span>';
     if (n == 2) return n + '<span class="ordinal">nd</span>';

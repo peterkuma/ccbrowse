@@ -286,8 +286,8 @@ var Map = new Class({
         var content = $('popup-content-template').clone();
         var valueText = isNaN(desc.value) ? 'Missing data' : scientific(desc.value)+' '+this.nav.getLayer().units;
 
-        var lat = format_latitude(desc.latitude, 2);
-        var lon = format_longitude(desc.longitude, 2);
+        var lat = desc.latitude;
+        var lon = desc.longitude;
 
         content.querySelector('.value').set('html', valueText);
         content.querySelector('.color-box').setStyle('background-color', desc.color);
@@ -296,7 +296,7 @@ var Map = new Class({
         content.querySelector('.height').set('html', scientific(desc.latlng.lat/1000, 3)+' km');
         content.querySelector('.time').set('html', time(desc.latlng.lng, this.profile));
         content.querySelector('.country').set('text', desc.country);
-        content.querySelector('.latlon-link').href = 'https://maps.google.com/maps?z=5&t=p&q='+lat+', '+lon;
+        content.querySelector('.latlon-link').href = 'https://www.openstreetmap.org/?mlat='+lat+'amp;mlon='+lon+'#map=4/'+lat+'/'+lon;
 
         var popup = new L.Popup();
         popup.setLatLng(desc.latlng);
