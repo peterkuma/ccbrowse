@@ -39,11 +39,11 @@ Optional arguments:
   --hard           hard import
   -t TYPE          type of FILE or `help' for a list of supported types
   -z ZOOM          import only specified zoom level
-  
+
 Supported product types:
   calipso
   naturalearth
-  
+
 Report bugs to <ccplot-general@lists.sourceforge.net>
 '''.format(program_name=program_name))
 
@@ -60,13 +60,13 @@ def save_decorator(f):
 def save(product, profile, layer=None, zoom=None,
          statistics=False, soft=False, overwrite=False, skip=False):
     if statistics: stat = dict(n=0, read=0, save=0)
-    
+
     if soft:
         product_name = PRODUCTS.keys()[PRODUCTS.values().index(type(product))]
         filename = os.path.abspath(product.filename)
         root = profile.get_root()
         if filename.startswith(root): filename = filename[len(root):]
-    
+
     for level in sorted(profile['zoom'].keys()):
         if zoom != None and level != zoom: continue
         for l in product.layers():
@@ -83,9 +83,9 @@ def save(product, profile, layer=None, zoom=None,
                            (l, level, X[0], X[-1], i, size, 100.0*i/size)
                     sys.stderr.write(line)
                     i = i + 1
-                    
+
                     if statistics: t1 = time.clock()
-                    
+
                     if skip:
                         obj = profile.load({
                             'layer': l,
@@ -94,7 +94,7 @@ def save(product, profile, layer=None, zoom=None,
                             'z': z,
                         }, exclude=['data'], dereference=False)
                         if obj is not None: continue
-                    
+
                     if not soft:
                         tile = product.tile(l, level, x, z)
                     else:
@@ -110,13 +110,13 @@ def save(product, profile, layer=None, zoom=None,
                             'z': z,
                             'ref': [ref],
                         }
-                    
+
                     if statistics:
                         t2 = time.clock()
                         stat['read'] += t2 - t1
-                    
+
                     profile.save(tile, append=(not overwrite))
-                    
+
                     if statistics:
                         stat['save'] += time.clock() - t2
                         stat['n'] += 1
@@ -131,7 +131,7 @@ def save(product, profile, layer=None, zoom=None,
 if __name__ == "__main__":
     program_name = sys.argv[0]
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
-    
+
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'c:l:sz:',
                                    ['help', 'overwrite', 'skip', 'hard'])
@@ -139,19 +139,19 @@ if __name__ == "__main__":
         logging.error(e)
         usage()
         sys.exit(1)
-    
+
     config_filename = 'config.json'
     file_type = None
     layer = None
     zoom = None
-    
+
     options = {
         'statistics': False,
         'overwrite': False,
         'skip': False,
         'soft': True,
     }
-    
+
     for opt,value in opts:
         if opt == '--help':
             print_help()
@@ -170,21 +170,21 @@ if __name__ == "__main__":
             options['skip'] = True
         elif opt == '--hard':
             options['soft'] = False
-    
+
     if len(args) < 2:
         usage()
         sys.exit(1)
-    
+
     file_type = args[0]
     filenames = args[1:]
-    
+
     try:
         with open(config_filename) as fp:
             config = json.load(fp)
     except IOError as e:
         logging.error('%s: %s' % (e.filename, e.strerror))
         sys.exit(1)
-    
+
     try:
         with ccbrowse.Profile(config, cache_size=0) as profile:
             for filename in filenames:
