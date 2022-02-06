@@ -7,4 +7,4 @@ shapely==1.7.1
 bottle==0.12.19
 bintrees==2.0.7
 jinja2==2.11.3
-boto==2.38.0
+boto==2.49.0
