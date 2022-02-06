@@ -296,7 +296,7 @@ var Map = new Class({
         content.querySelector('.height').set('html', scientific(desc.latlng.lat/1000, 3)+' km');
         content.querySelector('.time').set('html', time(desc.latlng.lng, this.profile));
         content.querySelector('.country').set('text', desc.country);
-        content.querySelector('.latlon-link').href = 'http://maps.google.com/maps?z=5&t=p&q='+lat+', '+lon;
+        content.querySelector('.latlon-link').href = 'https://maps.google.com/maps?z=5&t=p&q='+lat+', '+lon;
 
         var popup = new L.Popup();
         popup.setLatLng(desc.latlng);
