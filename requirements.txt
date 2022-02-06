@@ -1,6 +1,6 @@
 pytz==2015.7
 python-dateutil==2.4.2
-pillow==3.0.0
+pillow==6.2.2
 numpy==1.22.2
 scipy==0.16.1
 shapely==1.5.13
