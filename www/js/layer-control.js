@@ -38,8 +38,10 @@ var LayerControl = new Class({
                 evt.preventDefault();
             }.bind(this);
             item.addClass('layer-item');
-            if (layer == this.nav.getLayer())
+            let currentLayer = this.nav.getLayer();
+            if (currentLayer && layer == currentLayer.source) {
                 item.addClass('active');
+            }
             var bulb = document.createElement('div');
             bulb.addClass('bulb');
             item.appendChild(bulb);
