@@ -145,10 +145,12 @@ export class Application {
     }
 
     route() {
-        if (document.location.pathname == '/about/')
+        console.log('route');
+        if (document.location.hash == '#about')
             this.page('/about.html');
-        else
+        else {
             this.context('map');
+        }
     }
 
     onError(evt) {

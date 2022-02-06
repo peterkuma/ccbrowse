@@ -37,7 +37,7 @@ header #toolbox a {
   font-size: 160%;
   padding: 0.4em 0.5em 0.4em 1.8em;
 }
-header #toolbox a[href="/about/"] {
+header #toolbox a[href="#about"] {
   background: url("../img/about.png") no-repeat 0.6em center;
   background-size: 0.8em;
 }
