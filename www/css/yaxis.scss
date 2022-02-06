@@ -1,7 +1,7 @@
 #yaxis-container {
     width: 3em;
     height: 100%;
-    background: inline-image('../img/yaxis.png') repeat-y;
+    background: url('../img/yaxis.png') repeat-y;
     background-size: 2em;
     text-shadow: 2px 2px 0 #000;
     color: white;
@@ -16,7 +16,7 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    
+
     .label {
         position: absolute;
         left: 0;

@@ -2,11 +2,11 @@ nav {
     position: absolute;
     width: 100%;
     bottom: 0;
-    font-size: 120%;
+    font-size: 100%;
     color: #eee;
     background: #333;
     padding-top: 0.5em;
-    @include box-shadow(inset 2px 2px 6px black);
+    box-shadow: inset 2px 2px 6px black;
 
     .years {
         .year-group {
@@ -20,13 +20,14 @@ nav {
                 font-size: 120%;
                 line-height: 1.2em;
                 color: white;
-                padding: 0 0.3em;
+                padding: 0 0.2em;
                 margin: 0.1em 0em 0.1em 0.1em;
                 border-radius: 2px;
 
                 &.disabled {
                     cursor: auto;
                     color: #777;
+                    display: none;
                 }
             }
 
@@ -39,9 +40,9 @@ nav {
                 .month {
                     display: inline-block;
                     cursor: pointer;
-                    margin: 0.16em 0.1em;
+                    margin: 0.16em 0em;
                     border-radius: 2px;
-                    padding: 0.1em 0.3em;
+                    padding: 0.1em 0.2em;
 
                     &.selected {
                         background-color: #0197fd;
@@ -51,6 +52,7 @@ nav {
                     &.disabled {
                         cursor: auto;
                         color: #777;
+                        display: none;
                     }
                 }
             }
@@ -82,6 +84,7 @@ nav {
             &.disabled {
                 cursor: auto;
                 color: #777;
+                display: none;
             }
         }
     }
@@ -90,12 +93,12 @@ nav {
         margin-top: 0.3em;
         height: 8px;
         width: 100%;
-        background: black inline-image('../img/progress-unavailable.png') repeat-x;
+        background: black url('../img/progress-unavailable.png') repeat-x;
         border-top: 1px solid #555;
         border-bottom: 1px solid #555;
         position: relative;
         cursor: pointer;
-        @include box-shadow(0 0 10px rgba(0,0,0,0.5));
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
 
         .indicator {
             z-index: 1;
@@ -104,7 +107,7 @@ nav {
             height: 100%;
             background: #0197fd;
             width: 0;
-            background: inline-image('../img/progress.png') repeat-x;
+            background: url('../img/progress.png') repeat-x;
             border-top: 1px solid #555;
             border-bottom: 1px solid #555;
             margin-top: -1px;
@@ -114,7 +117,7 @@ nav {
             z-index: 1;
             width: 20px;
             height: 20px;
-            background: inline-image('../img/thumb.png') no-repeat;
+            background: url('../img/thumb.png') no-repeat;
             position: absolute;
             margin-left: -10px;
             margin-top: -6px;
@@ -134,7 +137,7 @@ nav {
 
         .availability {
             position: absolute;
-            background: inline-image('../img/progress-available.png') repeat-x;
+            background: url('../img/progress-available.png') repeat-x;
             border: 1px solid #66fc43;
             height: 6px;
         }

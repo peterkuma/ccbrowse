@@ -13,7 +13,7 @@
     left: 0;
     right: 130px;
     text-align: center;
-    background: inline-image('../img/bg.png') repeat-x;
+    background: url('../img/bg.png') repeat-x;
 }
 
 #map {
@@ -30,10 +30,10 @@
     color: white;
     border-radius: 6px;
     border: 1px solid #555;
-    @include box-shadow(0 0 5px rgba(0,0,0,0.8));
+    box-shadow: 0 0 5px rgba(0,0,0,0.8);
     overflow: hidden;
     text-align: left;
-    @include transition(opacity 200ms);
+    transition: opacity 200ms;
     opacity: 0.8;
 }
 
@@ -74,13 +74,13 @@
     background-color: rgba(0,0,0,0.6);
     color: white;
     padding: 2px 4px;
-    @include box-shadow(none);
+    box-shadow: none;
     font-size: 70%;
     font-family: Tahoma, sans-serif;
     border-radius: 0;
     border: none;
     opacity: 0.5;
-    @include transition(opacity 200ms);
+    transition: opacity 200ms;
 }
 
 .leaflet-container .leaflet-control-attribution:hover {
@@ -109,10 +109,10 @@
     background: black;
     border-radius: 6px;
     border: 1px solid #555;
-    @include box-shadow(0 0 5px rgba(0,0,0,0.8));
+    box-shadow: 0 0 5px rgba(0,0,0,0.8);
     width: 71px;
     padding: 0;
-    @include transition(opacity 200ms);
+    transition: opacity 200ms;
 }
 
 .leaflet-control a {
@@ -126,21 +126,23 @@
 }
 
 .leaflet-control-zoom-in {
-    background: inline-image('../img/zoom-in.png') no-repeat;
+    background: url('../img/zoom-in.png') no-repeat;
     float: left;
     border-right: 1px solid #777;
+    font-size: 0;
 }
 
 .leaflet-control-zoom-out {
-    background: inline-image('../img/zoom-out.png') no-repeat;
+    background: url('../img/zoom-out.png') no-repeat;
     float: right;
+    font-size: 0;
 }
 
 .leaflet-popup-content-wrapper {
     background: black;
     border-radius: 5px;
     border: 1px solid #999;
-    @include box-shadow(2px 2px 10px black);
+    box-shadow: 2px 2px 10px black;
     position: relative;
     left: 30%;
 }
@@ -150,7 +152,7 @@
     font-size: inherit;
     font-family: inherit;
     margin: 0.5em;
-    @include box-shadow(2px 2px 6px black);
+    box-shadow: 2px 2px 6px black;
 }
 
 .leaflet-popup-close-button {
@@ -159,7 +161,7 @@
 
 .leaflet-popup-tip {
     background-color: black;
-    @include box-shadow(2px 2px 6px black);
+    box-shadow: 2px 2px 6px black;
     border: 1px solid #999;
     position: relative;
     top: -1px;
@@ -182,7 +184,7 @@
     float: right;
     width: 20px;
     height: 20px;
-    background: black inline-image('../img/layers.png') no-repeat center center;
+    background: black url('../img/layers.png') no-repeat center center;
     margin: 0.2em;
     cursor: pointer;
     position: relative;
@@ -215,13 +217,13 @@
         color: black;
 
         .bulb {
-            background: inline-image('../img/bulb-active.png') no-repeat;
+            background: url('../img/bulb-active.png') no-repeat;
         }
     }
 
     &.enabled {
         .bulb {
-            background: inline-image('../img/bulb-enabled.png') no-repeat;
+            background: url('../img/bulb-enabled.png') no-repeat;
         }
     }
 
@@ -230,7 +232,7 @@
         height: 12px;
         margin: 0 5px;
         display: inline-block;
-        background: inline-image('../img/bulb-disabled.png') no-repeat;
+        background: url('../img/bulb-disabled.png') no-repeat;
     }
 }
 
@@ -255,15 +257,15 @@
     position: relative;
     opacity: 0.85;
     margin: 0 auto;
-    display: inline-block;    
+    display: inline-block;
     top: -2px;
     z-index: 80;
     text-align: center;
     padding: 16px 14px 8px 14px;
     font-weight: bold;
-    @include box-shadow(0 0 10px rgba(0,0,0,0.8));
+    box-shadow: 0 0 10px rgba(0,0,0,0.8);
     text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
-    @include transition(top 200ms);
+    transition: top 200ms;
     color: white;
     border: 1px solid rgba(255,255,255,0.4);
 }
@@ -287,10 +289,10 @@
     left: 4px;
     width: 30px;
     height: 15px;
-    background: rgba(255,255,255,0.8) inline-image('../img/keyboard.png') no-repeat;
+    background: rgba(255,255,255,0.8) url('../img/keyboard.png') no-repeat;
     opacity: 0.5;
     z-index: 1000;
-    @include transition(opacity 200ms);
+    transition: opacity 200ms;
 }
 
 .keyboard-legend:hover {

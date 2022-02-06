@@ -6,7 +6,8 @@ header {
 
     h1 {
         float: left;
-        margin-top: 0.8em;
+        margin-top: 0;
+        margin-bottom: 0;
         margin-left: 0.2em;
         font-size: 100%;
 
@@ -16,7 +17,7 @@ header {
             font-weight: normal;
             color: transparent;
             padding: 0.1em 0.2em;
-            background: inline-image('../img/ccbrowse.png') no-repeat center center;
+            background: url('../img/ccbrowse.png') no-repeat center center;
             background-size: 4em;
 
             &:hover {
@@ -28,7 +29,8 @@ header {
     #toolbox {
         float: right;
         color: #eee;
-        margin-top: 0.8em;
+        margin-top: 0;
+        margin-bottom: 0;
         margin-right: 0.5em;
 
         a {
@@ -38,7 +40,7 @@ header {
         }
 
         a[href="/about/"] {
-            background: inline-image('../img/about.png') no-repeat 0.6em center;
+            background: url('../img/about.png') no-repeat 0.6em center;
             background-size: 0.8em;
         }
     }
