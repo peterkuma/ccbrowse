@@ -26,7 +26,7 @@ apt-get install libhdf4-0 libhdf4-dev libhdfeos0 libhdfeos-dev sqlite3 \
 python3 python3-dev cython3
 ```
 
-Set up a Python virtual environment and Install Python dependencies with:
+Set up a Python virtual environment and install Python dependencies with:
 
 ```sh
 python3 -m venv env
