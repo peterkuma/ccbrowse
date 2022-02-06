@@ -18,8 +18,29 @@ You can see an example ccbrowse application running at
 Installation
 ------------
 
-ccbrowse can be installed on Linux and Mac OS X.
-First, make sure you have the following dependencies installed:
+ccbrowse can be installed on Linux (other operating systems are currently not
+supported). On Ubuntu or Debian, install system dependencies with:
+
+```sh
+apt-get install libhdf4-0 libhdf4-dev libhdfeos0 libhdfeos-dev sqlite3 \
+python3 python3-dev cython3
+```
+
+Set up a Python virtual environment and Install Python dependencies with:
+
+```sh
+python3 -m venv env
+. env/bin/activate
+pip3 install -r requirements.txt
+```
+
+To install ccbrowse, run:
+
+```sh
+pip3 install .
+```
+
+The full list of Python dependencies is:
 
   * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
   * [HDF-EOS2 library](http://www.hdfeos.org/software/library.php#HDF-EOS2)
@@ -35,17 +56,6 @@ First, make sure you have the following dependencies installed:
   * [Shapely](http://pypi.python.org/pypi/Shapely/)
   * [Bottle](http://bottlepy.org/docs/dev/)
   * [bintrees](http://pypi.python.org/pypi/bintrees/)
-
-On Ubuntu or Debian, install dependencies with:
-
-    apt-get install libhdf4-0 libhdf4-dev libhdfeos0 libhdfeos-dev sqlite3 \
-    python3 python3-dev cython3
-
-    pip3 install -r requirements.txt
-
-To install ccbrowse, run:
-
-    python3 setup.py install
 
 Getting started
 ---------------
