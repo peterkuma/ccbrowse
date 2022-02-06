@@ -70,6 +70,8 @@ class build_js(Command):
 
 
 class build_scss(Command):
+    user_options = []
+
     def initialize_options(self):
         pass
 
@@ -79,12 +81,12 @@ class build_scss(Command):
     def run(self):
         try:
             with open(os.devnull, 'w') as fp:
-                proc = subprocess.Popen(['scss', '-v'], stdout=fp, stderr=fp)
+                proc = subprocess.Popen(['sass', '-v'], stdout=fp, stderr=fp)
                 proc.communicate()
         except OSError:
-            print >>sys.stderr, 'warning: scss not available, will not rebuild stylesheets'
+            print >>sys.stderr, 'warning: sass not available, will not rebuild stylesheets'
             return
-        cmd = ['scss', '--compass', '--update', 'ccbrowse.scss']
+        cmd = ['sass', '--update', 'ccbrowse.scss', 'ccbrowse.css']
         print ' '.join(cmd)
         try:
             ret = call(cmd, cwd='www/css')
