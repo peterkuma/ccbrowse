@@ -284,7 +284,7 @@ var Map = new Class({
 
     popup: function(desc) {
         var content = $('popup-content-template').clone();
-        var valueText = isNaN(desc.value) ? 'Missing data' : scientific(desc.value)+' '+this.nav.getLayer().units;
+        var valueText = isNaN(desc.value) ? 'Missing data' : scientific(desc.value)+' '+this.nav.getLayer().source.units;
 
         var lat = desc.latitude;
         var lon = desc.longitude;
