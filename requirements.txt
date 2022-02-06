@@ -2,7 +2,7 @@ pytz==2021.3
 python-dateutil==2.8.2
 pillow==6.2.2
 numpy==1.22.2
-scipy==0.16.1
+scipy==1.2.3
 shapely==1.5.13
 bottle==0.12.19
 bintrees==2.0.2
