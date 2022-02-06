@@ -31,7 +31,9 @@ var NavigationPanel = new Class({
         //var smooth = typeof(expandedYear) != 'undefined';
         expandedYear = expandedYear || t0.getUTCFullYear();
 
-        var years = d3.time.year.utc.range(t1, t2);
+        var years = d3.time.year.utc.range(t1, t2).filter(function(d) {
+                return !this.nav.isAvailableYear(d.getUTCFullYear());
+        }.bind(this));
 
         var nextMonth = d3.time.month.utc.offset(t0, 1);
         var dayStop = nextMonth < t2 ? nextMonth : t2;
