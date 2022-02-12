@@ -183,7 +183,7 @@ var Map = new Class({
             tileSize: 256,
             continuousWorld: true,
             tms: true,
-            attribution: layer.attribution
+            attribution: layer.source.attribution
         });
 
         this.layerGroup.addLayer(this.tileLayer);

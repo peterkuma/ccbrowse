@@ -41,7 +41,7 @@
             "title": "Total Att. Backscatter 532nm",
             "src": "layers/calipso532/{zoom}/{x},{z}.png",
             "availability": "layers/calipso532/availability.json",
-            "attribution": "Data courtesy <a href=\"http://eosweb.larc.nasa.gov/PRODOCS/calipso/table_calipso.html\">NASA LARC Atmospheric Science Data Center</a>",
+            "attribution": "Data courtesy <a href=\"https://www-calipso.larc.nasa.gov\">NASA LARC</a>",
             "colormap": "colormaps/calipso-backscatter.json"
         },
         "calipso532p":
@@ -53,7 +53,7 @@
             "title": "Perpendicular Att. Backscatter 532nm",
             "src": "layers/calipso532p/{zoom}/{x},{z}.png",
             "availability": "layers/calipso532p/availability.json",
-            "attribution": "Data courtesy <a href=\"http://eosweb.larc.nasa.gov/PRODOCS/calipso/table_calipso.html\">NASA LARC Atmospheric Science Data Center</a>",
+            "attribution": "Data courtesy <a href=\"https://www-calipso.larc.nasa.gov\">NASA LARC</a>",
             "colormap": "colormaps/calipso-backscatter.json"
         },
         "calipso1064":
@@ -65,7 +65,7 @@
             "title": "Attenuated Backscatter 1064nm",
             "src": "layers/calipso1064/{zoom}/{x},{z}.png",
             "availability": "layers/calipso1064/availability.json",
-            "attribution": "Data courtesy <a href=\"http://eosweb.larc.nasa.gov/PRODOCS/calipso/table_calipso.html\">NASA LARC Atmospheric Science Data Center</a>",
+            "attribution": "Data courtesy <a href=\"https://www-calipso.larc.nasa.gov\">NASA LARC</a>",
             "colormap": "colormaps/calipso-backscatter.json"
         },
         "cloudsat-reflec":
