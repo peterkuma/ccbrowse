@@ -4,7 +4,8 @@ import os
 import sys
 from glob import glob
 from setuptools import setup, Extension, Command
-import distutils.command.build
+from setuptools.command.build_py import build_py
+
 import subprocess
 from subprocess import call
 
@@ -26,48 +27,10 @@ data_files += find('share/ccbrowse/www/', 'www')
 data_files += find('share/ccbrowse/colormaps/', 'colormaps')
 
 
-class build(distutils.command.build.build):
+class build(build_py):
     def run(self):
-        distutils.command.build.build.run(self)
-        #self.run_command('build_js')
         self.run_command('build_scss')
-
-
-class build_js(Command):
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        try:
-            with open(os.devnull, 'w') as fp:
-                proc = subprocess.Popen(['browserify', '-v'], stdout=fp, stderr=fp)
-                proc.communicate()
-        except OSError:
-            print('warning: browserify not available, will not rebuild javascript', file=sys.stderr)
-            return
-        cmd = [
-            'browserify',
-            '-o', 'www/js/bundle.js',
-            '-t', '[',
-                'babelify',
-                '--optional', 'runtime',
-                '--optional', 'es7.asyncFunctions',
-            ']',
-            'node_modules/whatwg-fetch',
-        ] + glob('www/js/*.js')
-        print(' '.join(cmd))
-        try:
-            ret = call(cmd)
-            if ret != 0:
-                sys.exit(1)
-        except OSError as e:
-            print(e.strerror, file=sys.stderr)
-            sys.exit(1)
+        build_py.run(self)
 
 
 class build_scss(Command):
@@ -118,6 +81,23 @@ setup(
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering :: Atmospheric Science",
     ],
+    python_requires='>=3.0.0',
+    setup_requires=[
+        'cython',
+    ],
+    install_requires=[
+        'pytz>=2021.3',
+        'python-dateutil>=2.8.2',
+        'pillow>=9.0.1',
+        'numpy>=1.16.2',
+        'scipy>=1.1.0',
+        'shapely>=1.5.13',
+        'bottle>=0.12.19',
+        'bintrees>=2.2.0',
+        'jinja2>=3.0.3',
+        'boto>=2.49.0',
+        'gunicorn>=20.1.0',
+    ],
     package_dir={'': 'src'},
     packages=[
         'ccbrowse',
@@ -135,9 +115,8 @@ setup(
         'src/bin/ccload',
     ],
     cmdclass = {
-        'build': build,
+        'build_py': build,
         'build_scss': build_scss,
-        'build_js': build_js,
     },
     ext_modules=[
         Extension('ccbrowse.algorithms',
