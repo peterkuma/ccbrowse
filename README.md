@@ -4,8 +4,8 @@ ccbrowse is an open source web application for browsing data from atmospheric
 profiling satellites. In the current version, it supports importing two
 datasets of the CALIPSO satellite, but new importing classes can be added as
 needed. It is comprised of a web application and a backend for importing
-various types of product files. You can see an example ccbrowse application
-running at [browse.ccplot.org](http://browse.ccplot.org).
+various types of product files. An example ccbrowse deployment is available at
+[browse.ccplot.org](http://browse.ccplot.org).
 
 ![](screenshot.png)
 
@@ -36,15 +36,16 @@ A new ccbrowse repository `repo` can be created with:
 
 ```sh
 ccbrowse create repo
-cd repo
 ```
 
 This will create a directory containing the profile specification and
 directories where layers and cache will be stored. Next, you have to import
 data to display. Download CALIPSO Level 1B product HDF files from [NASA
-Earthdata](https://earthdata.nasa.gov). You can import the data files with:
+Earthdata](https://earthdata.nasa.gov). You can import the data files from
+within the repository with:
 
 ```sh
+cd repo
 ccbrowse import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
 ```
 
