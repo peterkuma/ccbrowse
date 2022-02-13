@@ -5,6 +5,7 @@ import os
 import logging
 import json
 import getopt
+import bottle
 
 import ccbrowse
 
@@ -28,10 +29,16 @@ Positional arguments:
 Optional arguments:
   -c FILE           configuration file (default: config.json)
   -d                print debugging information
+  -s SERVER         server backend or "help" to print a list of backends
+  -w WORKERS        number of server backend workers
   --help            print this help information
 
 Report bugs to <ccplot-general@lists.sourceforge.net>.
 '''.format(program_name=program_name))
+
+
+def print_server_backends():
+    print('\n'.join(bottle.server_names))
 
 
 if __name__ == "__main__":
@@ -41,10 +48,12 @@ if __name__ == "__main__":
 
     config = ccbrowse.config.default_config
     filename = 'config.json'
+    server = None
+    workers = None
     debug = False
 
     # Command line arguments.
-    try: opts, args = getopt.getopt(sys.argv[1:], 'c:d', ['help'])
+    try: opts, args = getopt.getopt(sys.argv[1:], 'c:ds:w:', ['help'])
     except getopt.GetoptError as e:
         logging.error(e)
         usage()
@@ -55,6 +64,22 @@ if __name__ == "__main__":
             debug = True
         elif opt == '-c':
             filename = value
+        elif opt == '-s':
+            if value == 'help':
+                print_server_backends()
+                sys.exit(0)
+            if value not in bottle.server_names:
+                logging.error('Invalid server backend "%s"' % value)
+                sys.exit(1)
+            server = value
+        elif opt == '-w':
+            try:
+                workers = int(value)
+                assert(workers > 0)
+            except (ValueError, AssertionError):
+                logging.error('Invalid number of workers "%s"' % value)
+                sys.exit(1)
+            workers = value
         elif opt == '--help':
             print_help()
             sys.exit(0)
@@ -84,13 +109,14 @@ if __name__ == "__main__":
             host = args[0][:i]
             port = args[0][(i+1):]
 
+    if server != None: config['server'] = server
+    if workers != None: config['workers'] = workers
     if host != None: config['host'] = host
     try:
         if port != None: config['port'] = int(port)
     except ValueError:
         logging.error('Invalid port number %s' % args[0][i+1:])
         sys.exit(1)
-
     try: ccbrowse.server.run(config)
     except RuntimeError as e:
         logging.error(e)

@@ -1,4 +1,6 @@
 {
+    "server": "auto",
+    "workers": 10,
     "host": "localhost",
     "port": 8080,
     "debug": false,

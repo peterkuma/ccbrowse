@@ -227,6 +227,8 @@ Configuration
 
 The repository configuration is defined in `config.json`, e.g.:
 
+    "server": "auto",
+    "workers": 10,
     "host": "localhost",
     "port": 8080,
     "debug": false,
@@ -253,6 +255,8 @@ The repository configuration is defined in `config.json`, e.g.:
 
 The configuration options are:
 
+    server                  server backend (default: auto)
+    workers                 number of server backend workers (default: 10)
     host                    hostname to listen on (default: localhost)
     port                    port to listen on (default: 8080)
     debug                   enable server debugging (default: false)
@@ -273,6 +277,8 @@ The configuration options are:
         [storage]...
 
 The storage configuration options are documented in a later section.
+
+For a list of server backends, use `ccbrowse -s help`.
 
 Profile specification
 ---------------------
