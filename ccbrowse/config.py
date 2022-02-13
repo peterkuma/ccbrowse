@@ -2,7 +2,7 @@ import os
 import json
 
 
-sharepath = os.path.join(os.path.dirname(__file__), '../../../../share/ccbrowse/')
+sharepath = os.path.dirname(__file__)
 
 default_config = {
     'profile': 'profile.json',

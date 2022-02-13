@@ -1,0 +1,4 @@
+recursive-include ccbrowse/init-scripts *
+recursive-include ccbrowse/template *
+recursive-include ccbrowse/colormaps *
+recursive-include ccbrowse/www *.html *.js *.scss *.css *.svg *.png *.rb *.map

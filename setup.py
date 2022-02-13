@@ -10,23 +10,6 @@ import subprocess
 from subprocess import call
 
 
-def find(prefix, path):
-    l = []
-    for dirpath, dirnames, filenames in os.walk(path):
-        fl = [os.path.join(dirpath, f) for f in filenames]
-        l.append((os.path.join(prefix, dirpath[len(path):].lstrip('/')), fl))
-    return l
-
-
-data_files = [
-    ('share/doc/ccbrowse/', ['README.md']),
-]
-
-data_files += find('share/ccbrowse/template/', 'template')
-data_files += find('share/ccbrowse/www/', 'www')
-data_files += find('share/ccbrowse/colormaps/', 'colormaps')
-
-
 class build(build_py):
     def run(self):
         self.run_command('build_scss')
@@ -53,7 +36,7 @@ class build_scss(Command):
         cmd = ['sass', '--update', 'ccbrowse.scss:ccbrowse.css']
         print(' '.join(cmd))
         try:
-            ret = call(cmd, cwd='www/css')
+            ret = call(cmd, cwd='ccbrowse/www/css')
             if ret != 0:
                 sys.exit(1)
         except OSError as e:
@@ -99,7 +82,6 @@ setup(
         'boto>=2.49.0',
         'gunicorn>=20.1.0',
     ],
-    package_dir={'': 'src'},
     packages=[
         'ccbrowse',
         'ccbrowse.fetch',
@@ -107,25 +89,27 @@ setup(
         'ccbrowse.storage',
     ],
     scripts=[
-        'src/bin/ccfetch',
-        'src/bin/ccimport',
-        'src/bin/ccinfo',
-        'src/bin/ccbrowse',
-        'src/bin/ccserver',
-        'src/bin/cchtree-clean',
-        'src/bin/ccload',
+        'bin/ccfetch',
+        'bin/ccimport',
+        'bin/ccinfo',
+        'bin/ccbrowse',
+        'bin/ccserver',
+        'bin/cchtree-clean',
+        'bin/ccload',
     ],
+    include_package_data=True,
+    zip_safe=False,
     cmdclass = {
         'build_py': build,
         'build_scss': build_scss,
     },
     ext_modules=[
         Extension('ccbrowse.algorithms',
-            ['src/ccbrowse/algorithms.pyx'],
+            ['ccbrowse/algorithms.pyx'],
             extra_compile_args=['-march=native'],
         ),
         Extension('ccbrowse.hdf',
-            ['src/ccbrowse/hdf.pyx'],
+            ['ccbrowse/hdf.pyx'],
             libraries=['mfhdf', 'df', 'jpeg', 'z'],
             extra_compile_args=[
                 '-I/usr/include/hdf',
@@ -134,7 +118,7 @@ setup(
             ],
         ),
         Extension('ccbrowse.hdfeos',
-            ['src/ccbrowse/hdfeos.pyx'],
+            ['ccbrowse/hdfeos.pyx'],
             libraries=['hdfeos', 'mfhdf', 'df', 'jpeg', 'z'],
             extra_compile_args=[
                 '-I/usr/include/hdf',
@@ -143,5 +127,4 @@ setup(
             ],
         ),
     ],
-    data_files=data_files,
 )

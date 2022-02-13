@@ -19,15 +19,16 @@ system dependencies with:
 apt-get install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3
 ```
 
-To install ccbrowse in a Python virtual environment:
+To install ccbrowse:
 
 ```sh
-python3 -m venv env
-. env/bin/activate
-git clone https://github.com/peterkuma/ccbrowse.git
+git clone https://github.com/peterkuma/ccbrowse
 cd ccbrowse
 pip3 install .
 ```
+
+Optionally, use `--user` to install in the user's home directory
+and make sure that `~/.local/bin` is in the PATH environmental variable.
 
 ## Setup
 
@@ -105,10 +106,9 @@ adduser --system --group --shell /bin/bash ccbrowse
 mkdir /var/log/ccbrowse
 chown ccbrowse:ccbrowse /var/log/ccbrowse
 su - ccbrowse
-git clone https://github.com/peterkuma/ccbrowse.git
+git clone https://github.com/peterkuma/ccbrowse
 cd ccbrowse
 pip3 install . --user
-cd ..
 ~/.local/bin/ccbrowse create repo
 cd repo
 # Edit config.json. Change log to "/var/log/ccbrowse/error.log" and accesslog
@@ -116,12 +116,12 @@ cd repo
 exit
 
 # For systemd based operating systems (e.g. Ubuntu or Debian):
-cp ~ccbrowse/ccbrowse/init-scripts/systemd /etc/systemd/system/ccbrowse.service
+cp ~ccbrowse/.local/lib/python*/site-packages/ccbrowse/init-scripts/systemd /etc/systemd/system/ccbrowse.service
 systemctl enable ccbrowse.service
 service ccbrowse start
 
 # For init based operating systems (e.g. Devuan):
-cp ~ccbrowse/ccbrowse/init-scripts/init /etc/init.d
+cp ~ccbrowse/.local/lib/python*/site-packages/ccbrowse/init-scripts/init /etc/init.d/ccbrowse
 update-rc.d ccbrowse defaults
 service ccbrowse start
 ```
