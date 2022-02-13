@@ -1,6 +1,4 @@
-ccplot - Atmospheric profiler data browser.
-
-This program is released under the terms of the MIT license.
+This program is available under the terms of an MIT license.
 
 Copyright (c) 2012-2022 Peter Kuma
 
