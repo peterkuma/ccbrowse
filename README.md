@@ -26,7 +26,6 @@ python3 -m venv env
 . env/bin/activate
 git clone https://github.com/peterkuma/ccbrowse.git
 cd ccbrowse
-pip3 install -r requirements.txt
 pip3 install .
 ```
 
