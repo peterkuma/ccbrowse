@@ -5,7 +5,6 @@ import sys
 from glob import glob
 from setuptools import setup, Extension, Command
 import distutils.command.build
-from Cython.Distutils import build_ext
 import subprocess
 from subprocess import call
 
@@ -137,7 +136,6 @@ setup(
     ],
     cmdclass = {
         'build': build,
-        'build_ext': build_ext,
         'build_scss': build_scss,
         'build_js': build_js,
     },
