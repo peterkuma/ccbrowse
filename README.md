@@ -22,9 +22,7 @@ apt-get install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-de
 To install ccbrowse:
 
 ```sh
-git clone https://github.com/peterkuma/ccbrowse
-cd ccbrowse
-pip3 install .
+pip3 install ccbrowse
 ```
 
 Optionally, use `--user` to install in the user's home directory
@@ -106,9 +104,7 @@ adduser --system --group --shell /bin/bash ccbrowse
 mkdir /var/log/ccbrowse
 chown ccbrowse:ccbrowse /var/log/ccbrowse
 su - ccbrowse
-git clone https://github.com/peterkuma/ccbrowse
-cd ccbrowse
-pip3 install . --user
+pip3 install ccbrowse --user
 ~/.local/bin/ccbrowse create repo
 cd repo
 # Edit config.json. Change log to "/var/log/ccbrowse/error.log" and accesslog
@@ -532,3 +528,9 @@ popups and location is fetched via JSON. The server is responsible for serving
 static files, tiles, as well as applying a given colormap. It also performs
 geocoding with the shapely library using geographica data from [Natural
 Earth](http://www.naturalearthdata.com/).
+
+## Release notes
+
+### 0.1.0 (2022-02-13)
+
+- Initial release.
