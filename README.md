@@ -1,44 +1,35 @@
-ccbrowse
-======
+# ccbrowse
+
+ccbrowse is an open source web application for browsing data from atmospheric
+profiling satellites. In the current version, it supports importing two
+datasets of the CALIPSO satellite, but new importing classes can be added as
+needed. It is comprised of a web application and a backend for importing
+various types of product files. You can see an example ccbrowse application
+running at [browse.ccplot.org](http://browse.ccplot.org).
 
 ![](screenshot.png)
 
-ccbrowse is an open-source web application for browsing data from atmospheric
-profilers. It is comprised of a web application and a backend for importing
-various types of product files.
-
-In the current version, it supports importing two datasets from the
-CALIPSO satellite, but new importing classes can be added as needed.
-
-You can see an example ccbrowse application running at
-[browse.ccplot.org](http://browse.ccplot.org).
-
-Installation
-------------
+## Installation
 
 ccbrowse can be installed on Linux (other operating systems are currently not
 supported). On Ubuntu or Debian, install system dependencies with:
 
 ```sh
-apt-get install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 \
-python3 python3-dev cython3
+apt-get install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev cython3
 ```
 
-Set up a Python virtual environment and install Python dependencies with:
+To install in a Python virtual environment:
 
 ```sh
 python3 -m venv env
 . env/bin/activate
+git clone https://github.com/peterkuma/ccbrowse.git
+cd ccbrowse
 pip3 install -r requirements.txt
-```
-
-To install ccbrowse, run:
-
-```sh
 pip3 install .
 ```
 
-The full list of Python dependencies is:
+Full list of Python dependencies:
 
   * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
   * [HDF-EOS2 library](http://www.hdfeos.org/software/library.php#HDF-EOS2)
@@ -54,17 +45,19 @@ The full list of Python dependencies is:
   * [Shapely](http://pypi.python.org/pypi/Shapely/)
   * [Bottle](http://bottlepy.org/docs/dev/)
   * [bintrees](http://pypi.python.org/pypi/bintrees/)
+  * [gunicorn](https://gunicorn.org/)
 
-Getting started
----------------
+## Setup
 
 Begin with creating a new repository:
 
-    ccbrowse create ccbrowse
-    cd ccbrowse
+```sh
+ccbrowse create repo
+cd repo
+``
 
-This will create a directory containing the profile specification
-and directories where layers and cache will be stored.
+This will create a directory containing the profile specification and
+directories where layers and cache will be stored.
 
 Because ccbrowse does not come with any data in the distribution,
 you first have to import some. [Create a new account](https://reverb.echo.nasa.gov/reverb/users/new)
@@ -96,8 +89,7 @@ Now, open [http://localhost:8080/](http://localhost:8080/) in your browser. That
 If you encounter any issues, [file a bug report](https://github.com/peterkuma/ccbrowse/issues)
 or post to the [mailing list](mailto:ccplot-general@lists.sourceforge.net).
 
-Server options
---------------
+## Running the server
 
 By default, the server listens on localhost:8080 for incoming HTTP connections,
 but you can change that by supplying an address and port as an argument, e.g.:
@@ -117,8 +109,7 @@ Other command line options:
     -s SERVER   server backend or "help" for a list of options (default: gunicorn)
     -w WORKERS  number of server backend workers (default: 10)
 
-Importing data
---------------
+## Importing data
 
 The command `ccbrowse get` actually performs two steps: product fetching
 and importing. If you already have product files available locally,
@@ -139,8 +130,7 @@ You can choose to import only a certain layer or zoom level with `-l` and `-z`.
 
 would generate tiles for the layer calipso532 and zoom level 2.
 
-Deployment
-----------
+## Deployment
 
 For a production deployment, it is recommended to start ccbrowse through
 the operating system init system. To install:
@@ -202,8 +192,7 @@ configuration:
 
 replacing `your.domain` with the desired domain name.
 
-Repository
-----------
+## Repository
 
 The ccbrowse repository is a directory that holds imported tiles, cache
 and downloaded product files. Additionally, it contains information
@@ -238,9 +227,7 @@ Other options of storage include filesystem storage, when each tile
 is stored as a standalone file. This is suitable for testing purposes,
 but does not scale to more that several product files with typical file systems.
 
-
-Configuration
--------------
+## Configuration
 
 The repository configuration is defined in `config.json`, e.g.:
 
@@ -304,8 +291,7 @@ The storage configuration options are documented in a later section.
 
 For a list of server backends, use `ccbrowse -s help`.
 
-Profile specification
----------------------
+## Profile specification
 
 The profile specification defines what zoom levels and layers are available
 and how to access them. This information is needed by the importers, so that
@@ -421,8 +407,7 @@ elements for each tile. You can find instructions on how to do that in
 `src/ccbrowse/ccimport/product.py`, and use the existing import classes
 in the same directory as an example.
 
-Storage
--------
+## Storage
 
 Internally, ccbrowse handles tiles as objects, where object
 is a simple list of parameters (key-value pairs), e.g.
@@ -565,27 +550,23 @@ The table in chunk is allowed to have an arbitrary name (here "tiles"), but two 
 are required by the HTree storage: `_id` and `_hash`, having the value
 of the supplied `_id` and `_hash` parameters (respectively).
 
-Internals
----------
+## How it works
 
-ccbrowse consists of two parts—a backend and a web application.
-The backend is responsible for importing product files and serving
-tiles. The interface between the backend and the web application is
+ccbrowse consists of two parts: a Python backend and a JavaScript web
+application. The backend is responsible for importing product files and
+serving tiles. The interface between the backend and the web application is
 defined by `profile.json`.
 
-When importing product files, data is interpolated onto a regular grid
-and saved as tiles of 256x256px. Tiles are
-saved as grayscale PNG images, with every four adjacent 8-bit pixels coding one
-32-bit float value, resulting in images of 1024x256 pixels.
+When importing product files, data is interpolated onto a regular grid and
+saved as tiles of 256✕256px. Tiles are saved as grayscale PNG images, with
+every four adjacent 8-bit pixels coding one 32-bit float value, resulting in
+images of 1024✕256 pixels.
 
-The web application consists of a python bottle server and a
-javascript application running in the browser.
-The javascript application uses the mapping framework
-[Leaflet](http://leaflet.cloudmade.com/) for displaying tiles.
-Information for popups and location is fetched via JSON.
+The web application consists of a Python bottle server and a JavaScript
+application running in the browser. The javascript application uses the
+mapping framework [Leaflet](http://leaflet.cloudmade.com/) for displaying
+tiles. Information for popups and location is fetched via JSON.
 
-The server is responsible for serving static files, tiles,
-as well as applying a given colormap.
-It also performs geocoding
-with the shapely library
-according to data from [Natural Earth](http://www.naturalearthdata.com/).
+The server is responsible for serving static files, tiles, as well as applying
+a given colormap. It also performs geocoding with the shapely library using
+geographica data from [Natural Earth](http://www.naturalearthdata.com/).
