@@ -1,0 +1,73 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          ccbrowse
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+### END INIT INFO
+
+NAME="ccbrowse"
+DESC="ccbrowse"
+DAEMON="/home/ccbrowse/.local/bin/ccbrowse"
+DAEMONNAME="ccbrowse"
+DAEMONUSER="ccbrowse:ccbrowse"
+DAEMON_OPTS="server"
+PIDFILE="/var/run/ccbrowse.pid"
+CHDIR="/home/ccbrowse/repo"
+PATH="$PATH:/home/ccbrowse/.local/bin"
+
+test -x $DAEMON || exit 0
+
+. /lib/lsb/init-functions
+
+case "$1" in
+    start)
+        log_daemon_msg "Starting $DESC" "$NAME"
+        if start-stop-daemon --start --background --quiet --oknodo --make-pidfile --pidfile $PIDFILE --chuid $DAEMONUSER --name $NAME --chdir "$CHDIR" --startas $DAEMON -- $DAEMON_OPTS; then
+            log_end_msg 0
+        else
+            log_end_msg 1
+        fi
+        ;;
+
+    stop)
+        log_daemon_msg "Stopping $DESC" "$NAME"
+        if start-stop-daemon --stop --quiet --oknodo --remove-pidfile --pidfile $PIDFILE --name $DAEMONNAME --retry 5; then
+            log_end_msg 0
+        else
+            log_end_msg 1
+        fi
+        ;;
+
+    restart|force-reload)
+        log_daemon_msg "Restarting $DESC" "$NAME"
+        start-stop-daemon --stop --quiet --remove-pidfile --pidfile $PIDFILE --chuid $DAEMONUSER --name $DAEMONNAME --retry 5
+        if start-stop-daemon --start --background --quiet --oknodo --make-pidfile --pidfile $PIDFILE --chuid $DAEMONUSER --name $NAME --chdir "$CHDIR" --startas $DAEMON -- $DAEMON_OPTS; then
+            log_end_msg 0
+        else
+            log_end_msg 1
+        fi
+        ;;
+
+    reload)
+        if start-stop-daemon --stop --remove-pidfile --pidfile $PIDFILE --signal 1; then
+            log_end_msg 0
+        else
+            log_end_msg 1
+        fi
+        ;;
+
+    status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+        ;;
+
+    *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|status|reload|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

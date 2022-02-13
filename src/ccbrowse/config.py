@@ -6,7 +6,7 @@ sharepath = os.path.join(os.path.dirname(__file__), '../../../../share/ccbrowse/
 
 default_config = {
     'profile': 'profile.json',
-    'server': 'auto',
+    'server': 'gunicorn',
     'workers': 10,
     'log': None,
     'loglevel': 'info',

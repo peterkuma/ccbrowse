@@ -20,7 +20,7 @@ ccbrowse can be installed on Linux (other operating systems are currently not
 supported). On Ubuntu or Debian, install system dependencies with:
 
 ```sh
-apt-get install libhdf4-0 libhdf4-dev libhdfeos0 libhdfeos-dev sqlite3 \
+apt-get install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 \
 python3 python3-dev cython3
 ```
 
@@ -114,7 +114,7 @@ error occur.
 Other command line options:
 
     -c CONFIG   configuration file (default: config.json)
-    -s SERVER   server backend or "help" for a list of options (default: auto)
+    -s SERVER   server backend or "help" for a list of options (default: gunicorn)
     -w WORKERS  number of server backend workers (default: 10)
 
 Importing data
@@ -142,36 +142,46 @@ would generate tiles for the layer calipso532 and zoom level 2.
 Deployment
 ----------
 
-The standard server supplied with ccbrowse is only suitable for small-scale
-deployment, as it is single-threaded. For production use, it is recommended
-to use one of the more robust WSGI servers, such as
-[gunicorn](http://gunicorn.org/). For that purpose, the repository
-contains a `wsgi.py` module, containing a WSGI application `app`.
-You can instruct gunicorn to run 4 application workers with:
+For a production deployment, it is recommended to start ccbrowse through
+the operating system init system. To install:
 
-    gunicorn -w 4 wsgi:app
+```sh
+adduser --system --group --shell /bin/bash ccbrowse
+mkdir /var/log/ccbrowse
+chown ccbrowse:ccbrowse /var/log/ccbrowse
+su - ccbrowse
+git clone https://github.com/peterkuma/ccbrowse.git
+cd ccbrowse
+pip3 install -r requirements.txt --user
+python3 setup.py install --user
+cd ..
+~/.local/bin/ccbrowse create repo
+exit
 
-Some operating systems such as Debian support placing the gunicorn configuration
-in `/etc/gunicorn.d/`, so that it runs automatically on system startup.
-Create a file `/etc/gunicorn.d/ccbrowse`:
+# For systemd based operating systems (e.g. Ubuntu or Debian):
+cp ~ccbrowse/ccbrowse/init-scripts/systemd /etc/systemd/system/ccbrowse.service
+systemctl enable ccbrowse.service
+service ccbrowse start
 
-    CONFIG = {
-        'working_dir': '/path/to/ccbrowse/',
-        'python': '/usr/bin/python3',
-        'args': (
-            '--log-level=DEBUG',
-            '--bind=localhost:8080',
-            '--user=username',
-            '--group=username',
-            '--workers=4',
-            '--timeout=60',
-            'wsgi:app',
-        ),
-    }
+# For init based operating systems (e.g. Devuan):
+cp ~ccbrowse/ccbrowse/init-scripts/init /etc/init.d
+update-rc.d ccbrowse defaults
+service ccbrowse start
+```
 
-replacing path to the ccbrowse repository and username. In order to
-make ccbrowse available on a public domain, you can deploy an HTTP server such as
-[nginx](http://nginx.org/), and use this example virtual server configuration:
+To import data:
+
+```sh
+su - ccbrowse
+cd repo
+ccbrowse import ...
+exit
+service ccbrowse restart
+```
+
+In order to make ccbrowse available on a public domain, you can deploy an HTTP
+server such as [nginx](http://nginx.org/), and use this example virtual server
+configuration:
 
     server {
             listen 80;
@@ -231,7 +241,7 @@ Configuration
 
 The repository configuration is defined in `config.json`, e.g.:
 
-    "server": "auto",
+    "server": "gunicorn",
     "workers": 10,
     "log": null,
     "loglevel": "info",
@@ -262,7 +272,7 @@ The repository configuration is defined in `config.json`, e.g.:
 
 The configuration options are:
 
-    server                  server backend (default: auto)
+    server                  server backend (default: gunicorn)
     workers                 number of server backend workers (default: 10)
     log                     log file or null for none (default: null)
     loglevel                log level: debug, info, warning, error, critical

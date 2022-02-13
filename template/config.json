@@ -1,5 +1,5 @@
 {
-    "server": "auto",
+    "server": "gunicorn",
     "workers": 10,
     "log": null,
     "loglevel": "info",

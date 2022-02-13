@@ -1,0 +1,14 @@
+[Unit]
+Description=ccbrowse
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=ccbrowse
+Group=ccbrowse
+ExecStart=/home/ccbrowse/.local/bin/ccbrowse server
+ExecStop=/bin/kill -s TERM $MAINPID
+WorkingDirectory=/home/ccbrowse/repo
+Environment=PATH=/home/ccbrowse/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
