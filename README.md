@@ -42,32 +42,30 @@ cd repo
 This will create a directory containing the profile specification and
 directories where layers and cache will be stored.
 
-Because ccbrowse does not come with any data in the distribution,
-you first have to import some. [Create a new account](https://reverb.echo.nasa.gov/reverb/users/new)
-on the NASA ECHO service.
-Open `config.json`, and enter login details for the account you just created
-under `echo` in `providers`:
+Because ccbrowse does not come with any data in the distribution, you first
+have to import some. You can download CALIPSO Level 1B product files from [NASA
+Earthdata](https://earthdata.nasa.gov).
 
-    "providers": {
-        "echo": {
-            "login": "myrusername",
-            "password": "mypassword",
-        }
-    },
+Once you have product files available locally, you can import them with:
 
-In order to import data, run:
+```sh
+ccbrowse import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
+```
 
-    ccbrowse get calipso "2012-01-01 12:00" "2012-01-01 12:30"
+You can choose to import only a certain layer or zoom level with `-l` and `-z`.
 
-The command will connect the ECHO service, and download
-product files in the specified time interval. When done,
-the files will be processed into tiles and imported into the repository.
+```sh
+ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
+```
+
+would generate tiles for the layer calipso532 and zoom level 2.
 
 Finally, run the server with:
 
     ccbrowse server
 
-Now, open [http://localhost:8080/](http://localhost:8080/) in your browser. That's it!
+Now, open [http://localhost:8080/](http://localhost:8080/) in your browser.
+That's it!
 
 If you encounter any issues, [file a bug report](https://github.com/peterkuma/ccbrowse/issues)
 or post to the [mailing list](mailto:ccplot-general@lists.sourceforge.net).
@@ -91,27 +89,6 @@ Other command line options:
     -c CONFIG   configuration file (default: config.json)
     -s SERVER   server backend or "help" for a list of options (default: gunicorn)
     -w WORKERS  number of server backend workers (default: 10)
-
-## Importing data
-
-The command `ccbrowse get` actually performs two steps: product fetching
-and importing. If you already have product files available locally,
-you can import them with:
-
-    ccbrowse import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
-
-Similarly, if you want to fetch product files without importing, run:
-
-    cccbrowse fetch calipso "2012-01-01 12:00" "2012-01-01 12:30"
-
-The product files will be saved under the `products/calipso` directory inside
-the repository.
-
-You can choose to import only a certain layer or zoom level with `-l` and `-z`.
-
-    ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
-
-would generate tiles for the layer calipso532 and zoom level 2.
 
 ## Deployment
 
