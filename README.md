@@ -25,8 +25,8 @@ To install ccbrowse:
 pip3 install ccbrowse
 ```
 
-Optionally, use `--user` to install in the user's home directory
-and make sure that `~/.local/bin` is in the PATH environmental variable.
+Make sure that the directory `$HOME/.local/bin` is in the PATH environmental
+variable.
 
 ## Setup
 
@@ -104,7 +104,7 @@ adduser --system --group --shell /bin/bash ccbrowse
 mkdir /var/log/ccbrowse
 chown ccbrowse:ccbrowse /var/log/ccbrowse
 su - ccbrowse
-pip3 install ccbrowse --user
+pip3 install ccbrowse
 ~/.local/bin/ccbrowse create repo
 cd repo
 # Edit config.json. Change log to "/var/log/ccbrowse/error.log" and accesslog
