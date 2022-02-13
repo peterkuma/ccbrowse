@@ -10,10 +10,8 @@ various types of product files.
 In the current version, it supports importing two datasets from the
 CALIPSO satellite, but new importing classes can be added as needed.
 
-<!--
 You can see an example ccbrowse application running at
 [browse.ccplot.org](http://browse.ccplot.org).
--->
 
 Installation
 ------------
