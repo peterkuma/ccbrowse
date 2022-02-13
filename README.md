@@ -97,7 +97,9 @@ Other command line options:
 ## Deployment
 
 For a production deployment, it is recommended to start ccbrowse through
-the operating system init system. To install:
+the operating system init system. Below is an example how to create a new
+operating system user `ccbrowse`, install ccbrowse in this user's home
+directory, and register a new system service to run ccbrowse on system start:
 
 ```sh
 adduser --system --group --shell /bin/bash ccbrowse
@@ -140,19 +142,21 @@ In order to make ccbrowse available on a public domain, you can deploy an HTTP
 server such as [nginx](http://nginx.org/), and use this example virtual server
 configuration:
 
-    server {
-            listen 80;
-            listen [::]:80 default ipv6only=on;
-            server_name your.domain;
-            access_log  /var/log/nginx/ccbrowse.access.log;
+```
+server {
+        listen 80;
+        listen [::]:80 default ipv6only=on;
+        server_name your.domain;
+        access_log  /var/log/nginx/ccbrowse.access.log;
 
-            location / {
-                    proxy_pass http://localhost:8080;
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            }
-    }
+        location / {
+                proxy_pass http://localhost:8080;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+}
+```
 
 replacing `your.domain` with the desired domain name.
 
