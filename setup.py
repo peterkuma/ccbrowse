@@ -64,6 +64,7 @@ class build_scss(Command):
 setup(
     name='ccbrowse',
     version='0.1',
+    description='Web application for browsing data from atmospheric profiling satellites',
     author='Peter Kuma',
     author_email='peter@peterkuma.net',
     url='https://github.com/peterkuma/ccbrowse',
