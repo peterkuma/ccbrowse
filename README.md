@@ -32,7 +32,7 @@ pip3 install .
 
 ## Setup
 
-Begin with creating a new repository:
+A new ccbrowse repository `repo` can be created with:
 
 ```sh
 ccbrowse create repo
@@ -40,32 +40,31 @@ cd repo
 ```
 
 This will create a directory containing the profile specification and
-directories where layers and cache will be stored.
-
-Because ccbrowse does not come with any data in the distribution, you first
-have to import some. You can download CALIPSO Level 1B product files from [NASA
-Earthdata](https://earthdata.nasa.gov).
-
-Once you have product files available locally, you can import them with:
+directories where layers and cache will be stored. Next, you have to import
+data to display. Download CALIPSO Level 1B product HDF files from [NASA
+Earthdata](https://earthdata.nasa.gov). You can import the data files with:
 
 ```sh
 ccbrowse import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
 ```
 
-You can choose to import only a certain layer or zoom level with `-l` and `-z`.
+Alternatively, to import only a certain layer or zoom level, use the `-l` or
+`-z` options:
 
 ```sh
 ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
 ```
 
-would generate tiles for the layer calipso532 and zoom level 2.
+This will generate tiles for the layer calipso532 and zoom level 2.
 
 Finally, run the server with:
 
-    ccbrowse server
+```sh
+ccbrowse server
+```
 
-Now, open [http://localhost:8080/](http://localhost:8080/) in your browser.
-That's it!
+This will make ccbrowse available in a web browser at
+[http://localhost:8080/](http://localhost:8080/).
 
 If you encounter any issues, [file a bug report](https://github.com/peterkuma/ccbrowse/issues)
 or post to the [mailing list](mailto:ccplot-general@lists.sourceforge.net).
@@ -75,11 +74,15 @@ or post to the [mailing list](mailto:ccplot-general@lists.sourceforge.net).
 By default, the server listens on localhost:8080 for incoming HTTP connections,
 but you can change that by supplying an address and port as an argument, e.g.:
 
-    ccbrowse server 192.168.0.1:8000
+```sh
+ccbrowse server 192.168.0.1:8000
+```
 
 To enable debugging mode, use the -d switch:
 
-    ccbrowse server -d
+```
+ccbrowse server -d
+```
 
 This will cause the server to respond with detailed messages should an
 error occur.
