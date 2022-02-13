@@ -536,20 +536,16 @@ of the supplied `_id` and `_hash` parameters (respectively).
 ## How it works
 
 ccbrowse consists of two parts: a Python backend and a JavaScript web
-application. The backend is responsible for importing product files and
-serving tiles. The interface between the backend and the web application is
-defined by `profile.json`.
-
-When importing product files, data is interpolated onto a regular grid and
-saved as tiles of 256✕256px. Tiles are saved as grayscale PNG images, with
-every four adjacent 8-bit pixels coding one 32-bit float value, resulting in
-images of 1024✕256 pixels.
-
-The web application consists of a Python bottle server and a JavaScript
-application running in the browser. The javascript application uses the
-mapping framework [Leaflet](http://leaflet.cloudmade.com/) for displaying
-tiles. Information for popups and location is fetched via JSON.
-
-The server is responsible for serving static files, tiles, as well as applying
-a given colormap. It also performs geocoding with the shapely library using
-geographica data from [Natural Earth](http://www.naturalearthdata.com/).
+application. The backend is responsible for importing product files and serving
+tiles. The interface between the backend and the web application is defined by
+`profile.json`. When importing product files, data is interpolated onto a
+regular grid and saved as tiles of 256✕256px. Tiles are saved as grayscale PNG
+images, with every four adjacent 8-bit pixels coding one 32-bit float value,
+resulting in images of 1024✕256 pixels. The web application consists of a
+Python bottle server and a JavaScript application running in the browser. The
+JavaScript application uses the mapping framework
+[Leaflet](http://leaflet.cloudmade.com/) for displaying tiles. Information for
+popups and location is fetched via JSON. The server is responsible for serving
+static files, tiles, as well as applying a given colormap. It also performs
+geocoding with the shapely library using geographica data from [Natural
+Earth](http://www.naturalearthdata.com/).
