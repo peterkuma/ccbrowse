@@ -1,6 +1,9 @@
 {
     "server": "auto",
     "workers": 10,
+    "log": null,
+    "loglevel": "info",
+    "accesslog": null,
     "host": "localhost",
     "port": 8080,
     "debug": false,

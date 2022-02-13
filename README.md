@@ -235,6 +235,9 @@ The repository configuration is defined in `config.json`, e.g.:
 
     "server": "auto",
     "workers": 10,
+    "log": null,
+    "loglevel": "info",
+    "accesslog": null,
     "host": "localhost",
     "port": 8080,
     "debug": false,
@@ -263,6 +266,10 @@ The configuration options are:
 
     server                  server backend (default: auto)
     workers                 number of server backend workers (default: 10)
+    log                     log file or null for none (default: null)
+    loglevel                log level: debug, info, warning, error, critical
+                            (default: info)
+    accesslog               access log file or null for none (default: null)
     host                    hostname to listen on (default: localhost)
     port                    port to listen on (default: 8080)
     debug                   enable server debugging (default: false)

@@ -54,6 +54,9 @@ def run(config):
         bottle.run(
             server=config['server'],
             workers=config['workers'],
+            errorlog=config['log'],
+            loglevel=config['loglevel'],
+            accesslog=config['accesslog'],
             host=config['host'],
             port=config['port'],
             reloader=config['debug'],
