@@ -156,6 +156,9 @@ pip3 install -r requirements.txt --user
 python3 setup.py install --user
 cd ..
 ~/.local/bin/ccbrowse create repo
+cd repo
+# Edit config.json. Change log to "/var/log/ccbrowse/error.log" and accesslog
+# to "/var/log/ccbrowse/access.log".
 exit
 
 # For systemd based operating systems (e.g. Ubuntu or Debian):
