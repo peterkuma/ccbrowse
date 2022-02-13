@@ -16,7 +16,7 @@ supported). On Debian-based distributions (e.g. Ubuntu and Devuan), install
 system dependencies with:
 
 ```sh
-apt-get install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev cython3
+apt-get install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3
 ```
 
 To install ccbrowse in a Python virtual environment:

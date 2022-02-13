@@ -3,7 +3,7 @@
 import os
 import sys
 from glob import glob
-from distutils.core import setup, Extension, Command
+from setuptools import setup, Extension, Command
 import distutils.command.build
 from Cython.Distutils import build_ext
 import subprocess
@@ -88,7 +88,7 @@ class build_scss(Command):
         except OSError:
             print('warning: sass not available, will not rebuild stylesheets', file=sys.stderr)
             return
-        cmd = ['sass', '--update', 'ccbrowse.scss', 'ccbrowse.css']
+        cmd = ['sass', '--update', 'ccbrowse.scss:ccbrowse.css']
         print(' '.join(cmd))
         try:
             ret = call(cmd, cwd='www/css')
@@ -103,10 +103,9 @@ setup(
     name='ccbrowse',
     version='0.1',
     author='Peter Kuma',
-    author_email='peterkuma@waveland.org',
+    author_email='peter@peterkuma.net',
     url='https://github.com/peterkuma/ccbrowse',
     license = "MIT",
-    platforms='any',
     classifiers = [
         "Programming Language :: Python",
         "Programming Language :: Python :: 3 :: Only",
