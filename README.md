@@ -113,6 +113,12 @@ To enable debugging mode, use the -d switch:
 This will cause the server to respond with detailed messages should an
 error occur.
 
+Other command line options:
+
+    -c CONFIG   configuration file (default: config.json)
+    -s SERVER   server backend or "help" for a list of options (default: auto)
+    -w WORKERS  number of server backend workers (default: 10)
+
 Importing data
 --------------
 
