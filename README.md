@@ -12,13 +12,14 @@ running at [browse.ccplot.org](http://browse.ccplot.org).
 ## Installation
 
 ccbrowse can be installed on Linux (other operating systems are currently not
-supported). On Ubuntu or Debian, install system dependencies with:
+supported). On Debian-based distributions (e.g. Ubuntu and Devuan), install
+system dependencies with:
 
 ```sh
 apt-get install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev cython3
 ```
 
-To install in a Python virtual environment:
+To install ccbrowse in a Python virtual environment:
 
 ```sh
 python3 -m venv env
@@ -29,24 +30,6 @@ pip3 install -r requirements.txt
 pip3 install .
 ```
 
-Full list of Python dependencies:
-
-  * [libhdf4](http://www.hdfgroup.org/release4/obtain.html)
-  * [HDF-EOS2 library](http://www.hdfeos.org/software/library.php#HDF-EOS2)
-  * [SQLite](http://www.sqlite.org/)
-  * [Python](http://www.python.org) >= 3.0 (incl. dev files)
-  * [Cython](http://www.cython.org/)
-  * [pytz](http://pytz.sourceforge.net/)
-  * [python-dateutil](http://labix.org/python-dateutil)
-  * [PIL](http://www.pythonware.com/products/pil/)
-  * [numpy](http://numpy.scipy.org/)
-  * [scipy](http://www.scipy.org/)
-  * [Suds](https://fedorahosted.org/suds/)
-  * [Shapely](http://pypi.python.org/pypi/Shapely/)
-  * [Bottle](http://bottlepy.org/docs/dev/)
-  * [bintrees](http://pypi.python.org/pypi/bintrees/)
-  * [gunicorn](https://gunicorn.org/)
-
 ## Setup
 
 Begin with creating a new repository:
@@ -54,7 +37,7 @@ Begin with creating a new repository:
 ```sh
 ccbrowse create repo
 cd repo
-``
+```
 
 This will create a directory containing the profile specification and
 directories where layers and cache will be stored.
