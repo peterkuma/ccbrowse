@@ -77,7 +77,7 @@ var Map = new Class({
         this.locationLayer.addTo(this.map);
         */
 
-        this.nav.on('change', this.move.bind(this));
+        this.nav.on('change', source => source != 'map' && this.move());
         this.nav.on('layerchange', this.updateLayer.bind(this));
     },
 
@@ -181,7 +181,7 @@ var Map = new Class({
         this.tileLayer = new L.TileLayer(url, {
             maxZoom: this.nav.getMaxZoom(),
             tileSize: 256,
-            continuousWorld: true,
+            //continuousWorld: true,
             tms: true,
             attribution: layer.source.attribution
         });
@@ -226,7 +226,7 @@ var Map = new Class({
         date.increment('ms', t);
         date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
         //this.hold = true;
-        this.nav.setCurrent(date);
+        this.nav.setCurrent(date, 'map');
         //this.hold = false;
 
         this.update();
@@ -239,7 +239,6 @@ var Map = new Class({
 
         var fn = function() {
             if (value == null || latitude == null || longitude == null) return;
-            console.log(value, latitude, longitude);
 
             var url = this.profile.layers.geography.src+'?q='+latitude+','+longitude;
             var xhr = new XMLHttpRequest();
@@ -268,6 +267,8 @@ var Map = new Class({
             xhr.open('GET', url);
             xhr.send();
         }.bind(this);
+
+        console.log(evt.latlng);
 
         var q = new Query();
         q.onLoad = function(response) { value = parseFloat(response); fn(); }.bind(this);

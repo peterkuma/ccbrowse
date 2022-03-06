@@ -20,8 +20,10 @@ export default class Navigation extends EventEmitter2 {
         if (window.location.hash === '') return;
         var date = new Date().parse(window.location.hash.substring(1) + ' +0000');
         if (!date.isValid()) return;
-        this.current = date;
-        this.emit('change');
+        if (Math.abs(this.current - date) >= 1000) {
+            this.current = date;
+            this.emit('change');
+        }
     }
 
     getLayers() { return this.profile.layers; }
@@ -38,10 +40,10 @@ export default class Navigation extends EventEmitter2 {
         return new Date(this.current);
     }
 
-    setCurrent(date) {
+    setCurrent(date, source) {
         this.current = date;
         window.location.replace('#'+date.formatUTC('%Y-%b-%d,%H:%M:%S'));
-        this.emit('change');
+        this.emit('change', source);
     }
 
     getZoom() {
