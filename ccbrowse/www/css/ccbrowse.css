@@ -4,43 +4,36 @@ header {
   position: relative;
   /* height: defined in ccbrowse.scss */
   z-index: 200;
-  background-color: #111;
-}
-header h1 {
-  float: left;
-  margin-top: 0;
-  margin-bottom: 0;
-  margin-left: 0.2em;
-  font-size: 100%;
-}
-header h1 a {
-  display: block;
-  font-size: 200%;
-  font-weight: normal;
-  color: transparent;
-  padding: 0.1em 0.2em;
-  background: url("../img/ccbrowse.png") no-repeat center center;
-  background-size: 4em;
-}
-header h1 a:hover {
-  text-decoration: none;
-}
-header #toolbox {
-  float: right;
-  color: #eee;
-  margin-top: 0;
-  margin-bottom: 0;
-  margin-right: 0.5em;
-}
-header #toolbox a {
-  display: block;
-  font-size: 160%;
-  padding: 0.4em 0.5em 0.4em 1.8em;
-}
-header #toolbox a[href="#about"] {
-  background: url("../img/about.png") no-repeat 0.6em center;
-  background-size: 0.8em;
-}
+  background-color: #111; }
+  header h1 {
+    float: left;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 0.2em;
+    font-size: 100%; }
+    header h1 a {
+      display: block;
+      font-size: 200%;
+      font-weight: normal;
+      color: transparent;
+      padding: 0.1em 0.2em;
+      background: url("../img/ccbrowse.png") no-repeat center center;
+      background-size: 4em; }
+      header h1 a:hover {
+        text-decoration: none; }
+  header #toolbox {
+    float: right;
+    color: #eee;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 0.5em; }
+    header #toolbox a {
+      display: block;
+      font-size: 160%;
+      padding: 0.4em 0.5em 0.4em 1.8em; }
+    header #toolbox a[href="#about"] {
+      background: url("../img/about.png") no-repeat 0.6em center;
+      background-size: 0.8em; }
 
 nav {
   position: absolute;
@@ -50,130 +43,112 @@ nav {
   color: #eee;
   background: #333;
   padding-top: 0.5em;
-  box-shadow: inset 2px 2px 6px black;
-}
-nav .years .year-group {
-  float: left;
-  white-space: nowrap;
-}
-nav .years .year-group .year {
-  display: inline-block;
-  border-left: 1px solid #888;
-  cursor: pointer;
-  font-size: 120%;
-  line-height: 1.2em;
-  color: white;
-  padding: 0 0.2em;
-  margin: 0.1em 0em 0.1em 0.1em;
-  border-radius: 2px;
-}
-nav .years .year-group .year.disabled {
-  cursor: auto;
-  color: #777;
-  display: none;
-}
-nav .years .year-group .months {
-  display: inline-block;
-  vertical-align: top;
-  overflow: hidden;
-  white-space: nowrap;
-}
-nav .years .year-group .months .month {
-  display: inline-block;
-  cursor: pointer;
-  margin: 0.16em 0em;
-  border-radius: 2px;
-  padding: 0.1em 0.2em;
-}
-nav .years .year-group .months .month.selected {
-  background-color: #0197fd;
-  color: black;
-}
-nav .years .year-group .months .month.disabled {
-  cursor: auto;
-  color: #777;
-  display: none;
-}
-nav .years .year-group:first-child .year {
-  border-left: none;
-}
-nav .days {
-  clear: both;
-  white-space: nowrap;
-}
-nav .days .day {
-  display: inline-block;
-  cursor: pointer;
-  border-radius: 2px;
-  padding: 0.1em 0.3em;
-  margin: 0.1em;
-}
-nav .days .day.selected {
-  background-color: #0197fd;
-  color: black;
-}
-nav .days .day.disabled {
-  cursor: auto;
-  color: #777;
-  display: none;
-}
-nav .progress {
-  margin-top: 0.3em;
-  height: 8px;
-  width: 100%;
-  background: black url("../img/progress-unavailable.png") repeat-x;
-  border-top: 1px solid #555;
-  border-bottom: 1px solid #555;
-  position: relative;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-nav .progress .indicator {
-  z-index: 1;
-  position: absolute;
-  left: 0;
-  height: 100%;
-  background: #0197fd;
-  width: 0;
-  background: url("../img/progress.png") repeat-x;
-  border-top: 1px solid #555;
-  border-bottom: 1px solid #555;
-  margin-top: -1px;
-}
-nav .progress .thumb {
-  z-index: 1;
-  width: 20px;
-  height: 20px;
-  background: url("../img/thumb.png") no-repeat;
-  position: absolute;
-  margin-left: -10px;
-  margin-top: -6px;
-}
-nav .progress .tooltip {
-  font-family: helvetica, sans-serif;
-  font-size: 74%;
-  z-index: 2;
-  position: absolute;
-  margin-top: 20px;
-  padding: 5px 7px;
-  text-align: center;
-  background: black;
-  border-radius: 4px;
-}
-nav .progress .availability {
-  position: absolute;
-  background: url("../img/progress-available.png") repeat-x;
-  border: 1px solid #66fc43;
-  height: 6px;
-}
+  box-shadow: inset 2px 2px 6px black; }
+  nav .years .year-group {
+    float: left;
+    white-space: nowrap; }
+    nav .years .year-group .year {
+      display: inline-block;
+      border-left: 1px solid #888;
+      cursor: pointer;
+      font-size: 120%;
+      line-height: 1.2em;
+      color: white;
+      padding: 0 0.2em;
+      margin: 0.1em 0em 0.1em 0.1em;
+      border-radius: 2px; }
+      nav .years .year-group .year.disabled {
+        cursor: auto;
+        color: #777;
+        display: none; }
+    nav .years .year-group .months {
+      display: inline-block;
+      vertical-align: top;
+      overflow: hidden;
+      white-space: nowrap; }
+      nav .years .year-group .months .month {
+        display: inline-block;
+        cursor: pointer;
+        margin: 0.16em 0em;
+        border-radius: 2px;
+        padding: 0.1em 0.2em; }
+        nav .years .year-group .months .month.selected {
+          background-color: #0197fd;
+          color: black; }
+        nav .years .year-group .months .month.disabled {
+          cursor: auto;
+          color: #777;
+          display: none; }
+    nav .years .year-group:first-child .year {
+      border-left: none; }
+  nav .days {
+    clear: both;
+    white-space: nowrap; }
+    nav .days .day {
+      display: inline-block;
+      cursor: pointer;
+      border-radius: 2px;
+      padding: 0.1em 0.3em;
+      margin: 0.1em; }
+      nav .days .day.selected {
+        background-color: #0197fd;
+        color: black; }
+      nav .days .day.disabled {
+        cursor: auto;
+        color: #777;
+        display: none; }
+  nav .progress {
+    margin-top: 0.3em;
+    height: 8px;
+    width: 100%;
+    background: black url("../img/progress-unavailable.png") repeat-x;
+    border-top: 1px solid #555;
+    border-bottom: 1px solid #555;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+    nav .progress .indicator {
+      z-index: 1;
+      position: absolute;
+      left: 0;
+      height: 100%;
+      background: #0197fd;
+      width: 0;
+      background: url("../img/progress.png") repeat-x;
+      border-top: 1px solid #555;
+      border-bottom: 1px solid #555;
+      margin-top: -1px; }
+    nav .progress .thumb {
+      z-index: 1;
+      width: 20px;
+      height: 20px;
+      background: url("../img/thumb.png") no-repeat;
+      position: absolute;
+      margin-left: -10px;
+      margin-top: -6px; }
+    nav .progress .tooltip {
+      display: none;
+      font-family: helvetica, sans-serif;
+      font-size: 74%;
+      z-index: 2;
+      position: absolute;
+      margin-top: 20px;
+      padding: 5px 7px;
+      text-align: center;
+      background: black;
+      border-radius: 4px; }
+    nav .progress .availability {
+      position: absolute;
+      background: url("../img/progress-available.png") repeat-x;
+      border: 1px solid #66fc43;
+      height: 6px; }
 
 .overlay {
   position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
-  left: 0;
-}
+  left: 0; }
 
 #map-container {
   position: absolute;
@@ -182,8 +157,7 @@ nav .progress .availability {
   left: 0;
   right: 130px;
   text-align: center;
-  background: url("../img/bg.png") repeat-x;
-}
+  background: url("../img/bg.png") repeat-x; }
 
 #map {
   background: transparent !important;
@@ -191,8 +165,7 @@ nav .progress .availability {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-}
+  height: 100%; }
 
 .leaflet-container .leaflet-control, .control {
   background: black;
@@ -203,41 +176,33 @@ nav .progress .availability {
   overflow: hidden;
   text-align: left;
   transition: opacity 200ms;
-  opacity: 0.8;
-}
+  opacity: 0.8; }
 
 .control:hover, .leaflet-container .leaflet-control:hover {
-  opacity: 1;
-}
+  opacity: 1; }
 
 .leaflet-container .leaflet-control-measure {
   position: absolute;
   left: 100px;
-  top: 0px;
-}
+  top: 0px; }
 
 .leaflet-container .leaflet-control-measure a {
   display: block;
   width: 20px;
   height: 20px;
-  background: url("../img/measure.png") no-repeat center center;
-}
+  background: url("../img/measure.png") no-repeat center center; }
 
 .control {
-  position: absolute;
-}
+  position: absolute; }
 
 .control.collapsed {
-  opacity: 0.8;
-}
+  opacity: 0.8; }
 
 .control.collapsed:hover {
-  opacity: 1;
-}
+  opacity: 1; }
 
 .control.collapsed .content {
-  display: none;
-}
+  display: none; }
 
 .leaflet-container .leaflet-control-attribution {
   background-color: rgba(0, 0, 0, 0.6);
@@ -249,30 +214,24 @@ nav .progress .availability {
   border-radius: 0;
   border: none;
   opacity: 0.5;
-  transition: opacity 200ms;
-}
+  transition: opacity 200ms; }
 
 .leaflet-container .leaflet-control-attribution:hover {
-  opacity: 1;
-}
+  opacity: 1; }
 
 .leaflet-container .leaflet-control-attribution a {
   color: inherit;
   font-weight: bold;
-  padding: 0;
-}
+  padding: 0; }
 
 .leaflet-container .leaflet-control-attribution a:hover {
-  text-decoration: inherit;
-}
+  text-decoration: inherit; }
 
 .leaflet-top .leaflet-control {
-  margin-top: 20px;
-}
+  margin-top: 20px; }
 
 .leaflet-left .leaflet-control {
-  margin-top: 20px;
-}
+  margin-top: 20px; }
 
 .leaflet-control-zoom {
   background: black;
@@ -281,31 +240,26 @@ nav .progress .availability {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
   width: 71px;
   padding: 0;
-  transition: opacity 200ms;
-}
+  transition: opacity 200ms; }
 
 .leaflet-control a {
   background-color: transparent;
   margin: 0;
-  padding: 8px;
-}
+  padding: 8px; }
 
 .leaflet-control a:hover {
-  background-color: transparent;
-}
+  background-color: transparent; }
 
 .leaflet-control-zoom-in {
   background: url("../img/zoom-in.png") no-repeat;
   float: left;
   border-right: 1px solid #777;
-  font-size: 0;
-}
+  font-size: 0; }
 
 .leaflet-control-zoom-out {
   background: url("../img/zoom-out.png") no-repeat;
   float: right;
-  font-size: 0;
-}
+  font-size: 0; }
 
 .leaflet-popup-content-wrapper {
   background: black;
@@ -313,41 +267,35 @@ nav .progress .availability {
   border: 1px solid #999;
   box-shadow: 2px 2px 10px black;
   position: relative;
-  left: 30%;
-}
+  left: 30%; }
 
 .leaflet-popup-content {
   color: white;
   font-size: inherit;
   font-family: inherit;
   margin: 0.5em;
-  box-shadow: 2px 2px 6px black;
-}
+  box-shadow: 2px 2px 6px black; }
 
 .leaflet-popup-close-button {
-  display: none;
-}
+  display: none; }
 
 .leaflet-popup-tip {
   background-color: black;
   box-shadow: 2px 2px 6px black;
   border: 1px solid #999;
   position: relative;
-  top: -1px;
-}
+  top: -1px; }
 
 .leaflet-popup-tip-container {
   height: 20px;
   position: relative;
-  top: -1px;
-}
+  top: -1px; }
 
 #layer-control {
   top: 1.5em;
   right: 1.5em;
   z-index: 100;
-  padding: 0.7em 0;
-}
+  padding: 0.7em 0; }
 
 #layer-control .icon {
   float: right;
@@ -358,61 +306,49 @@ nav .progress .availability {
   cursor: pointer;
   position: relative;
   z-index: 200;
-  margin: 0 0.7em;
-}
+  margin: 0 0.7em; }
 
 #layer-control .label {
   font-size: 150%;
-  margin: 0 0.5em 0.5em 0.5em;
-}
+  margin: 0 0.5em 0.5em 0.5em; }
 
 .layer-item {
   display: block;
   height: 1.3em;
   padding: 0.5em 0.5em;
-  white-space: nowrap;
-}
-.layer-item:focus {
-  outline: none;
-  text-decoration: underline;
-}
-.layer-item:hover:before {
-  text-decoration: none !important;
-}
-.layer-item.active {
-  background-color: #0197fd;
-  color: black;
-}
-.layer-item.active .bulb {
-  background: url("../img/bulb-active.png") no-repeat;
-}
-.layer-item.enabled .bulb {
-  background: url("../img/bulb-enabled.png") no-repeat;
-}
-.layer-item .bulb {
-  width: 12px;
-  height: 12px;
-  margin: 0 5px;
-  display: inline-block;
-  background: url("../img/bulb-disabled.png") no-repeat;
-}
+  white-space: nowrap; }
+  .layer-item:focus {
+    outline: none;
+    text-decoration: underline; }
+  .layer-item:hover:before {
+    text-decoration: none !important; }
+  .layer-item.active {
+    background-color: #0197fd;
+    color: black; }
+    .layer-item.active .bulb {
+      background: url("../img/bulb-active.png") no-repeat; }
+  .layer-item.enabled .bulb {
+    background: url("../img/bulb-enabled.png") no-repeat; }
+  .layer-item .bulb {
+    width: 12px;
+    height: 12px;
+    margin: 0 5px;
+    display: inline-block;
+    background: url("../img/bulb-disabled.png") no-repeat; }
 
 .popup-content .color-box {
   width: 10px;
   height: 10px;
   float: left;
   margin-right: 5px;
-  margin-top: 8px;
-}
+  margin-top: 8px; }
 
 .popup-content .value {
-  font-weight: bold;
-}
+  font-weight: bold; }
 
 .popup-content .latlon-link {
   display: block;
-  color: #0197fd;
-}
+  color: #0197fd; }
 
 .error, .note {
   position: relative;
@@ -428,20 +364,16 @@ nav .progress .availability {
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
   transition: top 200ms;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-}
+  border: 1px solid rgba(255, 255, 255, 0.4); }
 
 .error.collapsed, .note.collapsed, .note.hold {
-  top: -55px;
-}
+  top: -55px; }
 
 .error {
-  background-color: #f50000;
-}
+  background-color: #f50000; }
 
 .note {
-  background: rgba(0, 0, 0, 0.2);
-}
+  background: rgba(0, 0, 0, 0.2); }
 
 .keyboard-legend {
   font-size: 70%;
@@ -453,26 +385,22 @@ nav .progress .availability {
   background: rgba(255, 255, 255, 0.8) url("../img/keyboard.png") no-repeat;
   opacity: 0.5;
   z-index: 1000;
-  transition: opacity 200ms;
-}
+  transition: opacity 200ms; }
 
 .keyboard-legend:hover {
-  opacity: 1;
-}
+  opacity: 1; }
 
 .keyboard-tooltip .title {
   font-weight: bold;
   border-bottom: 1px solid rgba(255, 255, 255, 0.7);
   padding-bottom: 2px;
-  margin-bottom: 4px;
-}
+  margin-bottom: 4px; }
 
 .keyboard-tooltip span {
   font-weight: bold;
   width: 60px;
   display: inline-block;
-  text-align: right;
-}
+  text-align: right; }
 
 #colormap-container {
   position: absolute;
@@ -482,8 +410,7 @@ nav .progress .availability {
   width: 130px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   bottom: 0;
-  z-index: 50;
-}
+  z-index: 50; }
 
 #colormap {
   position: absolute;
@@ -492,20 +419,17 @@ nav .progress .availability {
   left: 20px;
   right: 20px;
   font-size: 84%;
-  font-family: helvetica, sans-serif;
-}
+  font-family: helvetica, sans-serif; }
 
 .colormap-over {
   width: 20px;
   height: 25px;
-  background: url("../img/over.png") no-repeat;
-}
+  background: url("../img/over.png") no-repeat; }
 
 .colormap-under {
   width: 20px;
   height: 25px;
-  background: url("../img/under.png") no-repeat;
-}
+  background: url("../img/under.png") no-repeat; }
 
 #location-bar {
   position: absolute;
@@ -516,27 +440,23 @@ nav .progress .availability {
   font-size: 150%;
   font-family: "Open Sans";
   font-weight: bold;
-  text-shadow: 2px 2px 0 #000;
-}
+  text-shadow: 2px 2px 0 #000; }
 
 #location-bar .center {
   margin: 0 auto;
-  text-align: center;
-}
+  text-align: center; }
 
 #location-bar .left {
   position: absolute;
   left: 10px;
   bottom: 0;
-  text-align: left;
-}
+  text-align: left; }
 
 #location-bar .right {
   position: absolute;
   right: 10px;
   bottom: 0;
-  text-align: right;
-}
+  text-align: right; }
 
 /*
 #location-bar {
@@ -579,8 +499,7 @@ nav .progress .availability {
   font-size: 80%;
   border: 1px solid black;
   z-index: 500;
-  border-radius: 2px;
-}
+  border-radius: 2px; }
 
 .page {
   width: 800px;
@@ -589,16 +508,14 @@ nav .progress .availability {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   border-left: 1px solid rgba(255, 255, 255, 0.1);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
+  border-right: 1px solid rgba(255, 255, 255, 0.1); }
 
 .page h1 {
   font-size: 32pt;
   color: white;
   font-weight: normal;
   margin-left: 20px;
-  text-align: left;
-}
+  text-align: left; }
 
 .page article {
   text-align: left;
@@ -606,23 +523,19 @@ nav .progress .availability {
   padding: 10px 20px 20px 20px;
   border-radius: 1px;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.15);
-  color: #333;
-}
+  color: #333; }
 
 .page article a {
   color: #1122cc;
-  text-decoration: underline;
-}
+  text-decoration: underline; }
 
 .page article p {
-  margin: 10px 0;
-}
+  margin: 10px 0; }
 
 .page article h2 {
   margin-top: 20px;
   margin-bottom: 10px;
-  font-size: 16pt;
-}
+  font-size: 16pt; }
 
 #yaxis-container {
   width: 3em;
@@ -634,94 +547,77 @@ nav .progress .availability {
   font-weight: bold;
   position: absolute;
   z-index: 100;
-  opacity: 0.9;
-}
+  opacity: 0.9; }
 
 .yaxis {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-}
-.yaxis .label {
-  position: absolute;
-  left: 0;
-  padding-left: 0.7em;
-}
-.yaxis .tick {
-  position: absolute;
-  left: 0;
-  height: 1px;
-  width: 0.3em;
-  background: white;
-  border-bottom: 2px solid black;
-}
-.yaxis .tick.minor {
-  width: 0.2em;
-}
+  overflow: hidden; }
+  .yaxis .label {
+    position: absolute;
+    left: 0;
+    padding-left: 0.7em; }
+  .yaxis .tick {
+    position: absolute;
+    left: 0;
+    height: 1px;
+    width: 0.3em;
+    background: white;
+    border-bottom: 2px solid black; }
+  .yaxis .tick.minor {
+    width: 0.2em; }
 
 body {
   margin: 0;
   background: #333;
   font-family: Asap, helvetica, sans-serif;
-  overflow-x: hidden;
-}
+  overflow-x: hidden; }
 
 #overlay {
   position: fixed;
   overflow: hidden;
   width: 100%;
   height: 100%;
-}
+  z-index: 500;
+  pointer-events: none; }
 
 a {
   color: inherit;
-  text-decoration: inherit;
-}
+  text-decoration: inherit; }
 
 a:hover {
-  text-decoration: underline;
-}
+  text-decoration: underline; }
 
 a:hover:before {
-  text-decoration: none !important;
-}
+  text-decoration: none !important; }
 
 .context {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  text-align: center;
-}
+  text-align: center; }
 
 /* Standard screen. */
 @media screen {
   body {
-    font-size: 11pt;
-  }
+    font-size: 11pt; }
 
   header {
-    height: 110px;
-  }
+    height: 110px; }
 
   .context {
-    top: 110px;
-  }
-}
+    top: 110px; } }
 /* Small screen. */
 @media screen and (max-width: 1024px) {
   body {
-    font-size: 8pt;
-  }
+    font-size: 8pt; }
 
   header {
-    height: 105px;
-  }
+    height: 105px; }
 
   .context {
-    top: 105px;
-  }
-}
+    top: 105px; } }
 
 /*# sourceMappingURL=ccbrowse.css.map */
