@@ -35,11 +35,11 @@ var NavigationPanel = new Class({
             return this.nav.isAvailableYear(d.getUTCFullYear());
         }.bind(this));
 
-        var nextMonth = d3.time.month.utc.offset(t0, 1);
+        var nextMonth = d3.time.month.utc.offset(d3.time.month.utc(t0), 1);
         var dayStop = nextMonth < t2 ? nextMonth : t2;
         var days = d3.time.day.utc.range(
             d3.time.month.utc(t0),
-            d3.time.month.utc(dayStop)
+            dayStop
         );
 
         var yearGroup = this.years.selectAll('.year-group')
