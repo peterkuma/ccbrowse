@@ -59,7 +59,7 @@ def run(config):
             accesslog=config['accesslog'],
             host=config['host'],
             port=config['port'],
-            reloader=config['debug'],
+            timeout=300,
         )
     except socket.error as e:
         raise RuntimeError('[%s:%s]: %s' % (config['host'], config['port'], e.strerror))
