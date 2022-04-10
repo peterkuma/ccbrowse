@@ -158,11 +158,11 @@ class Calipso(Product):
 
         if interpolation == 'smart':
             N = np.arange(n1, n2, (n2-n1)/256.0)
-            N = np.round(N).astype(np.int) - n1_
+            N = np.round(N).astype(int) - n1_
             f = interp1d(height[m1:m2][::-1], np.arange(m1, m2)[::-1], 'nearest',
                          bounds_error=False, fill_value=m1-1)
             M = f(np.arange(z1, z2, (z2-z1)/256.0)[::-1])
-            M = np.round(M).astype(np.int) - m1
+            M = np.round(M).astype(int) - m1
             data = interp2d(raw_data.astype(np.float32).filled(),
                             N.astype(np.float32),
                             M.astype(np.float32))
