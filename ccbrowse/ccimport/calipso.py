@@ -3,6 +3,7 @@ import pytz
 import numpy as np
 import math
 from scipy.interpolate import interp1d
+from netCDF4 import Dataset
 
 import ccbrowse
 from . import calipso_constants
@@ -26,7 +27,12 @@ class Calipso(Product):
 
     def __init__(self, filename, profile, offset=None):
         Product.__init__(self, filename, profile, offset)
-        self.hdf = HDF(filename)
+        try:
+            self.hdf = HDF(filename)
+        except OSError:
+            self.hdf = Dataset(filename)
+            self.hdf.set_auto_mask(False)
+            self.hdf.set_always_mask(False)
 
     def layers(self):
         layers = list(self.profile['layers'].keys())
@@ -148,7 +154,7 @@ class Calipso(Product):
         try:
             fillvalue = dataset.attributes['fillvalue']
             raw_data = np.ma.masked_equal(raw_data, fillvalue, copy=False)
-        except KeyError as IndexError: pass
+        except (KeyError, AttributeError): pass
 
         if interpolation == 'smart':
             N = np.arange(n1, n2, (n2-n1)/256.0)
