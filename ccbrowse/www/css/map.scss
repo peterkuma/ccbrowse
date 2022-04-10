@@ -11,7 +11,6 @@
     top: 0;
     bottom: 0;
     left: 0;
-    right: 130px;
     text-align: center;
     background: url('../img/bg.png') repeat-x;
 }
@@ -23,6 +22,10 @@
     left: 0;
     width: 100%;
     height: 100%;
+}
+
+.leaflet-container a.leaflet-active {
+    outline: none;
 }
 
 .leaflet-container .leaflet-control,.control {
@@ -110,9 +113,10 @@
     border-radius: 6px;
     border: 1px solid #555;
     box-shadow: 0 0 5px rgba(0,0,0,0.8);
-    width: 71px;
+    box-sizing: border-box;
     padding: 0;
     transition: opacity 200ms;
+    display: flex;
 }
 
 .leaflet-control a {
@@ -127,14 +131,13 @@
 
 .leaflet-control-zoom-in {
     background: url('../img/zoom-in.png') no-repeat;
-    float: left;
     border-right: 1px solid #777;
+    border-radius: 0 !important;
     font-size: 0;
 }
 
 .leaflet-control-zoom-out {
     background: url('../img/zoom-out.png') no-repeat;
-    float: right;
     font-size: 0;
 }
 

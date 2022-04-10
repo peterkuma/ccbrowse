@@ -53,6 +53,9 @@ a:hover:before {
     body { font-size: 11pt; }
     header { height: 110px; }
     .context { top: 110px; }
+    #map-container { right: 130px; }
+    #colormap { left: 20px; right: 20px; }
+    #colormap-container { width: 130px; }
 }
 
 /* Small screen. */
@@ -60,4 +63,7 @@ a:hover:before {
     body { font-size: 8pt; }
     header { height: 105px; }
     .context { top: 105px; }
+    #map-container { right: 100px; }
+    #colormap { left: 10px; right: 10px; }
+    #colormap-container { width: 100px; }
 }
