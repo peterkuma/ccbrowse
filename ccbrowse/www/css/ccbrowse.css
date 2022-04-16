@@ -107,7 +107,8 @@ nav {
     border-bottom: 1px solid #555;
     position: relative;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    overflow-x: clip; }
     nav .progress .indicator {
       z-index: 1;
       position: absolute;

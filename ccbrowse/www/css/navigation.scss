@@ -101,6 +101,7 @@ nav {
         position: relative;
         cursor: pointer;
         box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        overflow-x: clip;
 
         .indicator {
             z-index: 1;
