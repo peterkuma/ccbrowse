@@ -1,11 +1,12 @@
 @import url(https://fonts.googleapis.com/css?family=Asap:400,700);
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
 header {
-  z-index: 200;
+  z-index: 2000;
   background-color: #111;
   display: flex;
   flex-direction: column;
-  align-items: center; }
+  align-items: center;
+  overflow-x: clip; }
   header .header-top {
     width: 100%;
     display: flex;
@@ -49,43 +50,43 @@ nav {
     display: flex;
     flex-direction: column;
     padding: 0.3rem; }
-    nav .panel .years .year-group {
-      float: left;
-      white-space: nowrap; }
-      nav .panel .years .year-group .year {
-        display: inline-block;
-        border-left: 1px solid #888;
-        cursor: pointer;
-        font-size: 120%;
-        line-height: 1.2em;
-        color: white;
-        padding: 0 0.2em;
-        margin: 0.1em 0em 0.1em 0.1em;
-        border-radius: 2px; }
-        nav .panel .years .year-group .year.disabled {
-          cursor: auto;
-          color: #777;
-          display: none; }
-      nav .panel .years .year-group .months {
-        display: inline-block;
-        vertical-align: top;
-        overflow: hidden;
-        white-space: nowrap; }
-        nav .panel .years .year-group .months .month {
-          display: inline-block;
+    nav .panel .years {
+      display: flex;
+      flex-wrap: wrap; }
+      nav .panel .years .year-group {
+        display: flex; }
+        nav .panel .years .year-group .year {
+          display: block;
+          border-left: 1px solid #888;
           cursor: pointer;
-          margin: 0.16em 0em;
-          border-radius: 2px;
-          padding: 0.1em 0.2em; }
-          nav .panel .years .year-group .months .month.selected {
-            background-color: #0197fd;
-            color: black; }
-          nav .panel .years .year-group .months .month.disabled {
+          font-size: 120%;
+          line-height: 1.2em;
+          color: white;
+          padding: 0 0.2em;
+          margin: 0.1em 0em 0.1em 0.1em;
+          border-radius: 2px; }
+          nav .panel .years .year-group .year.disabled {
             cursor: auto;
             color: #777;
             display: none; }
-      nav .panel .years .year-group:first-child .year {
-        border-left: none; }
+        nav .panel .years .year-group .months {
+          display: flex;
+          overflow: hidden; }
+          nav .panel .years .year-group .months .month {
+            display: block;
+            cursor: pointer;
+            margin: 0.16em 0em;
+            border-radius: 2px;
+            padding: 0.1em 0.2em; }
+            nav .panel .years .year-group .months .month.selected {
+              background-color: #0197fd;
+              color: black; }
+            nav .panel .years .year-group .months .month.disabled {
+              cursor: auto;
+              color: #777;
+              display: none; }
+        nav .panel .years .year-group:first-child .year {
+          border-left: none; }
     nav .panel .days .day {
       display: inline-block;
       cursor: pointer;
@@ -151,8 +152,8 @@ nav {
         height: 6px; }
 
 @media (max-width: 1024px) {
-  nav .days .day {
-    padding: 0.1em 0.1em; } }
+  nav .panel .days .day {
+    padding: 0.1em; } }
 .overlay {
   position: absolute;
   width: 100%;
@@ -312,7 +313,7 @@ nav {
 #layer-control {
   top: 0.9rem;
   right: 0.9rem;
-  z-index: 100; }
+  z-index: 1000; }
 
 #layer-control .icon {
   float: right;
@@ -380,7 +381,8 @@ nav {
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
   transition: top 200ms;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.4); }
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  z-index: 1500; }
 
 .error.collapsed, .note.collapsed, .note.hold {
   top: -55px; }
@@ -389,7 +391,7 @@ nav {
   background-color: #f50000; }
 
 .note {
-  background: rgba(0, 0, 0, 0.2); }
+  background: rgba(0, 0, 0, 0.5); }
 
 .keyboard-legend {
   font-size: 70%;
@@ -422,7 +424,7 @@ nav {
   background: #111;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   position: relative;
-  width: 8rem;
+  width: 7.5rem;
   overflow: hidden; }
 
 #colormap {

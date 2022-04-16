@@ -47,7 +47,7 @@ var Colormap = function(el, colormap) {
 
     var ticks =  document.createElement('div');
     this.el.appendChild(ticks);
-    ticks.setStyle('width', 80);
+    ticks.setStyle('width', '6rem');
     ticks.setStyle('height', height);
     ticks.setStyle('position', 'absolute');
     ticks.setStyle('top', yoffset);

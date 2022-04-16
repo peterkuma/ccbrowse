@@ -187,7 +187,7 @@
 #layer-control {
     top: 0.9rem;
     right: 0.9rem;
-    z-index: 100;
+    z-index: 1000;
 }
 
 #layer-control .icon {
@@ -277,6 +277,7 @@
     transition: top 200ms;
     color: white;
     border: 1px solid rgba(255,255,255,0.4);
+    z-index: 1500;
 }
 
 .error.collapsed,.note.collapsed,.note.hold {
@@ -288,7 +289,7 @@
 }
 
 .note {
-    background: rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.5);
 }
 
 .keyboard-legend {

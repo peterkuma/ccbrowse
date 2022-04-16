@@ -112,7 +112,7 @@ export class Application {
             new Tooltip(e);
         });
 
-        this.showNote('Double-click to read off values');
+        this.showNote('Double-tap to read off values');
     }
 
     smartCurrent(availability) {

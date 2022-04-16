@@ -80,6 +80,7 @@ var NavigationPanel = new Class({
 
         months.exit()
             .transition()
+            .ease('cubic-in-out')
             .duration(250)
             .style('width', '0px')
             .style('opacity', 0)

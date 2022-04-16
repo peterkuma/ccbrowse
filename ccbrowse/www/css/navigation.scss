@@ -14,12 +14,14 @@ nav {
         padding: 0.3rem;
 
         .years {
+            display: flex;
+            flex-wrap: wrap;
+
             .year-group {
-                float: left;
-                white-space: nowrap;
+                display: flex;
 
                 .year {
-                    display: inline-block;
+                    display: block;
                     border-left: 1px solid #888;
                     cursor: pointer;
                     font-size: 120%;
@@ -37,13 +39,11 @@ nav {
                 }
 
                 .months {
-                    display: inline-block;
-                    vertical-align: top;
+                    display: flex;
                     overflow: hidden;
-                    white-space: nowrap;
 
                     .month {
-                        display: inline-block;
+                        display: block;
                         cursor: pointer;
                         margin: 0.16em 0em;
                         border-radius: 2px;
@@ -156,7 +156,7 @@ nav {
 }
 
 @media (max-width: 1024px) {
-    nav .days .day {
-        padding: 0.1em 0.1em;
+    nav .panel .days .day {
+        padding: 0.1em;
     }
 }
