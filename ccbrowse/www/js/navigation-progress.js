@@ -19,6 +19,8 @@ var NavigationProgress = new Class({
         this.update();
         this.nav.on('change', this.update.bind(this));
 
+        new ResizeObserver(this.update.bind(this)).observe(document.querySelector(el));
+
         this.el.on('mousedown', function() {
             this.set(d3.event.clientX/this.el.property('clientWidth'));
             this.el.on('mousemove', function() {
@@ -74,7 +76,9 @@ var NavigationProgress = new Class({
 
         availability.enter()
             .append('div')
-            .attr('class', 'availability')
+            .attr('class', 'availability');
+
+        availability
             .style('left', function(d) { return x(d[0]) + 'px'; })
             .style('width', function(d) { return x(d[1]) - x(d[0]) + 'px'; });
 

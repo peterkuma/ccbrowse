@@ -92,9 +92,11 @@ export class Application {
             }
         }.bind(this));
 
-        window.addEventListener('resize', function() {
-            this.colormap = new Colormap($('colormap'), this.nav.getLayer().colormap);
-        }.bind(this));
+        new ResizeObserver(function() {
+            if (this.nav.getLayer()) {
+                this.colormap = new Colormap($('colormap'), this.nav.getLayer().colormap);
+            }
+        }.bind(this)).observe($('colormap'));
 
         var layerControl = new LayerControl($('layer-control'), this.nav);
         this.navPanel = new NavigationPanel('nav .panel', this.nav);
