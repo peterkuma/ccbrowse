@@ -1,53 +1,33 @@
 nav {
-    position: absolute;
     width: 100%;
     bottom: 0;
     font-size: 100%;
     color: #eee;
     background: #333;
-    padding-top: 0.5em;
     box-shadow: inset 2px 2px 6px black;
+    display: flex;
+    flex-direction: column;
 
-    .years {
-        .year-group {
-            float: left;
-            white-space: nowrap;
+    .panel {
+        display: flex;
+        flex-direction: column;
+        padding: 0.3rem;
 
-            .year {
-                display: inline-block;
-                border-left: 1px solid #888;
-                cursor: pointer;
-                font-size: 120%;
-                line-height: 1.2em;
-                color: white;
-                padding: 0 0.2em;
-                margin: 0.1em 0em 0.1em 0.1em;
-                border-radius: 2px;
-
-                &.disabled {
-                    cursor: auto;
-                    color: #777;
-                    display: none;
-                }
-            }
-
-            .months {
-                display: inline-block;
-                vertical-align: top;
-                overflow: hidden;
+        .years {
+            .year-group {
+                float: left;
                 white-space: nowrap;
 
-                .month {
+                .year {
                     display: inline-block;
+                    border-left: 1px solid #888;
                     cursor: pointer;
-                    margin: 0.16em 0em;
+                    font-size: 120%;
+                    line-height: 1.2em;
+                    color: white;
+                    padding: 0 0.2em;
+                    margin: 0.1em 0em 0.1em 0.1em;
                     border-radius: 2px;
-                    padding: 0.1em 0.2em;
-
-                    &.selected {
-                        background-color: #0197fd;
-                        color: black;
-                    }
 
                     &.disabled {
                         cursor: auto;
@@ -55,42 +35,64 @@ nav {
                         display: none;
                     }
                 }
-            }
 
-            &:first-child {
-                .year {
-                    border-left: none;
+                .months {
+                    display: inline-block;
+                    vertical-align: top;
+                    overflow: hidden;
+                    white-space: nowrap;
+
+                    .month {
+                        display: inline-block;
+                        cursor: pointer;
+                        margin: 0.16em 0em;
+                        border-radius: 2px;
+                        padding: 0.1em 0.2em;
+
+                        &.selected {
+                            background-color: #0197fd;
+                            color: black;
+                        }
+
+                        &.disabled {
+                            cursor: auto;
+                            color: #777;
+                            display: none;
+                        }
+                    }
+                }
+
+                &:first-child {
+                    .year {
+                        border-left: none;
+                    }
+                }
+            }
+        }
+
+        .days {
+            .day {
+                display: inline-block;
+                cursor: pointer;
+                border-radius: 2px;
+                padding: 0.1em 0.3em;
+                margin: 0.1em;
+
+                &.selected {
+                    background-color: #0197fd;
+                    color: black;
+                }
+
+                &.disabled {
+                    cursor: auto;
+                    color: #777;
+                    display: none;
                 }
             }
         }
     }
 
-    .days {
-        clear: both;
-        white-space: nowrap;
-
-        .day {
-            display: inline-block;
-            cursor: pointer;
-            border-radius: 2px;
-            padding: 0.1em 0.3em;
-            margin: 0.1em;
-
-            &.selected {
-                background-color: #0197fd;
-                color: black;
-            }
-
-            &.disabled {
-                cursor: auto;
-                color: #777;
-                display: none;
-            }
-        }
-    }
-
     .progress {
-        margin-top: 0.3em;
         height: 8px;
         width: 100%;
         background: black url('../img/progress-unavailable.png') repeat-x;
@@ -142,5 +144,11 @@ nav {
             border: 1px solid #66fc43;
             height: 6px;
         }
+    }
+}
+
+@media (max-width: 1024px) {
+    nav .days .day {
+        padding: 0.1em 0.1em;
     }
 }

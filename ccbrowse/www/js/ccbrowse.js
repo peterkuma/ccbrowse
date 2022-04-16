@@ -133,7 +133,7 @@ export class Application {
 
     context(name) {
         $$('.context').setStyle('display', 'none');
-        $$('.context.'+name).setStyle('display', 'block');
+        $$('.context.'+name).setStyle('display', 'flex');
     }
 
     page(path) {

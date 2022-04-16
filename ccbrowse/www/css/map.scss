@@ -7,21 +7,23 @@
 }
 
 #map-container {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
     text-align: center;
     background: url('../img/bg.png') repeat-x;
+    flex-grow: 1;
+    position: relative;
+}
+
+.context.map {
+    flex-direction: row;
 }
 
 #map {
     background: transparent !important;
     position: absolute;
-    top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    right: 0;
+    top: 0;
+    bottom: 0;
 }
 
 .leaflet-container a.leaflet-active {
@@ -105,7 +107,8 @@
 }
 
 .leaflet-left .leaflet-control {
-    margin-top: 20px;
+    margin-top: 0.9rem;
+    margin-left: 0.9rem;
 }
 
 .leaflet-control-zoom {
@@ -139,6 +142,11 @@
 .leaflet-control-zoom-out {
     background: url('../img/zoom-out.png') no-repeat;
     font-size: 0;
+}
+
+.leaflet-touch .leaflet-control-zoom a {
+    width: 18px !important;
+    height: 18px !important;
 }
 
 .leaflet-popup-content-wrapper {
@@ -177,10 +185,9 @@
 }
 
 #layer-control {
-    top: 1.5em;
-    right: 1.5em;
+    top: 0.9rem;
+    right: 0.9rem;
     z-index: 100;
-    padding: 0.7em 0;
 }
 
 #layer-control .icon {
@@ -188,11 +195,10 @@
     width: 20px;
     height: 20px;
     background: black url('../img/layers.png') no-repeat center center;
-    margin: 0.2em;
     cursor: pointer;
     position: relative;
     z-index: 200;
-    margin: 0 0.7em;
+    margin: 0.6rem;
 }
 
 #layer-control .label {

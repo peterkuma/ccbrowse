@@ -1,104 +1,105 @@
 @import url(https://fonts.googleapis.com/css?family=Asap:400,700);
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
 header {
-  position: relative;
-  /* height: defined in ccbrowse.scss */
   z-index: 200;
-  background-color: #111; }
+  background-color: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
+  header .header-top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0; }
   header h1 {
-    float: left;
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-left: 0.2em;
+    margin: auto 0.6rem;
     font-size: 100%; }
     header h1 a {
       display: block;
       font-size: 200%;
       font-weight: normal;
       color: transparent;
-      padding: 0.1em 0.2em;
       background: url("../img/ccbrowse.png") no-repeat center center;
       background-size: 4em; }
       header h1 a:hover {
         text-decoration: none; }
   header #toolbox {
-    float: right;
     color: #eee;
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-right: 0.5em; }
+    margin: auto 0.6rem;
+    display: flex;
+    align-items: center; }
     header #toolbox a {
       display: block;
       font-size: 160%;
-      padding: 0.4em 0.5em 0.4em 1.8em; }
+      padding-left: 1.8em; }
     header #toolbox a[href="#about"] {
       background: url("../img/about.png") no-repeat 0.6em center;
       background-size: 0.8em; }
 
 nav {
-  position: absolute;
   width: 100%;
   bottom: 0;
   font-size: 100%;
   color: #eee;
   background: #333;
-  padding-top: 0.5em;
-  box-shadow: inset 2px 2px 6px black; }
-  nav .years .year-group {
-    float: left;
-    white-space: nowrap; }
-    nav .years .year-group .year {
-      display: inline-block;
-      border-left: 1px solid #888;
-      cursor: pointer;
-      font-size: 120%;
-      line-height: 1.2em;
-      color: white;
-      padding: 0 0.2em;
-      margin: 0.1em 0em 0.1em 0.1em;
-      border-radius: 2px; }
-      nav .years .year-group .year.disabled {
-        cursor: auto;
-        color: #777;
-        display: none; }
-    nav .years .year-group .months {
-      display: inline-block;
-      vertical-align: top;
-      overflow: hidden;
+  box-shadow: inset 2px 2px 6px black;
+  display: flex;
+  flex-direction: column; }
+  nav .panel {
+    display: flex;
+    flex-direction: column;
+    padding: 0.3rem; }
+    nav .panel .years .year-group {
+      float: left;
       white-space: nowrap; }
-      nav .years .year-group .months .month {
+      nav .panel .years .year-group .year {
         display: inline-block;
+        border-left: 1px solid #888;
         cursor: pointer;
-        margin: 0.16em 0em;
-        border-radius: 2px;
-        padding: 0.1em 0.2em; }
-        nav .years .year-group .months .month.selected {
-          background-color: #0197fd;
-          color: black; }
-        nav .years .year-group .months .month.disabled {
+        font-size: 120%;
+        line-height: 1.2em;
+        color: white;
+        padding: 0 0.2em;
+        margin: 0.1em 0em 0.1em 0.1em;
+        border-radius: 2px; }
+        nav .panel .years .year-group .year.disabled {
           cursor: auto;
           color: #777;
           display: none; }
-    nav .years .year-group:first-child .year {
-      border-left: none; }
-  nav .days {
-    clear: both;
-    white-space: nowrap; }
-    nav .days .day {
+      nav .panel .years .year-group .months {
+        display: inline-block;
+        vertical-align: top;
+        overflow: hidden;
+        white-space: nowrap; }
+        nav .panel .years .year-group .months .month {
+          display: inline-block;
+          cursor: pointer;
+          margin: 0.16em 0em;
+          border-radius: 2px;
+          padding: 0.1em 0.2em; }
+          nav .panel .years .year-group .months .month.selected {
+            background-color: #0197fd;
+            color: black; }
+          nav .panel .years .year-group .months .month.disabled {
+            cursor: auto;
+            color: #777;
+            display: none; }
+      nav .panel .years .year-group:first-child .year {
+        border-left: none; }
+    nav .panel .days .day {
       display: inline-block;
       cursor: pointer;
       border-radius: 2px;
       padding: 0.1em 0.3em;
       margin: 0.1em; }
-      nav .days .day.selected {
+      nav .panel .days .day.selected {
         background-color: #0197fd;
         color: black; }
-      nav .days .day.disabled {
+      nav .panel .days .day.disabled {
         cursor: auto;
         color: #777;
         display: none; }
   nav .progress {
-    margin-top: 0.3em;
     height: 8px;
     width: 100%;
     background: black url("../img/progress-unavailable.png") repeat-x;
@@ -143,6 +144,9 @@ nav {
       border: 1px solid #66fc43;
       height: 6px; }
 
+@media (max-width: 1024px) {
+  nav .days .day {
+    padding: 0.1em 0.1em; } }
 .overlay {
   position: absolute;
   width: 100%;
@@ -151,20 +155,21 @@ nav {
   left: 0; }
 
 #map-container {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
   text-align: center;
-  background: url("../img/bg.png") repeat-x; }
+  background: url("../img/bg.png") repeat-x;
+  flex-grow: 1;
+  position: relative; }
+
+.context.map {
+  flex-direction: row; }
 
 #map {
   background: transparent !important;
   position: absolute;
-  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%; }
+  right: 0;
+  top: 0;
+  bottom: 0; }
 
 .leaflet-container a.leaflet-active {
   outline: none; }
@@ -233,7 +238,8 @@ nav {
   margin-top: 20px; }
 
 .leaflet-left .leaflet-control {
-  margin-top: 20px; }
+  margin-top: 0.9rem;
+  margin-left: 0.9rem; }
 
 .leaflet-control-zoom {
   background: black;
@@ -262,6 +268,10 @@ nav {
 .leaflet-control-zoom-out {
   background: url("../img/zoom-out.png") no-repeat;
   font-size: 0; }
+
+.leaflet-touch .leaflet-control-zoom a {
+  width: 18px !important;
+  height: 18px !important; }
 
 .leaflet-popup-content-wrapper {
   background: black;
@@ -294,21 +304,19 @@ nav {
   top: -1px; }
 
 #layer-control {
-  top: 1.5em;
-  right: 1.5em;
-  z-index: 100;
-  padding: 0.7em 0; }
+  top: 0.9rem;
+  right: 0.9rem;
+  z-index: 100; }
 
 #layer-control .icon {
   float: right;
   width: 20px;
   height: 20px;
   background: black url("../img/layers.png") no-repeat center center;
-  margin: 0.2em;
   cursor: pointer;
   position: relative;
   z-index: 200;
-  margin: 0 0.7em; }
+  margin: 0.6rem; }
 
 #layer-control .label {
   font-size: 150%;
@@ -337,6 +345,9 @@ nav {
     margin: 0 5px;
     display: inline-block;
     background: url("../img/bulb-disabled.png") no-repeat; }
+
+.popup-content {
+  z-index: 1000; }
 
 .popup-content .color-box {
   width: 10px;
@@ -405,19 +416,19 @@ nav {
   text-align: right; }
 
 #colormap-container {
-  position: absolute;
-  top: 0;
-  right: 0;
   background: #111;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  bottom: 0;
-  z-index: 50; }
+  position: relative;
+  width: 8rem;
+  overflow: hidden; }
 
 #colormap {
   position: absolute;
-  top: 10px;
-  bottom: 10px;
-  font-size: 84%;
+  top: 0.9rem;
+  bottom: 0.9rem;
+  left: 0.9rem;
+  right: 0.9rem;
+  font-size: 0.9rem;
   font-family: helvetica, sans-serif; }
 
 .colormap-over {
@@ -566,16 +577,28 @@ nav {
   .yaxis .tick.minor {
     width: 0.2em; }
 
+html {
+  font-size: 15px; }
+
 body {
   margin: 0;
   background: #333;
-  font-family: Asap, helvetica, sans-serif; }
+  font-family: Asap, helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
 
 #overlay {
   position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   overflow: hidden;
-  width: 100%;
-  height: 100%;
   z-index: 500;
   pointer-events: none; }
 
@@ -590,51 +613,13 @@ a:hover:before {
   text-decoration: none !important; }
 
 .context {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  text-align: center; }
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column; }
 
-/* Standard screen. */
-@media screen {
+@media (max-width: 1024px) {
   html {
-    font-size: 15px; }
-
-  header {
-    height: 110px; }
-
-  .context {
-    top: 110px; }
-
-  #map-container {
-    right: 130px; }
-
-  #colormap {
-    left: 20px;
-    right: 20px; }
-
-  #colormap-container {
-    width: 130px; } }
-/* Small screen. */
-@media screen and (max-width: 1024px) {
-  html {
-    font-size: 13px; }
-
-  header {
-    height: 105px; }
-
-  .context {
-    top: 105px; }
-
-  #map-container {
-    right: 100px; }
-
-  #colormap {
-    left: 10px;
-    right: 10px; }
-
-  #colormap-container {
-    width: 100px; } }
+    font-size: 13px; } }
 
 /*# sourceMappingURL=ccbrowse.css.map */

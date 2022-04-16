@@ -1,18 +1,18 @@
 #colormap-container {
-    position: absolute;
-    top: 0;
-    right: 0;
     background: #111;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    bottom: 0;
-    z-index: 50;
+    position: relative;
+    width: 8rem;
+    overflow: hidden;
 }
 
 #colormap {
     position: absolute;
-    top: 10px;
-    bottom: 10px;
-    font-size: 84%;
+    top: 0.9rem;
+    bottom: 0.9rem;
+    left: 0.9rem;
+    right: 0.9rem;
+    font-size: 0.9rem;
     font-family: helvetica, sans-serif;
 }
 
