@@ -15,6 +15,7 @@ var NavigationProgress = new Class({
         this.indicator = this.el.insert('div').attr('class', 'indicator');
         this.thumb = this.el.insert('div').attr('class', 'thumb');
         this.tooltip = this.el.insert('div').attr('class', 'tooltip');
+        this.avail = this.el.insert('div').attr('class', 'availability-container');
 
         this.update();
         this.nav.on('change', this.update.bind(this));
@@ -68,7 +69,7 @@ var NavigationProgress = new Class({
 
         var intervals = this.nav.availableBetween(t1, t2);
 
-        var availability = this.el.selectAll('.availability')
+        var availability = this.avail.selectAll('.availability')
             .data(intervals, Array);
 
         availability.exit()

@@ -138,11 +138,18 @@ nav {
             border-radius: 4px;
         }
 
-        .availability {
+        .availability-container {
             position: absolute;
-            background: url('../img/progress-available.png') repeat-x;
-            border: 1px solid #66fc43;
-            height: 6px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+
+            .availability {
+                position: absolute;
+                background: url('../img/progress-available.png') repeat-x;
+                border: 1px solid #66fc43;
+                height: 6px;
+            }
         }
     }
 }
