@@ -15,7 +15,6 @@ body {
     margin: 0;
     background: #333;
     font-family: Asap, helvetica, sans-serif;
-    overflow-x: hidden;
 }
 
 #overlay {
@@ -50,7 +49,7 @@ a:hover:before {
 
 /* Standard screen. */
 @media screen {
-    body { font-size: 11pt; }
+    html { font-size: 15px; }
     header { height: 110px; }
     .context { top: 110px; }
     #map-container { right: 130px; }
@@ -60,7 +59,7 @@ a:hover:before {
 
 /* Small screen. */
 @media screen and (max-width: 1024px) {
-    body { font-size: 8pt; }
+    html { font-size: 13px; }
     header { height: 105px; }
     .context { top: 105px; }
     #map-container { right: 100px; }
