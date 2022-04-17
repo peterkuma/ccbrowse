@@ -292,23 +292,6 @@
     background: rgba(0,0,0,0.5);
 }
 
-.keyboard-legend {
-    font-size: 70%;
-    position: absolute;
-    bottom: 4px;
-    left: 4px;
-    width: 30px;
-    height: 15px;
-    background: rgba(255,255,255,0.8) url('../img/keyboard.png') no-repeat;
-    opacity: 0.5;
-    z-index: 1000;
-    transition: opacity 200ms;
-}
-
-.keyboard-legend:hover {
-    opacity: 1;
-}
-
 .keyboard-shortcuts {
     position: absolute;
     bottom: 0;
