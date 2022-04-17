@@ -34,25 +34,17 @@ case "$1" in
 
     stop)
         log_daemon_msg "Stopping $DESC" "$NAME"
-        if start-stop-daemon --stop --quiet --oknodo --remove-pidfile --pidfile $PIDFILE --name $DAEMONNAME --retry 5; then
+        if start-stop-daemon --stop --quiet --oknodo --remove-pidfile --pidfile $PIDFILE --retry 5; then
             log_end_msg 0
         else
             log_end_msg 1
         fi
         ;;
 
-    restart|force-reload)
+    restart|reload|force-reload)
         log_daemon_msg "Restarting $DESC" "$NAME"
-        start-stop-daemon --stop --quiet --remove-pidfile --pidfile $PIDFILE --chuid $DAEMONUSER --name $DAEMONNAME --retry 5
+        start-stop-daemon --stop --quiet --remove-pidfile --pidfile $PIDFILE --retry 5
         if start-stop-daemon --start --background --quiet --oknodo --make-pidfile --pidfile $PIDFILE --chuid $DAEMONUSER --name $NAME --chdir "$CHDIR" --startas $DAEMON -- $DAEMON_OPTS; then
-            log_end_msg 0
-        else
-            log_end_msg 1
-        fi
-        ;;
-
-    reload)
-        if start-stop-daemon --stop --remove-pidfile --pidfile $PIDFILE --signal 1; then
             log_end_msg 0
         else
             log_end_msg 1
