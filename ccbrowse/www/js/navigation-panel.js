@@ -52,6 +52,7 @@ var NavigationPanel = new Class({
                 .attr('class', 'year')
                 .text(function(d) { return d.getUTCFullYear(); })
                 .each(function() { new Tooltip(this); });
+        yearGroup = this.years.selectAll('.year-group');
 
         var year = yearGroup.selectAll('.year');
 
@@ -86,12 +87,14 @@ var NavigationPanel = new Class({
             .style('opacity', 0)
             .remove();
 
+        months = this.years.selectAll('.year-group').selectAll('.months');
+
         var month = months.selectAll('.month')
-                .data(function(d) {
-                    var next = d3.utcYear.offset(d, 1);
-                    var stop = next < t2 ? next : t2;
-                    return d3.utcMonth.range(d, stop);
-                });
+            .data(function(d) {
+                var next = d3.utcYear.offset(d, 1);
+                var stop = next < t2 ? next : t2;
+                return d3.utcMonth.range(d, stop);
+            });
 
         month.enter()
             .append('a')
@@ -99,7 +102,7 @@ var NavigationPanel = new Class({
             .text(function(d) { return d.formatUTC('%b'); })
             .each(function() { new Tooltip(this); });
 
-        month
+        months.selectAll('.month')
             .classed('selected', function(d) {
                 return t0.getUTCFullYear() == d.getUTCFullYear() &&
                        t0.getUTCMonth() == d.getUTCMonth();
@@ -117,7 +120,7 @@ var NavigationPanel = new Class({
                 .attr('onclick', 'return false;')
                 .attr('title', 'Unavailable');
 
-        let x = monthsEnter
+        monthsEnter
             .property('__width__', function() {
                 return this.clientWidth;
             })
@@ -128,7 +131,8 @@ var NavigationPanel = new Class({
             .style('opacity', 1)
             .style('width', function() {
                 return this.__width__ + 'px';
-            });
+            })
+            .on('end', function() { d3.select(this).style('width', 'auto'); });
 
         var day = this.days.selectAll('.day').data(days);
 
