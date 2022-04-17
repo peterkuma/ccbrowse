@@ -531,6 +531,16 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.2.0 (2022-04-17)
+
+- Support for mobile.
+- Fixed location bar.
+- Fixed display of navigation panel days.
+- Fixed progress indication in ccbrowse import.
+- Fixed SysV init script.
+- Support for reading CALIPSO product files converted to HDF5.
+- Updated to a new version of the d3 library.
+
 ### 0.1.0 (2022-02-13)
 
 - Initial release.
