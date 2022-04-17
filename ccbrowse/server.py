@@ -182,7 +182,7 @@ def geocoding(zoom, x, z):
     for f in geography['data']['features']:
         s = shapely.geometry.shape(f['geometry'])
         i = s.intersection(t)
-        if type(i) != shapely.geometry.linestring.LineString:
+        if type(i) != shapely.geometry.linestring.LineString or i.is_empty:
             continue
 
         features.append({
