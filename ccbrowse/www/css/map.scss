@@ -309,16 +309,64 @@
     opacity: 1;
 }
 
-.keyboard-tooltip .title {
-    font-weight: bold;
-    border-bottom: 1px solid rgba(255,255,255,0.7);
-    padding-bottom: 2px;
-    margin-bottom: 4px;
+.keyboard-shortcuts {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
 }
 
-.keyboard-tooltip span {
+.keyboard-shortcuts > input {
+    display: none;
+}
+
+.keyboard-shortcuts > input+label {
+    position: absolute;
+    display: block;
+    bottom: 4px;
+    left: 4px;
+    width: 30px;
+    height: 15px;
+    background: url("../img/keyboard.png") no-repeat;
+    opacity: 0.5;
+}
+
+.keyboard-shortcuts input:checked+label {
+    opacity: 1;
+}
+
+.keyboard-shortcuts > div {
+    position: absolute;
+    left: 4px;
+    bottom: 23px;
+    padding: 0.3rem;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 100ms;
+    z-index: 1000;
+}
+
+.keyboard-shortcuts input:checked ~ div {
+    opacity: 1;
+}
+
+.keyboard-shortcuts .title {
     font-weight: bold;
-    width: 60px;
-    display: inline-block;
+    border-bottom: 1px solid rgba(255,255,255,0.7);
+    padding-bottom: 0.3rem;
+}
+
+.keyboard-shortcuts td:first-child {
+    font-weight: bold;
     text-align: right;
+    padding: 0;
+}
+
+.keyboard-shortcuts td:last-child {
+    text-align: left;
+    padding: 0 0 0 0.3rem;
 }

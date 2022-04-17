@@ -4,7 +4,7 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
+    overflow-x: clip;
 
     .header-top {
         width: 100%;
