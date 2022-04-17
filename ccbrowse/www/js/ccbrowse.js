@@ -47,8 +47,6 @@ export class Application {
         this.error = document.querySelector('.error');
         this.note = document.querySelector('.note');
 
-        //window.addEventListener('popstate', this.route.bind(this));
-
         // Initialize toolbox.
         $$('#toolbox a').each(function(link) {
             link.onclick = function(evt) {
@@ -76,29 +74,8 @@ export class Application {
         this.nav.setZoom(2);
         this.nav.setCurrent(this.profile.origin[0]);
 
-        window.addEventListener('hashchange', () => {
-            if (this.ignoreHashChange) {
-                this.ignoreHashChange = false;
-                return;
-            }
-            if (window.location.hash === '') return;
-            const date_s = window.location.hash.substring(1) + ' +0000';
-            const date = new Date().parse(date_s);
-            if (!date.isValid()) return;
-            this.nav.setCurrent(date);
-        });
-
-        this.nav.on('change', () => {
-            const date = this.nav.getCurrent();
-            const hash = '#'+date.formatUTC('%Y-%b-%d,%H:%M:%S');
-            if (window.location.hash === hash) return;
-            this.ignoreHashChange = true;
-            window.location.replace(hash);
-            const date_s = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M');
-            document.title = date_s + ' ‧ ccbrowse';
-            this.route();
-            //window.history.pushState({}, '', document.location.hash);
-        });
+        window.addEventListener('hashchange', () => this.onHashChange());
+        this.nav.on('change', () => this.onNavChange());
 
         this.nav.on('layerchange', function() {
             var layer = this.nav.getLayer();
@@ -131,6 +108,31 @@ export class Application {
         });
 
         this.showNote('Double-tap to read off values');
+
+        this.onHashChange();
+    }
+
+    onHashChange() {
+        if (this.ignoreHashChange) {
+            this.ignoreHashChange = false;
+            return;
+        }
+        if (window.location.hash === '') return;
+        const date_s = window.location.hash.substring(1) + ' +0000';
+        const date = new Date().parse(date_s);
+        if (!date.isValid()) return;
+        this.nav.setCurrent(date);
+    }
+
+    onNavChange() {
+        const date = this.nav.getCurrent();
+        const hash = '#'+date.formatUTC('%Y-%b-%d,%H:%M:%S');
+        if (window.location.hash === hash) return;
+        this.ignoreHashChange = true;
+        window.location.replace(hash);
+        const date_s = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M');
+        document.title = date_s + ' ‧ ccbrowse';
+        this.route();
     }
 
     smartCurrent(availability) {
