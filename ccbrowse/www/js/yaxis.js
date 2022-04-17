@@ -13,7 +13,7 @@ var YAxis = new Class({
     update: function() {
         var h = this.el.getSize().y;
 
-        var scale = d3.scale.linear().domain(this.domain).range([0, h]);
+        var scale = d3.scaleLinear().domain(this.domain).range([0, h]);
         var data = scale.ticks(10);
 
         var key = function(d) { return d; }

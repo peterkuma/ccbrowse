@@ -22,10 +22,10 @@ var NavigationProgress = new Class({
 
         new ResizeObserver(this.update.bind(this)).observe(document.querySelector(el));
 
-        this.el.on('mousedown', function() {
-            this.set(d3.event.clientX/this.el.property('clientWidth'));
+        this.el.on('mousedown', function(event) {
+            this.set(event.clientX/this.el.property('clientWidth'));
             this.el.on('mousemove', function() {
-                this.set(d3.event.clientX/this.el.property('clientWidth'));
+                this.set(event.clientX/this.el.property('clientWidth'));
             }.bind(this));
         }.bind(this));
 
@@ -33,12 +33,12 @@ var NavigationProgress = new Class({
             this.el.on('mousemove', null);
         }.bind(this));
 
-        this.el.on('mouseover.tooltip', function() {
-            this.tooltipAt(d3.event.clientX);
+        this.el.on('mouseover.tooltip', function(event) {
+            this.tooltipAt(event.clientX);
         }.bind(this));
 
-        this.el.on('mousemove.tooltip', function() {
-             this.tooltipAt(d3.event.clientX);
+        this.el.on('mousemove.tooltip', function(event) {
+             this.tooltipAt(event.clientX);
         }.bind(this));
 
         this.el.on('mouseout.tooltip', function() {
@@ -48,17 +48,17 @@ var NavigationProgress = new Class({
 
     set: function(fraction) {
         var t0 = this.nav.getCurrent();
-        var t1 = d3.time.day.utc(t0);
-        t0 = d3.time.second.utc.offset(t1, 24*60*60*fraction);
+        var t1 = d3.utcDay(t0);
+        t0 = d3.utcSecond.offset(t1, 24*60*60*fraction);
         this.nav.setCurrent(t0);
     },
 
     update: function() {
         var t0 = this.nav.getCurrent();
-        var t1 = d3.time.day.utc(t0);
-        var t2 = d3.time.day.utc.offset(t1, 1);
+        var t1 = d3.utcDay(t0);
+        var t2 = d3.utcDay.offset(t1, 1);
 
-        var x = d3.time.scale.utc()
+        var x = d3.scaleUtc()
             .domain([t1, t2])
             .range([0, this.el.property('clientWidth')]);
 
@@ -79,17 +79,16 @@ var NavigationProgress = new Class({
             .append('div')
             .attr('class', 'availability');
 
-        availability
+        this.avail.selectAll('.availability')
             .style('left', function(d) { return x(d[0]) + 'px'; })
             .style('width', function(d) { return x(d[1]) - x(d[0]) + 'px'; });
-
     },
 
     tooltipAt: function(x) {
         var fraction = x/this.el.property('clientWidth');
         var t0 = this.nav.getCurrent();
-        var t1 = d3.time.day.utc(t0);
-        var t = d3.time.second.utc.offset(t1, 24*60*60*fraction);
+        var t1 = d3.utcDay(t0);
+        var t = d3.utcSecond.offset(t1, 24*60*60*fraction);
 
         this.tooltip.style('display', function() {
             return x === null ? 'none' : 'block';

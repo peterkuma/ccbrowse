@@ -31,14 +31,14 @@ var NavigationPanel = new Class({
         //var smooth = typeof(expandedYear) != 'undefined';
         expandedYear = expandedYear || t0.getUTCFullYear();
 
-        var years = d3.time.year.utc.range(t1, t2).filter(function(d) {
+        var years = d3.utcYear.range(t1, t2).filter(function(d) {
             return this.nav.isAvailableYear(d.getUTCFullYear());
         }.bind(this));
 
-        var nextMonth = d3.time.month.utc.offset(d3.time.month.utc(t0), 1);
+        var nextMonth = d3.utcMonth.offset(d3.utcMonth(t0), 1);
         var dayStop = nextMonth < t2 ? nextMonth : t2;
-        var days = d3.time.day.utc.range(
-            d3.time.month.utc(t0),
+        var days = d3.utcDay.range(
+            d3.utcMonth(t0),
             dayStop
         );
 
@@ -80,7 +80,7 @@ var NavigationPanel = new Class({
 
         months.exit()
             .transition()
-            .ease('cubic-in-out')
+            .ease(d3.easeCubicInOut)
             .duration(250)
             .style('width', '0px')
             .style('opacity', 0)
@@ -88,9 +88,9 @@ var NavigationPanel = new Class({
 
         var month = months.selectAll('.month')
                 .data(function(d) {
-                    var next = d3.time.year.utc.offset(d, 1);
+                    var next = d3.utcYear.offset(d, 1);
                     var stop = next < t2 ? next : t2;
-                    return d3.time.month.utc.range(d, stop);
+                    return d3.utcMonth.range(d, stop);
                 });
 
         month.enter()
@@ -117,14 +117,14 @@ var NavigationPanel = new Class({
                 .attr('onclick', 'return false;')
                 .attr('title', 'Unavailable');
 
-        monthsEnter
+        let x = monthsEnter
             .property('__width__', function() {
                 return this.clientWidth;
             })
             .style('width', '0px')
             .transition()
             .duration(250)
-            .ease('cubic-in-out')
+            .ease(d3.easeCubicInOut)
             .style('opacity', 1)
             .style('width', function() {
                 return this.__width__ + 'px';
