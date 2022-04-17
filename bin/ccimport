@@ -78,10 +78,12 @@ def save(product, profile, layer=None, zoom=None,
             i = 0
             for x in X:
                 for z in Z:
-                    if line: sys.stderr.write('\r\033[K')
                     line = '%s level %s tiles %d--%d [%d/%d] %.f%%' % \
                            (l, level, X[0], X[-1], i, size, 100.0*i/size)
-                    sys.stderr.write(line)
+                    if sys.stdout.isatty():
+                        if line: sys.stdout.write('\r\033[K' + line)
+                        sys.stdout.flush()
+
                     i = i + 1
 
                     if statistics: t1 = time.clock()
