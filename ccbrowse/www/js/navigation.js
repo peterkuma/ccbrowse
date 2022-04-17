@@ -12,15 +12,10 @@ export default class Navigation extends EventEmitter2 {
         super();
         this.profile = profile;
         this.zoom = 0;
-        window.addEventListener('hashchange', this.update.bind(this));
         this.update();
     }
 
     update() {
-        if (window.location.hash === '') return;
-        var date = new Date().parse(window.location.hash.substring(1) + ' +0000');
-        if (!date.isValid()) return;
-        this.current = date;
         this.emit('change');
     }
 
@@ -40,7 +35,6 @@ export default class Navigation extends EventEmitter2 {
 
     setCurrent(date) {
         this.current = date;
-        window.location.replace('#'+date.formatUTC('%Y-%b-%d,%H:%M:%S'));
         this.emit('change');
     }
 

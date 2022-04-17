@@ -21,10 +21,12 @@ var Map = new Class({
         this.app = app;
         this.profile = app.profile;
 
+        const dt = this.nav.getCurrent() - this.profile.origin[0];
+
         this.map = new L.Map(this.el, {
             crs: L.CRS.Custom(this.app.profile),
             maxZoom: this.nav.getMaxZoom(),
-            center: new L.LatLng(25000, this.nav.getCurrent() - this.profile.origin[0], true), //new L.LatLng(25000, 45000*1633922 - 3120*1000, true),
+            center: new L.LatLng(25000, dt, true),
             zoom: 2,
             worldCopyJump: false,
             fadeAnimation: true,
@@ -38,7 +40,7 @@ var Map = new Class({
         //this.measureControl.addTo(this.map);
 
         this.map.on('dblclick', this.onDbClick.bind(this));
-        this.map.on('moveend', this.onMove.bind(this));
+        this.map.on('moveend', this.onMapMove.bind(this));
 
         this.layerGroup = new L.LayerGroup();
         this.layerGroup.addTo(this.map);
@@ -61,12 +63,12 @@ var Map = new Class({
             this.getYRange()[1]/1000
         ]);
 
-        this.map.on('move', function() {
+        this.map.on('move', () => {
             this.yaxis.setDomain([
                 this.getYRange()[0]/1000,
                 this.getYRange()[1]/1000
             ]);
-        }.bind(this));
+        });
 
         /*
         this.locationLayer = new LocationLayer({
@@ -198,37 +200,23 @@ var Map = new Class({
     },
 
     move: function() {
-        if (this.hold) return;
         var t = (this.nav.getCurrent() - this.profile.origin[0]);
         var latlng = this.map.getCenter();
+        if (latlng.lng === t || this.ignoreNavMove) return;
         latlng.lng = t;
-
-        this.disableOnMove = true;
         this.map.panTo(latlng);
-
-        var tmp = function() {
-            this.map.off('moveend', tmp);
-            this.disableOnMove = false;
-        }.bind(this);
-        this.map.on('moveend', tmp);
-
         this.update();
     },
 
-    onMove: function(evt) {
-        if (this.disableOnMove) return;
-        var latlng = this.map.getCenter();
-
-        var t = latlng.lng;
-        var h = latlng.lat;
-
-        var date = new Date(this.profile.origin[0]);
+    onMapMove: function(evt) {
+        let latlng = this.map.getCenter();
+        let t = latlng.lng;
+        let h = latlng.lat;
+        let date = new Date(this.profile.origin[0]);
         date.increment('ms', t);
-        date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
-        //this.hold = true;
+        this.ignoreNavMove = true;
         this.nav.setCurrent(date);
-        //this.hold = false;
-
+        this.ignoreNavMove = false;
         this.update();
     },
 
