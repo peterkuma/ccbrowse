@@ -31,12 +31,10 @@ import Map from './map.js';
 import Navigation from './navigation.js';
 import NavigationPanel from './navigation-panel.js';
 import NavigationProgress from './navigation-progress.js';
-import LocationBar from './location-bar.js';
 import LayerControl from './layer-control.js';
 import Colormap from './colormap.js';
 import Tooltip from './tooltip.js';
 import Profile from './profile.js';
-import Globe from './globe.js';
 
 
 export class Application {
@@ -100,16 +98,6 @@ export class Application {
         this.map = new Map($('map'), this.nav, this);
         this.map.on('error', this.onError.bind(this));
         $('map').focus();
-
-        this.globe = new Globe('.map .globe', this.profile);
-        this.map.on('move', () => {
-            this.map.center((lat, lon) => {
-                if (isFinite(lat) && isFinite(lon))
-                    this.globe.center([lon, lat]);
-            });
-        });
-
-        this.locationBar = new LocationBar($('location-bar'), this.map.map, this.profile);
 
         // Add tooltips.
         Array.prototype.forEach.call(document.querySelectorAll('[title]'), function(e) {

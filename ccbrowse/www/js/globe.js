@@ -63,6 +63,9 @@ export default class Globe {
 		if (!arguments.length)
 			return this._center;
 	    const origCenter = center;
+	    this._center = center;
+	    this.update();
+	    /*
 	    this.el.transition()
 	        .duration(1000)
 	        .tween('globe-rotation', () => {
@@ -71,7 +74,7 @@ export default class Globe {
 	                this._center = r(t);
 	                this.update();
 	            };
-	        });
+	        });*/
 	}
 
 	update() {

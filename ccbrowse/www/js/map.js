@@ -6,9 +6,11 @@
  * and position.
  */
 
-
 import YAxis from './yaxis.js';
 import Query from './query.js';
+import Geocoding from './geocoding.js';
+import LocationBar from './location-bar.js';
+import Globe from './globe.js';
 
 
 export default class Map extends EventEmitter2 {
@@ -77,6 +79,13 @@ export default class Map extends EventEmitter2 {
         this.locationLayer.addTo(this.map);
         */
 
+        this.geocoding = new Geocoding(this.profile);
+        this.locationBar = new LocationBar($('location-bar'));
+        this.globe = new Globe('.map .globe', this.profile);
+        this.map.on('moveend', () => this.updateGeocoding());
+        this.map.on('zoomend', () => this.updateGeocoding());
+        this.updateGeocoding();
+
         this.nav.on('change', this.move.bind(this));
         this.nav.on('layerchange', this.updateLayer.bind(this));
     }
@@ -143,6 +152,21 @@ export default class Map extends EventEmitter2 {
         } else {
             this.app.clearError();
         }
+    }
+
+    async updateGeocoding() {
+        this.geocoding
+            .zoom(this.map.getZoom())
+            .range(this.getXRange());
+        const range = this.getXRange();
+        const t = 0.5*(range[0] + range[1]);
+        const geocoding = await this.geocoding.geocoding(t);
+        const latitude = await this.geocoding.latitude(t);
+        const longitude = await this.geocoding.longitude(t);
+        if (geocoding && geocoding.features.length > 0)
+            window.setTimeout(() => this.locationBar.location(geocoding.features[0].properties.name));
+        if (isFinite(latitude) && isFinite(longitude))
+            window.setTimeout(() => this.globe.center([longitude, latitude], 0));
     }
 
     updateLayer() {
@@ -235,54 +259,28 @@ export default class Map extends EventEmitter2 {
         this.emit('move');
     }
 
-    onDbClick(evt) {
-        var value = null;
-        var latitude = null;
-        var longitude = null;
-
-        var fn = function() {
-            if (value == null || latitude == null || longitude == null) return;
-            console.log(value, latitude, longitude);
-
-            var url = this.profile.layers.geography.src+'?q='+latitude+','+longitude;
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if(xhr.readyState != 4) return;
-                if (xhr.status != 200) {
-                    console.log(url+' '+xhr.status+' '+xhr.statusText);
-                    this.emit('error', {
-                        message: 'No information available for this point'
-                    });
-                    return;
-                }
-                let json;
-                try { json = JSON.parse(xhr.responseText); }
-                catch(e) { json = {}; }
-                var name = json.name ? json.name : '';
-                this.popup({
-                    'value': value,
-                    'latitude': latitude,
-                    'longitude': longitude,
-                    'color': color(value, this.nav.getLayer().colormap),
-                    'latlng': evt.latlng,
-                    'country': name
-                });
-            }.bind(this);
-            xhr.open('GET', url);
-            xhr.send();
-        }.bind(this);
-
+    async onDbClick(evt) {
+        const geocoding = await this.geocoding.geocoding(evt.latlng.lng);
+        const latitude = await this.geocoding.latitude(evt.latlng.lng);
+        const longitude = await this.geocoding.longitude(evt.latlng.lng);
+        let name = '';
+        if (geocoding && geocoding.features.length > 0) {
+            name = geocoding.features[0].properties.name;
+        }
         var q = new Query();
-        q.onLoad = function(response) { value = parseFloat(response); fn(); }.bind(this);
-        q.perform(this.profile, this.nav.getLayer(), this.map.getZoom(), evt.latlng.lng, evt.latlng.lat);
-
-        q = new Query();
-        q.onLoad = function(response) { latitude = parseFloat(response); fn(); }.bind(this);
-        q.perform(this.profile, this.profile.layers.latitude, this.map.getZoom(), evt.latlng.lng);
-
-        q = new Query();
-        q.onLoad = function(response) { longitude = parseFloat(response); fn(); }.bind(this);
-        q.perform(this.profile, this.profile.layers.longitude, this.map.getZoom(), evt.latlng.lng);
+        q.onLoad = response => {
+            const value = parseFloat(response);
+            this.popup({
+                'value': value,
+                'latitude': latitude.toFixed(5),
+                'longitude': longitude.toFixed(5),
+                'color': color(value, this.nav.getLayer().colormap),
+                'latlng': evt.latlng,
+                'country': name
+            });
+        }
+        q.perform(this.profile, this.nav.getLayer(), this.map.getZoom(),
+            evt.latlng.lng, evt.latlng.lat);
     }
 
     popup(desc) {

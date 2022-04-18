@@ -1,5 +1,3 @@
-@import url(https://fonts.googleapis.com/css?family=Asap:400,700);
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:800,700,400);
 header {
   z-index: 2000;
   background-color: #111;
@@ -398,7 +396,8 @@ nav {
   position: absolute;
   bottom: 0;
   left: 0;
-  z-index: 1000; }
+  z-index: 1000;
+  pointer-events: none; }
 
 .keyboard-shortcuts > input {
   display: none; }
@@ -590,7 +589,8 @@ nav {
   font-weight: bold;
   position: absolute;
   z-index: 100;
-  opacity: 0.9; }
+  opacity: 0.9;
+  pointer-events: none; }
 
 .yaxis {
   position: relative;
@@ -631,10 +631,10 @@ nav {
   .map .globe .box {
     -opacity: 0.3; }
   .map .globe .land {
-    fill: rgba(255, 255, 255, 0.8); }
-  .map .globe .countries {
+    fill: rgba(255, 255, 255, 0.6); }
+  .map .globe .country {
     fill: none;
-    stroke: rgba(0, 0, 0, 0.5);
+    stroke: rgba(0, 0, 0, 0.3);
     stroke-width: 0.5px; }
 
 html {

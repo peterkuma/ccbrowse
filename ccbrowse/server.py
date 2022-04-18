@@ -15,12 +15,20 @@ from datetime import datetime
 import shapely.geometry
 import socket
 import logging
+import numpy as np
 
 import ccbrowse
 from ccbrowse.config import sharepath
 
 
 RFC822_TIME = '%a, %d %b %Y %H:%M:%S GMT'
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return JSONEncoder.default(self, obj)
 
 
 def init(conf):
@@ -306,16 +314,19 @@ def serve_tile(obj):
             except ValueError: pass
         abort(404, 'Invalid query coordinates')
 
-    m = re.match('colormaps/(.+)', profile['layers'][obj['layer']]['colormap'])
-    colormap = profile.colormap(m.group(1))
-    img = Image.fromarray(ccbrowse.algorithms.colorize(data, colormap))
-    buf = io.BytesIO()
-    img.save(buf, 'png')
-    out = buf.getvalue()
-    cache.store(dict(obj, raw_data=out))
-    bottle.response.content_type = 'image/png'
-    return out
-
+    if 'colormap' in profile['layers'][obj['layer']]:
+        m = re.match('colormaps/(.+)', profile['layers'][obj['layer']]['colormap'])
+        colormap = profile.colormap(m.group(1))
+        img = Image.fromarray(ccbrowse.algorithms.colorize(data, colormap))
+        buf = io.BytesIO()
+        img.save(buf, 'png')
+        out = buf.getvalue()
+        cache.store(dict(obj, raw_data=out))
+        bottle.response.content_type = 'image/png'
+        return out
+    else:
+        bottle.response.content_type = 'text/plain'
+        return json.dumps(data, cls=JSONEncoder)
 
 def usage():
     sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]

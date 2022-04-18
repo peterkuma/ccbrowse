@@ -1,59 +1,24 @@
 export default class LocationBar {
-    constructor(bar, map, profile) {
-        this.map = map;
-        this.profile = profile;
+    constructor(bar) {
         this.bar = bar;
-        this.left = this.bar.querySelector('.left');
         this.center = this.bar.querySelector('.center');
-        this.right = this.bar.querySelector('.right');
-
-        this.requests = [];
-
-        this.map.on('moveend', this.update.bind(this));
         this.update();
     }
 
+    location(location) {
+        if (arguments.length == 0) return this._location;
+        this._location = location;
+        this.update();
+        return this;
+    }
+
     update() {
-        if (this.xhr) return;
-
-        var bounds = this.map.getBounds();
-        var zoom = this.map.getZoom();
-
-        var t1 = bounds.getSouthWest().lon;
-        var t3 = bounds.getSouthEast().lon;
-        var t2 = (t3-t2)/2;
-
-        var bounds = this.map.getPixelBounds();
-        var x1 = Math.ceil(bounds.min.x/256);
-        var x2 = Math.floor(bounds.max.x/256);
-        var x = Math.round((x1+x2)/2);
-
-        var url = this.profile.prefix + this.profile.layers.geocoding.src;
-        url = L.Util.template(url, {
-                'zoom': zoom,
-                'x': x
-        });
-        url += '?reduce=128';
-
-        this.xhr = new XMLHttpRequest();
-        this.xhr.open('GET', url);
-        this.xhr.onreadystatechange = function() {
-            if (this.xhr.readyState != 4) return;
-            this.center.innerText = '…';
-            this.center.title = 'No information about place available';
-            if (this.xhr.status == 200) {
-                let json = JSON.parse(this.xhr.responseText);
-                if (json && json.features.length) {
-                    this.center.innerText = json.features[0].properties.name;
-                    this.center.title = '';
-                }
-            } else {
-                console.log(url+' '+this.xhr.status+' '+this.xhr.statusText);
-                console.log('No location information available');
-            }
-            if (this.center.tooltip) this.center.tooltip.update();
-            this.xhr = null;
-        }.bind(this);
-        this.xhr.send();
+        this.center.innerText = '…';
+        this.center.title = 'No information about place available';
+        if (this._location !== undefined) {
+            this.center.innerText = this._location;
+            this.center.title = '';
+        }
+        if (this.center.tooltip) this.center.tooltip.update();
     }
 }
