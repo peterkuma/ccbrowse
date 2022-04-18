@@ -36,6 +36,7 @@ import LayerControl from './layer-control.js';
 import Colormap from './colormap.js';
 import Tooltip from './tooltip.js';
 import Profile from './profile.js';
+import Globe from './globe.js';
 
 
 export class Application {
@@ -99,6 +100,15 @@ export class Application {
         this.map = new Map($('map'), this.nav, this);
         this.map.on('error', this.onError.bind(this));
         $('map').focus();
+
+        this.globe = Globe('.map .globe', this.profile);
+        this.globe.center([0, 0]);
+        this.map.on('move', () => {
+            this.map.center((lat, lon) => {
+                if (isFinite(lat) && isFinite(lon))
+                    this.globe.center([lon, lat]);
+            });
+        });
 
         this.locationBar = new LocationBar($('location-bar'), this.map.map, this.profile);
 

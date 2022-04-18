@@ -208,6 +208,20 @@ export default class Map extends EventEmitter2 {
         this.update();
     }
 
+    center(callback) {
+        let lat;
+        let lon;
+        let q;
+
+        q = new Query();
+        q.onLoad = function(response) { lat = parseFloat(response); }.bind(this);
+        q.perform(this.profile, this.profile.layers.latitude, this.map.getZoom(), this.map.getCenter().lng);
+
+        q = new Query();
+        q.onLoad = function(response) { lon = parseFloat(response); callback(lat, lon); }.bind(this);
+        q.perform(this.profile, this.profile.layers.longitude, this.map.getZoom(), this.map.getCenter().lng);
+    }
+
     onMapMove(evt) {
         let latlng = this.map.getCenter();
         let t = latlng.lng;
@@ -218,6 +232,7 @@ export default class Map extends EventEmitter2 {
         this.nav.setCurrent(date);
         this.ignoreNavMove = false;
         this.update();
+        this.emit('move');
     }
 
     onDbClick(evt) {
