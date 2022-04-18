@@ -8,4 +8,6 @@
     border: 1px solid black;
     z-index: 500;
     border-radius: 2px;
+    opacity: 0;
+    transition: opacity 100ms;
 }

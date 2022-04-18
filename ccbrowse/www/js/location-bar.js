@@ -1,5 +1,5 @@
-var LocationBar = new Class({
-    initialize: function(bar, map, profile) {
+export default class LocationBar {
+    constructor(bar, map, profile) {
         this.map = map;
         this.profile = profile;
         this.bar = bar;
@@ -11,9 +11,9 @@ var LocationBar = new Class({
 
         this.map.on('moveend', this.update.bind(this));
         this.update();
-    },
+    }
 
-    update: function() {
+    update() {
         if (this.xhr) return;
 
         var bounds = this.map.getBounds();
@@ -39,12 +39,12 @@ var LocationBar = new Class({
         this.xhr.open('GET', url);
         this.xhr.onreadystatechange = function() {
             if (this.xhr.readyState != 4) return;
-            this.center.set('text', '…');
+            this.center.innerText = '…';
             this.center.title = 'No information about place available';
             if (this.xhr.status == 200) {
-                let json = JSON.decode(this.xhr.responseText);
+                let json = JSON.parse(this.xhr.responseText);
                 if (json && json.features.length) {
-                    this.center.set('text', json.features[0].properties.name);
+                    this.center.innerText = json.features[0].properties.name;
                     this.center.title = '';
                 }
             } else {
@@ -56,6 +56,4 @@ var LocationBar = new Class({
         }.bind(this);
         this.xhr.send();
     }
-});
-
-export default LocationBar;
+}

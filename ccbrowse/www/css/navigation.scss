@@ -127,7 +127,6 @@ nav {
         }
 
         .tooltip {
-            display: none;
             font-family: helvetica, sans-serif;
             font-size: 74%;
             z-index: 2;
@@ -137,6 +136,8 @@ nav {
             text-align: center;
             background: black;
             border-radius: 4px;
+            transition: opacity 100ms;
+            opacity: 0;
         }
 
         .availability-container {

@@ -5,67 +5,65 @@
  * on mouse hover. The `title` attribute is used as the text of the tooltip.
  */
 
-var Tooltip = new Class({
-    Implements: EventEmitter2,
-
-    initialize: function(forEl) {
-        this.template = $('tooltip-template');
-        this.el = this.template.clone();
+export default class Tooltip extends EventEmitter2 {
+    constructor(forEl) {
+        super();
+        this.template = document.querySelector('#tooltip-template');
+        this.el = this.template.cloneNode(true);
+        this.el.removeAttribute('id');
         this.forEl = forEl;
         this.forEl.tooltip = this;
         this.content = this.el.querySelector('.content');
 
-        this.content.set('html', this.forEl.title);
+        this.content.innerHTML = this.forEl.title;
 
-        this.el.set('tween', {duration: 100});
-        this.el.fade('hide');
-
-        $('overlay').appendChild(this.el);
+        document.querySelector('#overlay').appendChild(this.el);
 
         this.forEl.addEventListener('mouseover', function() {
             this.update();
             if (!this.title) return;
             this.forEl.title = '';
-            this.el.fade('in');
+            this.el.style.opacity = '1';
         }.bind(this));
 
         this.forEl.addEventListener('mouseout', function() {
             if (this.stick) return;
-            this.el.fade('out');
+            this.el.style.opacity = '0';
             if (this.forEl.title === '') this.forEl.title = this.title;
         }.bind(this));
 
         //this.forEl.addEventListener('change', this.update.bind(this));
-    },
+    }
 
-    update: function() {
+    update() {
         this.title = this.forEl.title;
 
-        this.content.set('html', this.title);
-        if (this.title) this.el.setStyle('display', 'block');
-        else this.el.setStyle('display', 'none');
+        this.content.innerHTML = this.title;
+        if (this.title) {
+            this.el.style.opacity = '1';
+        } else {
+            this.el.style.opacity = '0';
+        }
 
-        var x = this.forEl.getPosition().x;
-        var y = this.forEl.getPosition().y;
-        var w = this.forEl.getSize().x;
-        var h = this.forEl.getSize().y;
+        var x = this.forEl.getBoundingClientRect().left;
+        var y = this.forEl.getBoundingClientRect().top;
+        var w = this.forEl.clientWidth;
+        var h = this.forEl.clientHeight;
 
-        var width = this.el.getSize().x;
-        var height = this.el.getSize().y;
+        var width = this.el.clientWidth;
+        var height = this.el.clientHeight;
 
-        this.el.setStyle('left', x + w/2 - width/2);
-        this.el.setStyle('top', y + h + 6);
+        this.el.style.left = (x + w/2 - width/2) + 'px';
+        this.el.style.top = (y + h + 6) + 'px';
 
-        if (y + h + 6 + height > document.body.getSize().y)
-            this.el.setStyle('top', y - height - 6);
+        if (y + h + 6 + height > document.body.clientHeight)
+            this.el.style.top = (y - height - 6) + 'px';
 
         if (x + w/2 - width/2 < 0)
-            this.el.setStyle('left', x);
-    },
+            this.el.style.left = x + 'px';
+    }
 
-    setStick: function(stick) {
+    setStick(stick) {
         this.stick = stick ? true : false;
     }
-});
-
-export default Tooltip;
+}

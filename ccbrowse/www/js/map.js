@@ -11,10 +11,9 @@ import YAxis from './yaxis.js';
 import Query from './query.js';
 
 
-var Map = new Class({
-    Implements: EventEmitter2,
-
-    initialize: function(el, nav, app) {
+export default class Map extends EventEmitter2 {
+    constructor(el, nav, app) {
+        super();
         this.el = el;
         this.container = this.el.parentNode;
         this.nav = nav;
@@ -45,23 +44,22 @@ var Map = new Class({
         this.layerGroup = new L.LayerGroup();
         this.layerGroup.addTo(this.map);
 
-        this.keyboard = new Keyboard({
-            defaultEventType: 'keydown',
-            events: {
-                'pagedown': function() {
-                    this.map.panBy(new L.Point(this.el.getSize().x, 0));
-                }.bind(this),
-                'pageup': function() {
-                    this.map.panBy(new L.Point(-this.el.getSize().x, 0));
-                }.bind(this)
+        document.addEventListener('keydown', event => {
+            if (event.key === 'PageDown') {
+                this.map.panBy(new L.Point(this.el.clientWidth, 0));
+            }
+
+            if (event.key === 'PageUp') {
+                this.map.panBy(new L.Point(-this.el.clientWidth, 0));
             }
         });
-        this.keyboard.activate();
 
-        this.yaxis = new YAxis($$('#yaxis-container .yaxis')[0], [
-            this.getYRange()[0]/1000,
-            this.getYRange()[1]/1000
-        ]);
+        this.yaxis = new YAxis(
+            document.querySelector('#yaxis-container .yaxis'), [
+                this.getYRange()[0]/1000,
+                this.getYRange()[1]/1000
+            ]
+        );
 
         this.map.on('move', () => {
             this.yaxis.setDomain([
@@ -81,7 +79,7 @@ var Map = new Class({
 
         this.nav.on('change', this.move.bind(this));
         this.nav.on('layerchange', this.updateLayer.bind(this));
-    },
+    }
 
     /*
     measure: function() {
@@ -121,37 +119,39 @@ var Map = new Class({
     },
     */
 
-    getYRange: function() {
+    getYRange() {
         return [
             this.map.getBounds().getSouthWest().lat,
             this.map.getBounds().getNorthWest().lat
         ];
-    },
+    }
 
-    getXRange: function() {
+    getXRange() {
         return [
             this.map.getBounds().getSouthWest().lng,
             this.map.getBounds().getSouthEast().lng
         ];
-    },
+    }
 
-    update: function() {
-        var start = (new Date(this.profile.origin[0])).increment('ms', this.getXRange()[0]);
-        var end = (new Date(this.profile.origin[0])).increment('ms', this.getXRange()[1]);
+    update() {
+        var start = new Date(this.profile.origin[0]);
+        start = d3.utcMillisecond.offset(start, this.getXRange()[0]);
+        var end = new Date(this.profile.origin[0]);
+        end = d3.utcMillisecond.offset(end, this.getXRange()[1]);
         if (!this.nav.isAvailable(start, end)) {
             this.app.showError('No data available here', true);
         } else {
             this.app.clearError();
         }
-    },
+    }
 
-    updateLayer: function() {
+    updateLayer() {
         var layer = this.nav.getLayer();
         //if (layer == this.currentLayer) return;
         //this.currentLayer = layer;
 
         if (layer.colormap.missing)
-            this.container.setStyle('background', layer.colormap.missing);
+            this.container.style.background = layer.colormap.missing;
 
         var url = layer.src;
         url = url.replace('\{z\}', '\{y\}');
@@ -197,30 +197,30 @@ var Map = new Class({
                 this.layerGroup.removeLayer(layer);
             }.bind(this));
         }.bind(this), 4000);
-    },
+    }
 
-    move: function() {
+    move() {
         var t = (this.nav.getCurrent() - this.profile.origin[0]);
         var latlng = this.map.getCenter();
         if (latlng.lng === t || this.ignoreNavMove) return;
         latlng.lng = t;
         this.map.panTo(latlng);
         this.update();
-    },
+    }
 
-    onMapMove: function(evt) {
+    onMapMove(evt) {
         let latlng = this.map.getCenter();
         let t = latlng.lng;
         let h = latlng.lat;
         let date = new Date(this.profile.origin[0]);
-        date.increment('ms', t);
+        date = d3.utcMillisecond.offset(date, t);
         this.ignoreNavMove = true;
         this.nav.setCurrent(date);
         this.ignoreNavMove = false;
         this.update();
-    },
+    }
 
-    onDbClick: function(evt) {
+    onDbClick(evt) {
         var value = null;
         var latitude = null;
         var longitude = null;
@@ -268,22 +268,22 @@ var Map = new Class({
         q = new Query();
         q.onLoad = function(response) { longitude = parseFloat(response); fn(); }.bind(this);
         q.perform(this.profile, this.profile.layers.longitude, this.map.getZoom(), evt.latlng.lng);
-    },
+    }
 
-    popup: function(desc) {
-        var content = $('popup-content-template').clone();
+    popup(desc) {
+        var content = document.querySelector('#popup-content-template').cloneNode(true);
         var valueText = isNaN(desc.value) ? 'Missing data' : scientific(desc.value)+' '+this.nav.getLayer().source.units;
 
         var lat = desc.latitude;
         var lon = desc.longitude;
 
-        content.querySelector('.value').set('html', valueText);
-        content.querySelector('.color-box').setStyle('background-color', desc.color);
-        content.querySelector('.latitude').set('html', lat);
-        content.querySelector('.longitude').set('html', lon);
-        content.querySelector('.height').set('html', scientific(desc.latlng.lat/1000, 3)+' km');
-        content.querySelector('.time').set('html', time(desc.latlng.lng, this.profile));
-        content.querySelector('.country').set('text', desc.country);
+        content.querySelector('.value').innerHTML = valueText;
+        content.querySelector('.color-box').style.background = desc.color;
+        content.querySelector('.latitude').innerHTML = lat;
+        content.querySelector('.longitude').innerHTML = lon;
+        content.querySelector('.height').innerHTML = scientific(desc.latlng.lat/1000, 3)+' km';
+        content.querySelector('.time').innerHTML = time(desc.latlng.lng, this.profile);
+        content.querySelector('.country').innerText = desc.country;
         content.querySelector('.latlon-link').href = 'https://www.openstreetmap.org/?mlat='+lat+'amp;mlon='+lon+'#map=4/'+lat+'/'+lon;
 
         var popup = new L.Popup();
@@ -291,6 +291,4 @@ var Map = new Class({
         popup.setContent(content);
         this.map.openPopup(popup);
     }
-});
-
-export default Map;
+}

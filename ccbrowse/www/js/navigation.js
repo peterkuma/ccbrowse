@@ -76,18 +76,21 @@ export default class Navigation extends EventEmitter2 {
     }
 
     isAvailableYear(year) {
-        return this.isAvailable(new UTCDate(year, 0, 1),
-                                new UTCDate(year, 0, 1).increment('year', 1));
+        const start = new Date(Date.UTC(year, 0, 1));
+        const end = d3.utcYear.offset(start, 1);
+        return this.isAvailable(start, end);
     }
 
     isAvailableMonth(year, month) {
-        return this.isAvailable(new UTCDate(year, month, 1),
-                                new UTCDate(year, month, 1).increment('month', 1));
+        const start = new Date(Date.UTC(year, month, 1));
+        const end = d3.utcMonth.offset(start, 1);
+        return this.isAvailable(start, end);
     }
 
     isAvailableDay(year, month, day) {
-        return this.isAvailable(new UTCDate(year, month, day),
-                                new UTCDate(year, month, day).increment('day', 1));
+        const start = new Date(Date.UTC(year, month, day));
+        const end = d3.utcDay.offset(start, 1);
+        return this.isAvailable(start, end);
     }
 
     availableBetween(start, end) {
@@ -102,8 +105,10 @@ export default class Navigation extends EventEmitter2 {
         for (var i = 0; i < availability.length; i++) {
             var range = availability[i];
 
-            var date1 = (new Date(this.profile.origin[0])).increment('ms', range[0]*this.profile.zoom[this.zoom].width);
-            var date2 = (new Date(this.profile.origin[0])).increment('ms', range[1]*this.profile.zoom[this.zoom].width);
+            var date1 = (new Date(this.profile.origin[0]));
+            date1 = d3.utcMillisecond.offset(date1, range[0]*this.profile.zoom[this.zoom].width);
+            var date2 = (new Date(this.profile.origin[0]));
+            date2 = d3.utcMillisecond.offset(date2, range[1]*this.profile.zoom[this.zoom].width);
 
             if (range[0] <= x1 && range[1] >= x2) intervals.push([start, end]);
             if (range[0] >= x1 && range[1] <= x2) intervals.push([date1, date2]);

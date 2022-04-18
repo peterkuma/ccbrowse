@@ -10,72 +10,72 @@ var Colormap = function(el, colormap) {
 
     this.el.innerHTML = '';
 
-    var height = this.el.getSize().y;
+    var height = this.el.clientHeight;
     var yoffset = 0;
 
     if (this.colormap.over) {
         var over = document.createElement('div');
-        over.addClass('colormap-over');
-        over.setStyle('position', 'absolute');
-        over.setStyle('top', 0);
-        over.setStyle('left', 0);
-        over.setStyle('background-color', this.colormap.over);
+        over.classList.add('colormap-over');
+        over.style.position = 'absolute';
+        over.style.top = '0';
+        over.style.left = '0';
+        over.style.backgroundColor = this.colormap.over;
         this.el.appendChild(over);
-        height -= over.getSize().y;
-        yoffset += over.getSize().y;
+        height -= over.clientHeight;
+        yoffset += over.clientHeight;
     }
 
     if (this.colormap.under) {
         var under = document.createElement('div');
-        under.addClass('colormap-under');
+        under.classList.add('colormap-under');
         this.el.appendChild(under);
-        height -= under.getSize().y;
-        under.setStyle('position', 'absolute');
-        under.setStyle('top', yoffset + height);
-        under.setStyle('left', 0);
-        under.setStyle('background-color', this.colormap.under);
+        height -= under.clientHeight;
+        under.style.position = 'absolute';
+        under.style.top = (yoffset + height) + 'px';
+        under.style.left = '0';
+        under.style.backgroundColor = this.colormap.under;
     }
 
     var colors = document.createElement('div');
     this.el.appendChild(colors);
-    colors.setStyle('position', 'absolute');
-    colors.setStyle('width', 20);
-    colors.setStyle('top', yoffset);
-    colors.setStyle('left', 0);
-    colors.setStyle('height', height);
+    colors.style.position = 'absolute';
+    colors.style.width = '20px';
+    colors.style.top = yoffset + 'px';
+    colors.style.left = '0';
+    colors.style.height = height + 'px';
     this.drawColors(colors);
 
     var ticks =  document.createElement('div');
     this.el.appendChild(ticks);
-    ticks.setStyle('width', '6rem');
-    ticks.setStyle('height', height);
-    ticks.setStyle('position', 'absolute');
-    ticks.setStyle('top', yoffset);
-    ticks.setStyle('left', 10);
+    ticks.style.width = '6rem';
+    ticks.style.height = height + 'px';
+    ticks.style.position = 'absolute';
+    ticks.style.top = yoffset + 'px';
+    ticks.style.left = '10px';
     this.drawTicks(ticks);
 };
 
 Colormap.prototype.drawColors = function(el) {
-    var height = el.getSize().y;
-    var width = el.getSize().x;
+    var height = el.clientHeight;
+    var width = el.clientWidth;
     var self = this;
     var h = height/this.colormap.colors.length;
     var n = 1;
     this.colormap.colors.forEach(function(color) {
         var div = document.createElement('div');
-        div.setStyle('position', 'absolute');
-        div.setStyle('top', height-n*h);
-        div.setStyle('width', width);
-        div.setStyle('height', h + 1);
-        div.setStyle('background', color);
+        div.style.position = 'absolute';
+        div.style.top = (height-n*h) + 'px';
+        div.style.width = width + 'px';
+        div.style.height = (h + 1) + 'px';
+        div.style.backgroundColor = color;
         el.appendChild(div);
         n++;
     });
 };
 
 Colormap.prototype.drawTicks = function(el) {
-    var height = el.getSize().y;
-    var width = el.getSize().x;
+    var height = el.clientHeight;
+    var width = el.clientWidth;
     var min = this.colormap.ticks[0];
     var max = this.colormap.ticks[this.colormap.ticks.length - 1];
     var h = height/this.colormap.colors.length;
@@ -100,21 +100,21 @@ Colormap.prototype.drawTicks = function(el) {
             var v = range.start + (range.end - range.start)*(i/range.steps);
             var y = (self.colormap.colors.length - self.transform(v))*h;
             var tick = document.createElement('div');
-            tick.setStyle('height', 1);
-            tick.setStyle('width', 10);
-            tick.setStyle('background', 'black');
-            tick.setStyle('position', 'absolute');
-            tick.setStyle('top', y+1);
+            tick.style.height = '1px';
+            tick.style.width = '10px';
+            tick.style.backgroundColor = 'black';
+            tick.style.position = 'absolute';
+            tick.style.top = (y+1) + 'px';
             el.appendChild(tick);
 
 
             var label = document.createElement('div');
             el.appendChild(label);
-            label.set('html', scientific(v));
-            label.setStyle('position', 'absolute');
-            label.setStyle('top', y+1 - label.getSize().y/2);
-            label.setStyle('left', 18);
-            label.setStyle('color', 'white');
+            label.innerHTML = scientific(v);
+            label.style.position = 'absolute';
+            label.style.top = (y+1 - label.clientHeight/2) + 'px';
+            label.style.left = '18px';
+            label.style.color = 'white';
         }
     });
 };

@@ -10,8 +10,8 @@
 import Tooltip from './tooltip.js';
 
 
-var NavigationPanel = new Class({
-    initialize: function(el, nav) {
+export default class NavigationPanel {
+    constructor(el, nav) {
         this.el = d3.select(el);
         this.nav = nav;
 
@@ -21,9 +21,9 @@ var NavigationPanel = new Class({
 
         this.update();
         this.nav.on('change', this.update.bind(this));
-    },
+    }
 
-    update: function(expandedYear) {
+    update(expandedYear) {
         var t1 = this.nav.profile.origin[0];
         var t2 = new Date();
         var t0 = this.nav.getCurrent();
@@ -99,7 +99,7 @@ var NavigationPanel = new Class({
         month.enter()
             .append('a')
             .attr('class', 'month')
-            .text(function(d) { return d.formatUTC('%b'); })
+            .text(function(d) { return formatUTC(d, '%b'); })
             .each(function() { new Tooltip(this); });
 
         months.selectAll('.month')
@@ -113,7 +113,7 @@ var NavigationPanel = new Class({
                     d.getUTCMonth()
                 );
             }.bind(this))
-            .attr('href', function(d) { return d.formatUTC('#%Y-%b'); })
+            .attr('href', function(d) { return formatUTC(d, '#%Y-%m-01T00:00:00'); })
             .attr('onclick', '')
             .attr('title', '')
             .filter('.disabled')
@@ -156,13 +156,11 @@ var NavigationPanel = new Class({
                     d.getUTCDate()
                 );
             }.bind(this))
-            .attr('href', function(d) { return d.formatUTC('#%Y-%b-%d'); })
+            .attr('href', function(d) { return formatUTC(d, '#%Y-%m-%dT00:00:00'); })
             .attr('onclick', '')
             .attr('title', '')
             .filter('.disabled')
                 .attr('onclick', 'return false;')
                 .attr('title', 'Unavailable');
     }
-});
-
-export default NavigationPanel;
+}

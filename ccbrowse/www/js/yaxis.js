@@ -1,17 +1,17 @@
-var YAxis = new Class({
-    initialize: function(el, domain) {
+export default class YAxis {
+    constructor(el, domain) {
         this.el = el;
         this.domain = domain;
         this.update();
-    },
+    }
 
-    setDomain: function(domain) {
+    setDomain(domain) {
         this.domain = domain;
         this.update();
-    },
+    }
 
-    update: function() {
-        var h = this.el.getSize().y;
+    update() {
+        var h = this.el.clientHeight;
 
         var scale = d3.scaleLinear().domain(this.domain).range([0, h]);
         var data = scale.ticks(10);
@@ -29,7 +29,7 @@ var YAxis = new Class({
             .text(String);
 
         label.style('bottom', function(d) {
-            return (scale(d) - this.getSize().y/2) + 'px';
+            return (scale(d) - this.clientHeight/2) + 'px';
         });
 
         tick.enter()
@@ -40,6 +40,4 @@ var YAxis = new Class({
             return (scale(d) - 3) + 'px';
         });
     }
-});
-
-export default YAxis;
+}

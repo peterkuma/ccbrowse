@@ -8,7 +8,7 @@ export default class Profile {
 
     get origin() {
         return [
-            new Date.parse(this.source.origin[0] + ' +0000'),
+            Date.parse(this.source.origin[0] + '+0000'),
             this.source.origin[1]
         ];
     }

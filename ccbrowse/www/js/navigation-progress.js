@@ -6,8 +6,8 @@
  * to display, such as data availability and current position and layer.
  */
 
-var NavigationProgress = new Class({
-    initialize: function(el, nav) {
+export default class NavigationProgress {
+    constructor(el, nav) {
         this.el = d3.select(el);
         this.nav = nav;
 
@@ -44,16 +44,16 @@ var NavigationProgress = new Class({
         this.el.on('mouseout.tooltip', function() {
             this.tooltipAt(null);
         }.bind(this));
-    },
+    }
 
-    set: function(fraction) {
+    set(fraction) {
         var t0 = this.nav.getCurrent();
         var t1 = d3.utcDay(t0);
         t0 = d3.utcSecond.offset(t1, 24*60*60*fraction);
         this.nav.setCurrent(t0);
-    },
+    }
 
-    update: function() {
+    update() {
         var t0 = this.nav.getCurrent();
         var t1 = d3.utcDay(t0);
         var t2 = d3.utcDay.offset(t1, 1);
@@ -82,24 +82,22 @@ var NavigationProgress = new Class({
         this.avail.selectAll('.availability')
             .style('left', function(d) { return x(d[0]) + 'px'; })
             .style('width', function(d) { return x(d[1]) - x(d[0]) + 'px'; });
-    },
+    }
 
-    tooltipAt: function(x) {
+    tooltipAt(x) {
         var fraction = x/this.el.property('clientWidth');
         var t0 = this.nav.getCurrent();
         var t1 = d3.utcDay(t0);
         var t = d3.utcSecond.offset(t1, 24*60*60*fraction);
 
-        this.tooltip.style('display', function() {
-            return x === null ? 'none' : 'block';
+        this.tooltip.style('opacity', function() {
+            return x === null ? '0' : '1';
         });
 
         this.tooltip
             .style('left', function() {
                 return x - this.clientWidth/2 + 'px';
             })
-            .text(t.formatUTC('%H:%M'));
+            .text(formatUTC(t, '%H:%M'));
     }
-});
-
-export default NavigationProgress;
+}

@@ -70,7 +70,7 @@ function color(v, colormap) {
 
 function time(t, profile) {
     var date = new Date(profile.origin[0]);
-    date.increment('ms', t);
+    date = d3.utcMillisecond.offset(date, t);
     return date.toUTCString().replace('GMT', 'UTC');
 }
 
@@ -81,19 +81,15 @@ function ordinal(n) {
     return n + '<span class="ordinal">th</span>';
 }
 
-Date.implement({
-    formatUTC: function(format) {
-        var date = new Date(this.getUTCFullYear(),
-                            this.getUTCMonth(),
-                            this.getUTCDate(),
-                            this.getUTCHours(),
-                            this.getUTCMinutes(),
-                            this.getUTCSeconds());
-        return date.format(format);
-    }
-});
-
-Date.defineParser('%Y(-%b(-%d(,%H:%M(:%S)?)?)?)?( %z)?');
+function formatUTC(date, format) {
+    var date = new Date(date.getUTCFullYear(),
+                        date.getUTCMonth(),
+                        date.getUTCDate(),
+                        date.getUTCHours(),
+                        date.getUTCMinutes(),
+                        date.getUTCSeconds());
+    return d3.utcFormat(format)(date);
+}
 
 var UTCDate = function(year, month, day, hour, minute, second, millisecond) {
     var date = new Date(1970, 1, 1);

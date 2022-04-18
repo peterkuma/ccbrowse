@@ -1,5 +1,5 @@
-var LayerControl = new Class({
-    initialize: function(el, nav) {
+export default class LayerControl {
+    constructor(el, nav) {
         this.el = el;
         this.nav = nav;
 
@@ -9,8 +9,8 @@ var LayerControl = new Class({
         this.items = this.el.querySelector('.items');
 
         this.icon.addEventListener('click', function() {
-            this.el.toggleClass('collapsed');
-            if (this.el.hasClass('collapsed')) {
+            this.el.classList.toggle('collapsed');
+            if (this.el.classList.contains('collapsed')) {
                 this.icon.title = '';
                 this.el.title = 'Layers';
             } else {
@@ -23,12 +23,12 @@ var LayerControl = new Class({
 
         this.nav.on('layerchange', this.update.bind(this));
         this.update();
-    },
+    }
 
-    update: function() {
+    update() {
         this.items.innerHTML = '';
         var layers = this.nav.getLayers();
-        Object.each(layers, function(layer, name) {
+        Object.entries(layers).forEach(([name, layer]) => {
             if (layer.dimensions != 'xz' || !layer.colormap) return;
             var item = document.createElement('a');
             item.href = name + '/';
@@ -37,19 +37,19 @@ var LayerControl = new Class({
                 this.update();
                 evt.preventDefault();
             }.bind(this);
-            item.addClass('layer-item');
+            item.classList.add('layer-item');
             let currentLayer = this.nav.getLayer();
             if (currentLayer && layer == currentLayer.source) {
-                item.addClass('active');
+                item.classList.add('active');
             }
             var bulb = document.createElement('div');
-            bulb.addClass('bulb');
+            bulb.classList.add('bulb');
             item.appendChild(bulb);
             var label = document.createElement('span');
-            label.set('text', layer.title);
+            label.innerText = layer.title;
             item.appendChild(label);
             this.items.appendChild(item);
-        }.bind(this));
+        });
 
         /*
         var newel = this.el.clone();
@@ -64,6 +64,4 @@ var LayerControl = new Class({
         this.content.setStyle('height', this.content.getDimensions().y);
         */
     }
-});
-
-export default LayerControl;
+}

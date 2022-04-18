@@ -48,13 +48,13 @@ export class Application {
         this.note = document.querySelector('.note');
 
         // Initialize toolbox.
-        $$('#toolbox a').each(function(link) {
-            link.onclick = function(evt) {
+        document.querySelectorAll('#toolbox a').forEach(link => {
+            link.onclick = evt => {
                 window.history.pushState({}, '', link.href);
                 this.route();
                 evt.preventDefault();
-            }.bind(this);
-        }.bind(this));
+            };
+        });
 
         try {
             let profileSource = await (await fetch('profile.json')).json();
@@ -81,7 +81,7 @@ export class Application {
             var layer = this.nav.getLayer();
             if (layer.colormap.colors)
                 this.colormap = new Colormap($('colormap'), this.nav.getLayer().colormap);
-            if (this.nav.getCurrent().diff(this.profile.origin[0], 'ms') == 0)
+            if (this.nav.getCurrent() - this.profile.origin[0] == 0)
             {
                 this.nav.setCurrent(this.smartCurrent(this.nav.getAvailability()));
             }
@@ -118,19 +118,19 @@ export class Application {
             return;
         }
         if (window.location.hash === '') return;
-        const date_s = window.location.hash.substring(1) + ' +0000';
-        const date = new Date().parse(date_s);
-        if (!date.isValid()) return;
+        const date_s = window.location.hash.substring(1);
+        const date = d3.utcParse('%Y-%m-%dT%H:%M:%S')(date_s);
+        if (date === null) return;
         this.nav.setCurrent(date);
     }
 
     onNavChange() {
         const date = this.nav.getCurrent();
-        const hash = '#'+date.formatUTC('%Y-%b-%d,%H:%M:%S');
+        const hash = '#'+formatUTC(date, '%Y-%m-%dT%H:%M:%S');
         if (window.location.hash === hash) return;
         this.ignoreHashChange = true;
         window.location.replace(hash);
-        const date_s = this.nav.getCurrent().formatUTC('%e %b %Y %H:%M');
+        const date_s = formatUTC(this.nav.getCurrent(), '%e %b %Y %H:%M:%S');
         document.title = date_s + ' ‧ ccbrowse';
         this.route();
     }
@@ -150,20 +150,20 @@ export class Application {
         var lower = Math.max(latest[0], latest[1] - hour);
         var upper = latest[1];
         var date = new Date(this.profile.origin[0]);
-        return date.increment('ms', (upper+lower)*0.5*width);
+        return d3.utcMillisecond.offset(date, (upper+lower)*0.5*width);
     }
 
     context(name) {
-        $$('.context').setStyle('display', 'none');
-        $$('.context.'+name).setStyle('display', 'flex');
+        document.querySelectorAll('.context')
+            .forEach(e => e.style.display = 'none');
+        document.querySelector('.context.'+name).style.display = 'flex';
     }
 
-    page(path) {
-        var page = document.querySelector('.page');
-        page.set('load', {
-            onSuccess: function() { this.context('page'); }.bind(this)
-        });
-        page.load(path);
+    async page(path) {
+        const page = document.querySelector('.page');
+        const response = await fetch(path);
+        page.innerHTML = await response.text();
+        this.context('page');
     }
 
     route() {
@@ -180,30 +180,30 @@ export class Application {
 
     showError(message, nohide) {
         console.log(message);
-        this.error.set('html', message);
-        this.error.removeClass('collapsed');
+        this.error.innerHTML = message;
+        this.error.classList.remove('collapsed');
         if (!nohide) {
             window.setTimeout(function() {
-                this.error.addClass('collapsed');
-                this.note.removeClass('hold');
+                this.error.classList.add('collapsed');
+                this.note.classList.remove('hold');
             }.bind(this), 5000);
         }
-        this.note.addClass('hold');
+        this.note.classList.add('hold');
     }
 
     clearError() {
-        this.error.addClass('collapsed');
-        this.note.removeClass('hold');
+        this.error.classList.add('collapsed');
+        this.note.classList.remove('hold');
     }
 
     showNote(message) {
-        this.note.set('html', message);
-        this.note.removeClass('collapsed');
+        this.note.innerHTML = message;
+        this.note.classList.remove('collapsed');
         window.setTimeout(function() {
-            this.note.addClass('collapsed');
+            this.note.classList.add('collapsed');
         }.bind(this), 5000);
-        if (!this.error.hasClass('collapsed'))
-            this.note.addClass('hold');
+        if (!this.error.classList.contains('collapsed'))
+            this.note.classList.add('hold');
     }
 }
 

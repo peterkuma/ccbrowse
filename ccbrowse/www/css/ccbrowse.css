@@ -130,7 +130,6 @@ nav {
       margin-left: -10px;
       margin-top: -6px; }
     nav .progress .tooltip {
-      display: none;
       font-family: helvetica, sans-serif;
       font-size: 74%;
       z-index: 2;
@@ -139,7 +138,9 @@ nav {
       padding: 5px 7px;
       text-align: center;
       background: black;
-      border-radius: 4px; }
+      border-radius: 4px;
+      transition: opacity 100ms;
+      opacity: 0; }
     nav .progress .availability-container {
       position: absolute;
       width: 100%;
@@ -473,7 +474,6 @@ nav {
   background: url("../img/under.png") no-repeat; }
 
 #location-bar {
-  display: none;
   position: absolute;
   z-index: 100;
   bottom: 6px;
@@ -541,7 +541,9 @@ nav {
   font-size: 80%;
   border: 1px solid black;
   z-index: 500;
-  border-radius: 2px; }
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 100ms; }
 
 .page {
   max-width: 800px;
