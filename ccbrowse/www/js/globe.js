@@ -1,118 +1,123 @@
-export default function Globe(el, profile) {
-	el = d3.select(el);
-	var center = [0, 0];
+export default class Globe {
+    constructor(el, profile) {
+	    this.el = d3.select(el);
+	    this._center = [0, 0];
 
-	var canvas = el.append('canvas')
-		.attr('class', 'canvas');
+	    this.canvas = this.el.append('canvas')
+		    .attr('class', 'canvas');
 
-	var svg = el.append('svg')
-		.style('width', '100%')
-		.style('height', '100%');
+	    const svg = this.el.append('svg')
+		    .style('width', '100%')
+		    .style('height', '100%');
 
-	var defs = svg.append('defs');
+	    const defs = svg.append('defs');
 
-	var circle = defs.append('circle')
-		.attr('id', 'circle');
+	    this.circle = defs.append('circle')
+		    .attr('id', 'circle');
 
-	defs.append('clipPath')
-		.attr('id', 'clip-path')
-		.append('use')
-			.attr('xlink:href', '#circle');
+	    defs.append('clipPath')
+		    .attr('id', 'clip-path')
+		    .append('use')
+			    .attr('xlink:href', '#circle');
 
-	var shadow = defs.append('radialGradient')
-		.attr('id', 'shadow')
-		.attr('cx', '45%')
-		.attr('cy', '45%');
-	shadow
-		.append('stop')
-			.attr('offset', '0%')
-			.attr('stop-color', 'rgba(255,255,255,0.1)');
-	shadow
-		.append('stop')
-			.attr('offset', '70%')
-			.attr('stop-color', 'rgba(200,200,200,0.1)');
-	shadow
-		.append('stop')
-			.attr('offset', '100%')
-			.attr('stop-color', 'rgba(0,0,0,0.4)');
+	    const shadow = defs.append('radialGradient')
+		    .attr('id', 'shadow')
+		    .attr('cx', '45%')
+		    .attr('cy', '45%');
+	    shadow
+		    .append('stop')
+			    .attr('offset', '0%')
+			    .attr('stop-color', 'rgba(255,255,255,0.1)');
+	    shadow
+		    .append('stop')
+			    .attr('offset', '70%')
+			    .attr('stop-color', 'rgba(200,200,200,0.1)');
+	    shadow
+		    .append('stop')
+			    .attr('offset', '100%')
+			    .attr('stop-color', 'rgba(0,0,0,0.4)');
 
-	svg.append('use')
-		.attr('xlink:href', '#circle')
-		.attr('class', 'circle');
+	    svg.append('use')
+		    .attr('xlink:href', '#circle')
+		    .attr('class', 'circle');
 
-	var pointer = svg.append('circle')
-		.attr('class', 'pointer')
-		.attr('r', 3)
-		.attr('cx', '50%')
-		.attr('cy', '50%');
+	    const pointer = svg.append('circle')
+		    .attr('class', 'pointer')
+		    .attr('r', 3)
+		    .attr('cx', '50%')
+		    .attr('cy', '50%');
 
-	var g = svg.append('g')
-		.attr('clip-path', 'url(#clip-path)');
+	    const g = svg.append('g')
+		    .attr('clip-path', 'url(#clip-path)');
 
-	var box = g.append('rect')
-		.attr('class', 'box');
+	    this.box = g.append('rect')
+		    .attr('class', 'box');
 
-	var world;
-    d3.json('/globe/world-50m.json').then(json => {
-		world = json;
-		update();
-	});
+        d3.json('/globe/world-50m.json').then(json => {
+		    this.world = json;
+		    this.update();
+	    });
+    }
 
-	var exports = {};
-
-	exports.center = function(point) {
+    center(center) {
 		if (!arguments.length)
-			return center;
-		center = point;
-		return update();
-	};
+			return this._center;
+	    const origCenter = center;
+	    this.el.transition()
+	        .duration(1000)
+	        .tween('globe-rotation', () => {
+	            const r = d3.interpolate(this._center, origCenter);
+	            return t => {
+	                this._center = r(t);
+	                this.update();
+	            };
+	        });
+	}
 
-	function update() {
-		if (!world) return exports;
+	update() {
+		if (!this.world) return;
 
-		var width = el.property('clientWidth');
-		var height = el.property('clientHeight');
+		const width = this.el.property('clientWidth');
+		const height = this.el.property('clientHeight');
 
-		canvas
+		this.canvas
 			.attr('width', width)
 			.attr('height', height);
-		var c = canvas.node().getContext('2d');
+		const c = this.canvas.node().getContext('2d');
 
-		box
+		this.box
 			.attr('width', width)
 			.attr('height', height)
 			.attr('fill', 'url(#shadow)');
 
-		circle
+		this.circle
 			.attr('cx', width/2)
 			.attr('cy', height/2)
 			.attr('r', d3.min([width/2, height/2]));
 
-		var projection = d3.geoOrthographic()
-			.rotate([-center[0], -center[1]])
+		const projection = d3.geoOrthographic()
+			.rotate([-this._center[0], -this._center[1]])
 			.scale(width/2)
 			.translate([width/2, height/2])
 			.clipAngle(90);
 
-		var path = d3.geoPath(projection, c);
+		const path = d3.geoPath(projection, c);
 
 		c.clearRect(0, 0, width, height);
-		c.arc(circle.attr('cx'), circle.attr('cy'), circle.attr('r'), 0, 2*Math.PI);
+		c.arc(this.circle.attr('cx'), this.circle.attr('cy'),
+		    this.circle.attr('r'), 0, 2*Math.PI);
 		c.clip();
 
 		c.fillStyle = 'white';
 		c.beginPath();
-		path(topojson.feature(world, world.objects.land));
+		path(topojson.feature(this.world, this.world.objects.land));
 		c.fill();
 
 		c.strokeStyle = 'black';
 		c.lineWidth = 0.3;
 		c.beginPath();
-		path(topojson.mesh(world, world.objects.countries, function(a, b) { return a.id !== b.id; }));
+		path(topojson.mesh(this.world, this.world.objects.countries,
+		    function(a, b) { return a.id !== b.id; }));
 		c.stroke();
-
-		return exports;
 	}
-
-	return update();
 }

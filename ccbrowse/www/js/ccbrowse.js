@@ -101,8 +101,7 @@ export class Application {
         this.map.on('error', this.onError.bind(this));
         $('map').focus();
 
-        this.globe = Globe('.map .globe', this.profile);
-        this.globe.center([0, 0]);
+        this.globe = new Globe('.map .globe', this.profile);
         this.map.on('move', () => {
             this.map.center((lat, lon) => {
                 if (isFinite(lat) && isFinite(lon))
