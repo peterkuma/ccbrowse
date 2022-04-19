@@ -398,8 +398,7 @@ nav {
   position: absolute;
   bottom: 0;
   left: 0;
-  z-index: 1000;
-  pointer-events: none; }
+  z-index: 1000; }
 
 .keyboard-shortcuts > input {
   display: none; }
@@ -429,7 +428,7 @@ nav {
   white-space: nowrap;
   opacity: 0;
   transition: opacity 100ms;
-  z-index: 1000; }
+  pointer-events: none; }
 
 .keyboard-shortcuts input:checked ~ div {
   opacity: 1; }
@@ -483,7 +482,8 @@ nav {
   font-size: 150%;
   font-family: "Open Sans";
   font-weight: bold;
-  text-shadow: 2px 2px 0 #000; }
+  text-shadow: 2px 2px 0 #000;
+  pointer-events: none; }
 
 #location-bar .center {
   margin: 0 auto;
@@ -619,7 +619,8 @@ nav {
   top: 1rem;
   right: 4rem;
   width: 9rem;
-  height: 9rem; }
+  height: 9rem;
+  pointer-events: none; }
   .map .globe .pointer {
     fill: red; }
   .map .globe .canvas {
