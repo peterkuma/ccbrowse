@@ -531,6 +531,12 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.3.0 (2022-04-19)
+
+- Globe showing the current location.
+- Faster geocoding.
+- Removed dependency on MooTools.
+
 ### 0.2.0 (2022-04-17)
 
 - Support for mobile.
