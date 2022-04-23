@@ -56,7 +56,7 @@ export class Application {
         });
 
         try {
-            let profileSource = await (await fetch('profile.json')).json();
+            let profileSource = await (await fetch(this.profileUrl)).json();
             this.profile = new Profile(profileSource);
         } catch(err) {
             if (err instanceof SyntaxError) {

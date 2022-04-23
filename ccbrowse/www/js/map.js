@@ -221,6 +221,8 @@ export default class Map extends EventEmitter2 {
                 this.layerGroup.removeLayer(layer);
             }.bind(this));
         }.bind(this), 4000);
+
+        this.update();
     }
 
     move() {

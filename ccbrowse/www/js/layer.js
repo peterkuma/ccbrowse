@@ -39,6 +39,4 @@ export default class Layer {
             data: data
         };
     }
-
-
 }
