@@ -119,6 +119,7 @@ export class Application {
         const date = d3.utcParse('%Y-%m-%dT%H:%M:%S')(date_s);
         if (date === null) return;
         this.nav.setCurrent(date);
+        this.route();
     }
 
     onNavChange() {
