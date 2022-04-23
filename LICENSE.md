@@ -20,10 +20,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-This program is distributed with third-party software d3, eventemitter2,
-leaflet and topojson, available under the terms as in their respective license:
+This program is distributed with third-party software and fonts available under
+the terms as in their respective license:
 
 - [d3](ccbrowse/www/lib/d3/LICENSE)
 - [eventemitter2](ccbrowse/www/lib/eventemitter2/LICENSE.txt)
 - [leafllet](ccbrowse/www/lib/leaflet/LICENSE)
 - [topojson](ccbrowse/www/lib/topojson/LICENSE.md)
+- [Asap](ccbrowse/www/font/asap/LICENSE.txt)
+- [Open Sans](ccbrowse/www/font/open-sans/LICENSE.txt)
