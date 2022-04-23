@@ -20,7 +20,7 @@ header {
       font-size: 200%;
       font-weight: normal;
       color: transparent;
-      background: url("../img/ccbrowse.png") no-repeat center center;
+      background: url("../img/ccbrowse.svg") no-repeat center center;
       background-size: 4em; }
       header h1 a:hover {
         text-decoration: none; }
@@ -34,7 +34,7 @@ header {
       font-size: 160%;
       padding-left: 1.8em; }
     header #toolbox a[href="#about"] {
-      background: url("../img/about.png") no-repeat 0.6em center;
+      background: url("../img/about.svg") no-repeat 0.6em center;
       background-size: 0.8em; }
 
 nav {
@@ -103,7 +103,7 @@ nav {
   nav .progress {
     height: 8px;
     width: 100%;
-    background: black url("../img/progress-unavailable.png") repeat-x;
+    background: black url("../img/progress-unavailable.svg") repeat-x;
     border-top: 1px solid #555;
     border-bottom: 1px solid #555;
     position: relative;
@@ -117,7 +117,7 @@ nav {
       height: 100%;
       background: #0197fd;
       width: 0;
-      background: url("../img/progress.png") repeat-x;
+      background: url("../img/progress.svg") repeat-x;
       border-top: 1px solid #555;
       border-bottom: 1px solid #555;
       margin-top: -1px; }
@@ -125,7 +125,7 @@ nav {
       z-index: 1;
       width: 20px;
       height: 20px;
-      background: url("../img/thumb.png") no-repeat;
+      background: url("../img/thumb.svg") no-repeat;
       position: absolute;
       margin-left: -10px;
       margin-top: -6px; }
@@ -148,7 +148,7 @@ nav {
       overflow: hidden; }
       nav .progress .availability-container .availability {
         position: absolute;
-        background: url("../img/progress-available.png") repeat-x;
+        background: url("../img/progress-available.svg") repeat-x;
         border: 1px solid #66fc43;
         height: 6px; }
 
@@ -268,13 +268,13 @@ nav {
   background-color: transparent; }
 
 .leaflet-control-zoom-in {
-  background: url("../img/zoom-in.png") no-repeat;
+  background: url("../img/zoom-in.svg") no-repeat center center;
   border-right: 1px solid #777;
   border-radius: 0 !important;
   font-size: 0; }
 
 .leaflet-control-zoom-out {
-  background: url("../img/zoom-out.png") no-repeat;
+  background: url("../img/zoom-out.svg") no-repeat center center;
   font-size: 0; }
 
 .leaflet-touch .leaflet-control-zoom a {
@@ -320,7 +320,7 @@ nav {
   float: right;
   width: 20px;
   height: 20px;
-  background: black url("../img/layers.png") no-repeat center center;
+  background: black url("../img/layers.svg") no-repeat center center;
   cursor: pointer;
   position: relative;
   z-index: 200;
@@ -344,15 +344,15 @@ nav {
     background-color: #0197fd;
     color: black; }
     .layer-item.active .bulb {
-      background: url("../img/bulb-active.png") no-repeat; }
+      background: url("../img/bulb-active.svg") no-repeat; }
   .layer-item.enabled .bulb {
-    background: url("../img/bulb-enabled.png") no-repeat; }
+    background: url("../img/bulb-enabled.svg") no-repeat; }
   .layer-item .bulb {
     width: 12px;
     height: 12px;
     margin: 0 5px;
     display: inline-block;
-    background: url("../img/bulb-disabled.png") no-repeat; }
+    background: url("../img/bulb-disabled.svg") no-repeat; }
 
 .popup-content .color-box {
   width: 10px;
@@ -410,7 +410,7 @@ nav {
   left: 4px;
   width: 30px;
   height: 15px;
-  background: url("../img/keyboard.png") no-repeat;
+  background: url("../img/keyboard.svg") no-repeat;
   opacity: 0.5; }
 
 .keyboard-shortcuts input:checked + label {
@@ -466,12 +466,12 @@ nav {
 .colormap-over {
   width: 20px;
   height: 25px;
-  background: url("../img/over.png") no-repeat; }
+  background: url("../img/over.svg") no-repeat; }
 
 .colormap-under {
   width: 20px;
   height: 25px;
-  background: url("../img/under.png") no-repeat; }
+  background: url("../img/under.svg") no-repeat; }
 
 #location-bar {
   position: absolute;
@@ -584,7 +584,7 @@ nav {
 #yaxis-container {
   width: 3em;
   height: 100%;
-  background: url("../img/yaxis.png") repeat-y;
+  background: url("../img/yaxis.svg") repeat-y;
   background-size: 2em;
   text-shadow: 2px 2px 0 #000;
   color: white;

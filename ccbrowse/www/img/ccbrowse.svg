@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -14,7 +12,7 @@
    height="54"
    id="svg15742"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
    sodipodi:docname="ccbrowse.svg"
    inkscape:export-filename="/mnt/data1/www/ccbrowse/www/img/ccbrowse.png"
    inkscape:export-xdpi="90"
@@ -171,11 +169,12 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1651"
-     inkscape:window-height="1028"
-     inkscape:window-x="29"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-width="1920"
+     inkscape:window-height="1055"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0" />
   <metadata
      id="metadata15747">
     <rdf:RDF>
@@ -184,7 +183,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -195,11 +194,10 @@
      transform="translate(0,-998.3622)">
     <text
        xml:space="preserve"
-       style="font-size:67.22710419px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;color:#000000;fill:url(#linearGradient15740);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Asap;-inkscape-font-specification:Bitstream Vera Sans Bold"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:0%;font-family:Asap;-inkscape-font-specification:'Bitstream Vera Sans Bold';text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15740);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;enable-background:accumulate"
        x="-2.4910865"
        y="1044.8868"
        id="text4562"
-       sodipodi:linespacing="125%"
        inkscape:export-filename="/tmp/export.png"
        inkscape:export-xdpi="151.19225"
        inkscape:export-ydpi="151.19225"
@@ -208,8 +206,8 @@
          id="tspan4564"
          x="-2.4910865"
          y="1044.8868"
-         style="fill:url(#linearGradient15740);fill-opacity:1"><tspan
-   style="font-weight:normal;fill:url(#linearGradient15740);fill-opacity:1;-inkscape-font-specification:Asap"
+         style="font-size:67.2271px;line-height:1.25;fill:url(#linearGradient15740);fill-opacity:1"><tspan
+   style="font-weight:normal;-inkscape-font-specification:Asap;fill:url(#linearGradient15740);fill-opacity:1"
    id="tspan13205">cc</tspan>browse</tspan></text>
   </g>
 </svg>

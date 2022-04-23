@@ -95,7 +95,7 @@ nav {
     .progress {
         height: 8px;
         width: 100%;
-        background: black url('../img/progress-unavailable.png') repeat-x;
+        background: black url("../img/progress-unavailable.svg") repeat-x;
         border-top: 1px solid #555;
         border-bottom: 1px solid #555;
         position: relative;
@@ -110,7 +110,7 @@ nav {
             height: 100%;
             background: #0197fd;
             width: 0;
-            background: url('../img/progress.png') repeat-x;
+            background: url("../img/progress.svg") repeat-x;
             border-top: 1px solid #555;
             border-bottom: 1px solid #555;
             margin-top: -1px;
@@ -120,7 +120,7 @@ nav {
             z-index: 1;
             width: 20px;
             height: 20px;
-            background: url('../img/thumb.png') no-repeat;
+            background: url("../img/thumb.svg") no-repeat;
             position: absolute;
             margin-left: -10px;
             margin-top: -6px;
@@ -148,7 +148,7 @@ nav {
 
             .availability {
                 position: absolute;
-                background: url('../img/progress-available.png') repeat-x;
+                background: url("../img/progress-available.svg") repeat-x;
                 border: 1px solid #66fc43;
                 height: 6px;
             }

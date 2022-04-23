@@ -8,7 +8,7 @@
 
 #map-container {
     text-align: center;
-    background: url('../img/bg.png') repeat-x;
+    background: url("../img/bg.png") repeat-x;
     flex-grow: 1;
     position: relative;
 }
@@ -133,14 +133,14 @@
 }
 
 .leaflet-control-zoom-in {
-    background: url('../img/zoom-in.png') no-repeat;
+    background: url("../img/zoom-in.svg") no-repeat center center;
     border-right: 1px solid #777;
     border-radius: 0 !important;
     font-size: 0;
 }
 
 .leaflet-control-zoom-out {
-    background: url('../img/zoom-out.png') no-repeat;
+    background: url("../img/zoom-out.svg") no-repeat center center;
     font-size: 0;
 }
 
@@ -194,7 +194,7 @@
     float: right;
     width: 20px;
     height: 20px;
-    background: black url('../img/layers.png') no-repeat center center;
+    background: black url("../img/layers.svg") no-repeat center center;
     cursor: pointer;
     position: relative;
     z-index: 200;
@@ -226,13 +226,13 @@
         color: black;
 
         .bulb {
-            background: url('../img/bulb-active.png') no-repeat;
+            background: url("../img/bulb-active.svg") no-repeat;
         }
     }
 
     &.enabled {
         .bulb {
-            background: url('../img/bulb-enabled.png') no-repeat;
+            background: url("../img/bulb-enabled.svg") no-repeat;
         }
     }
 
@@ -241,7 +241,7 @@
         height: 12px;
         margin: 0 5px;
         display: inline-block;
-        background: url('../img/bulb-disabled.png') no-repeat;
+        background: url("../img/bulb-disabled.svg") no-repeat;
     }
 }
 
@@ -310,7 +310,7 @@
     left: 4px;
     width: 30px;
     height: 15px;
-    background: url("../img/keyboard.png") no-repeat;
+    background: url("../img/keyboard.svg") no-repeat;
     opacity: 0.5;
 }
 

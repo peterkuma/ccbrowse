@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,7 +11,7 @@
    height="14"
    id="svg5633"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
    sodipodi:docname="zoom-in.svg">
   <defs
      id="defs5635">
@@ -26,7 +24,7 @@
        id="perspective5641" />
     <inkscape:perspective
        id="perspective5627"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:persp3d-origin="0.5 : 0.3333333 : 1"
        inkscape:vp_z="1 : 0.5 : 1"
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
@@ -39,17 +37,22 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6"
-     inkscape:cx="4.2709924"
-     inkscape:cy="1.4113826"
+     inkscape:zoom="27.853712"
+     inkscape:cx="9.556717"
+     inkscape:cy="13.298493"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1113"
-     inkscape:window-height="713"
-     inkscape:window-x="556"
-     inkscape:window-y="298"
-     inkscape:window-maximized="0" />
+     inkscape:window-width="1920"
+     inkscape:window-height="1055"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-bbox-edge-midpoints="true" />
   <metadata
      id="metadata5638">
     <rdf:RDF>
@@ -67,19 +70,20 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-368.55267,-524.80951)">
-    <text
-       inkscape:export-ydpi="151.19225"
-       inkscape:export-xdpi="151.19225"
-       inkscape:export-filename="/tmp/export.png"
-       sodipodi:linespacing="125%"
-       id="text5615"
-       y="538.51965"
-       x="367.10339"
-       style="font-size:28.98550797px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;color:#000000;fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Nimbus Sans L;-inkscape-font-specification:Bitstream Vera Sans Bold"
-       xml:space="preserve"><tspan
-         y="538.51965"
-         x="367.10339"
-         id="tspan5617"
-         sodipodi:role="line">+</tspan></text>
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;stroke:none;stroke-width:0.377999;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+       id="rect1505"
+       width="14"
+       height="4"
+       x="368.55267"
+       y="529.80951" />
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;stroke:none;stroke-width:0.377999;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+       id="rect1507"
+       width="14"
+       height="4"
+       x="524.80951"
+       y="-377.55267"
+       transform="rotate(90)" />
   </g>
 </svg>

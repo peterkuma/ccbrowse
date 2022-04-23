@@ -22,7 +22,7 @@ header {
             font-size: 200%;
             font-weight: normal;
             color: transparent;
-            background: url('../img/ccbrowse.png') no-repeat center center;
+            background: url("../img/ccbrowse.svg") no-repeat center center;
             background-size: 4em;
 
             &:hover {
@@ -44,7 +44,7 @@ header {
         }
 
         a[href="#about"] {
-            background: url('../img/about.png') no-repeat 0.6em center;
+            background: url("../img/about.svg") no-repeat 0.6em center;
             background-size: 0.8em;
         }
     }
