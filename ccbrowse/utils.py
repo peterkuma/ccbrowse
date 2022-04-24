@@ -294,6 +294,7 @@ def intoptim_convex(f, low, high):
     """
     x1 = low
     x3 = high
+    x = None
     while x3 - x1 > 1:
         x2 = int((x1 + x3)/2)
         y1 = f(x1)
@@ -308,7 +309,8 @@ def intoptim_convex(f, low, high):
             break
         else:
             raise AssertionError('Function not convex')
-
+    if x is None:
+        return np.nan
     x1 = x - 1
     x2 = x
     x3 = x + 1
@@ -326,3 +328,10 @@ def intoptim_convex(f, low, high):
             y1, y2, y3 = f(x1), y1, y2
 
     return quadmin([x1, x2, x3], [y1, y2, y3])
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return JSONEncoder.default(self, obj)

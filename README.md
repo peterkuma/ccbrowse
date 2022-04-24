@@ -1,13 +1,27 @@
 # ccbrowse
 
-ccbrowse is an open source web application for browsing data from atmospheric
-profiling satellites. In the current version, it supports importing two
-datasets of the CALIPSO satellite, but new importing classes can be added as
-needed. It is comprised of a web application and a backend for importing
-various types of product files. An example ccbrowse deployment is available at
+ccbrowse is an open source web application for browsing data from the CloudSat
+and CALIPSO satellites.
+
+It is comprised of a web application and a backend for importing various types
+of product files. An example ccbrowse deployment is available at
 [browse.ccplot.org](http://browse.ccplot.org).
 
 ![](screenshot.png)
+
+## Supported products
+
+CALIPSO:
+
+- CALIPSO Level 1 Profile
+    - Total Attenuated Backscatter 532nm
+    - Perpendicular Attenuated Backscatter 532nm
+    - Attenuated Backscatter 1064nm
+
+CloudSat:
+
+- CloudSat Level 2B-GEOPROF:
+    - Radar Reflectivity Factor
 
 ## Installation
 
@@ -34,21 +48,39 @@ A new ccbrowse repository `repo` can be created with:
 
 ```sh
 ccbrowse create repo
+cd repo
 ```
 
 This will create a directory containing the profile specification and
 directories where layers and cache will be stored. Next, you have to import
 data to display. Download CALIPSO Level 1B product HDF files from [NASA
-Earthdata](https://earthdata.nasa.gov). You can import the data files from
-within the repository with:
+Earthdata](https://earthdata.nasa.gov) or CloudSat 2B-GEOPROF product HDF-EOS2
+files from [CloudSat DPC](https://www.cloudsat.cira.colostate.edu). Next, choose
+the primary satellite in `profile.json`:
+
+```json
+    "profile": "calipso"
+```
+
+The choices are `calipso` or `cloudsat`. The primary satellite data need to
+be imported first for any given time period for time synchronization to work.
+The setting should never be changed after any data have been imported in the
+repository. Import data:
 
 ```sh
 cd repo
+ccbrowse import <type> <file>
+```
+
+where type is `calipso` or `cloudsat` and file is filesystem path to an HDF file,
+e.g.:
+
+```sh
 ccbrowse import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
 ```
 
 Alternatively, to import only a certain layer or zoom level, use the `-l` or
-`-z` options:
+`-z` options, e.g.:
 
 ```sh
 ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
@@ -166,8 +198,8 @@ list of files in a typical ccbrowse repository:
     colormaps           custom colormaps
     layers              layer data
     products            raw product files
-    config.json         repository configuration file
-    profile.json        profile specification
+    config.json          repository configuration file
+    profile.json         profile specification
     wsgi.py             WSGI module
     README              README file
 
@@ -254,6 +286,7 @@ A sample `profile.json`:
 
     {
         "name": "A-Train",
+        "primary": "calipso",
         "origin": ["2006-01-01 00:00:00", 0],
         "prefix": "",
         "zoom":
@@ -293,6 +326,8 @@ A sample `profile.json`:
 We can see a number of things in this profile specification:
 
   * It defines a profile called `A-Train`.
+  * The primary satellite is `calipso`. This means that CloudSat data will be
+    synchronized to CALIPSO.
   * The x-axis begins at midnight 1st Jan 2006, and the z-axis begins at
     an altitude of 0m.
   * The lowest zoom level (`0`) has tiles of 131072s in width and 65536m in
@@ -309,10 +344,11 @@ We can see a number of things in this profile specification:
 The structure of the profile specification is as follows:
 
     name                    name of the profile
+    primary                 primary satellite ("calipso" or "cloudsat")
     origin                  the physical coordinates of the origin of the system
                             as time in format "year-month-day hour:minute:second"
                             and altitude in meters
-    prefix                  URL prefix (when hosting on http://your.domain/prefix/)
+    prefix                   URL prefix (when hosting on http://your.domain/prefix/)
     zoom                    list of zoom levels
         0                   zoom level 0
             width           tile width in seconds
@@ -346,7 +382,7 @@ would reference the wrong tiles. To avoid the situation, you should either
 modify the profile specification *before* you import any products,
 or modify the tiles in storage accordingly (which may be difficult).
 
-You can safely change `name`, `prefix`, layer `title`, `units`, and
+You can safely change `name`, `primary`, `prefix`, layer `title`, `units`, and
 `colormap`.
 
 If you were to add a new layer to the profile specification,

@@ -13,10 +13,18 @@ from ccbrowse.algorithms import interp2d
 from .product import Product
 
 class Calipso(Product):
+    NAME = 'calipso'
+
     DATASETS = {
         'calipso532': ['Total_Attenuated_Backscatter_532'],
         'calipso532p': ['Perpendicular_Attenuated_Backscatter_532'],
         'calipso1064': ['Attenuated_Backscatter_1064'],
+        'calipso-latitude': ['Latitude'],
+        'calipso-longitude': ['Longitude'],
+        'calipso-trajectory': ['Latitude', 'Longitude'],
+    }
+
+    DATASETS_PRIMARY = {
         'latitude': ['Latitude'],
         'longitude': ['Longitude'],
         'trajectory': ['Latitude', 'Longitude'],
@@ -25,18 +33,14 @@ class Calipso(Product):
     LIDAR_ALTITUDES = calipso_constants.LIDAR_ALTITUDES
     MET_DATA_ALTITUDES = calipso_constants.MET_DATA_ALTITUDES
 
-    def __init__(self, filename, profile, offset=None):
-        Product.__init__(self, filename, profile, offset)
+    def __init__(self, filename, profile):
         try:
             self.hdf = HDF(filename)
         except OSError:
             self.hdf = Dataset(filename)
             self.hdf.set_auto_mask(False)
             self.hdf.set_always_mask(False)
-
-    def layers(self):
-        layers = list(self.profile['layers'].keys())
-        return set(layers).intersection(list(self.DATASETS.keys()))
+        Product.__init__(self, filename, profile)
 
     def xrange(self, layer, level):
         w = self.profile['zoom'][level]['width']
@@ -83,8 +87,7 @@ class Calipso(Product):
             'x': x,
             'z': z,
         }
-
-        datasets = [self.hdf[name] for name in self.DATASETS[layer]]
+        datasets = [self.hdf[name] for name in self._datasets[layer]]
         dataset = datasets[0]
         height = self.LIDAR_ALTITUDES
 
@@ -97,8 +100,8 @@ class Calipso(Product):
         m0 = 0
         mm = dataset.shape[1]
         time = self.hdf['Profile_UTC_Time']
-        t0 = self._dt2ms(self._time2dt(time[0,0]) - t_origin)
-        tn = self._dt2ms(self._time2dt(time[-1,0]) - t_origin)
+        t0 = self._dt2ms(self._time2dt(time[0,0]) - t_origin) + self.offset()
+        tn = self._dt2ms(self._time2dt(time[-1,0]) - t_origin) + self.offset()
         sampling_interval = (tn - t0)/(nn - n0)
         t1 = x*w
         t2 = t1 + w
@@ -114,7 +117,7 @@ class Calipso(Product):
         m2 = ccbrowse.utils.coerce(m2, m0, mm-1)
 
         # Trajectory - special case.
-        if layer == 'trajectory':
+        if layer in ('trajectory', self.NAME+'-trajectory'):
             raw_data_lat = datasets[0][n1_:n2_, 0]
             raw_data_lon = datasets[1][n1_:n2_, 0]
             lat = np.interp(np.arange(n1, n2, (n2-n1)/256.0),

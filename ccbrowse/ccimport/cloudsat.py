@@ -7,33 +7,30 @@ import math
 import ccbrowse
 from ccbrowse.hdfeos import HDFEOS
 from ccbrowse.algorithms import interp2d_12
-import ccbrowse.utils as utils
 
 from .product import Product
 
 class CloudSat(Product):
+    NAME = 'cloudsat'
+
     DATASETS = {
         'cloudsat-reflec': ['Radar_Reflectivity'],
         'cloudsat-latitude': ['Latitude'],
         'cloudsat-longitude': ['Longitude'],
         'cloudsat-trajectory': ['Latitude', 'Longitude'],
     }
-    
-    OFFSET_ZOOM = 2
-    OFFSET_LOW = -120 # s
-    OFFSET_HIGH = 0 # s
-    
-    def __init__(self, filename, profile, offset=None):
-        Product.__init__(self, filename, profile, offset)
+
+    DATASETS_PRIMARY = {
+        'latitude': ['Latitude'],
+        'longitude': ['Longitude'],
+        'trajectory': ['Latitude', 'Longitude'],
+    }
+
+    def __init__(self, filename, profile):
         self.hdfeos = HDFEOS(filename)
         self.swath = self.hdfeos['2B-GEOPROF']
-        if self._offset is None:
-            self._offset = self._calculate_offset(self.OFFSET_ZOOM)
-    
-    def layers(self):
-        layers = list(self.profile['layers'].keys())
-        return set(layers).intersection(list(self.DATASETS.keys()))
-        
+        Product.__init__(self, filename, profile)
+
     def xrange(self, layer, level):
         w = self.profile['zoom'][level]['width']
         time = self.swath['Profile_time']
@@ -50,7 +47,7 @@ class CloudSat(Product):
         # One-dimensional layer.
         if self.profile['layers'][layer]['dimensions'] == 'x':
             return [0]
-        
+
         # Two-dimensional layer.
         h = self.profile['zoom'][level]['height']
         height = self.swath['Height']
@@ -59,7 +56,7 @@ class CloudSat(Product):
         z1 = int(math.floor((low - self.profile['origin'][1])/h))
         z2 = int(math.floor((high - self.profile['origin'][1])/h))
         return list(range(z1, z2+1))
-    
+
     def tile(self, layer, level, x, z):
         #
         #    z ^
@@ -77,20 +74,20 @@ class CloudSat(Product):
         #      |     |                                        |
         #  m0  +-----+-----------+---------+------------------+------------->
         #           t0          t1 (n1)   t2 (n2)            tn (nn)       t
-        
+
         tile = {
             'layer': layer,
             'zoom': level,
             'x': x,
             'z': z,
         }
-        
-        datasets = [self.swath[name] for name in self.DATASETS[layer]]
+
+        datasets = [self.swath[name] for name in self._datasets[layer]]
         dataset = datasets[0]
         height = self.swath['Height']
         start = self.swath.attributes['start_time']
         start = dt.datetime.strptime(start, "%Y%m%d%H%M%S").replace(tzinfo=pytz.utc)
-        
+
         w = self.profile['zoom'][level]['width']
         h = self.profile['zoom'][level]['height']
         t_origin = self.profile['origin'][0]
@@ -121,9 +118,9 @@ class CloudSat(Product):
         m2 = len(height_min) - np.searchsorted(height_min[::-1], z1) + 1
         m2 = ccbrowse.utils.coerce(m2, m0, mm-1)
         height = height[:,m1:m2]
-        
+
         # Trajectory - special case.
-        if layer == 'cloudsat-trajectory':
+        if layer in ('trajectory', self.NAME+'-trajectory'):
             raw_data_lat = datasets[0][n1_:n2_]
             raw_data_lon = datasets[1][n1_:n2_]
             lat = np.interp(np.arange(n1, n2, (n2-n1)/256.0),
@@ -139,12 +136,12 @@ class CloudSat(Product):
                     'type': 'Feature',
                     'geometry': {
                         'type': 'LineString',
-                        'coordinates': list(zip(lon, lat))                        
+                        'coordinates': list(zip(lon, lat))
                     },
-                }]      
+                }]
             }
             return tile
-        
+
         # One-dimensional layer.
         if len(dataset.shape) == 1:
             raw_data = dataset[n1_:n2_]
@@ -152,31 +149,31 @@ class CloudSat(Product):
                                      np.arange(n1_, n2_, dtype=np.float32),
                                      raw_data).astype(np.float32).reshape(1, 256)
             return tile
-        
+
         # Two-dimensional layer.
         raw_data = dataset[n1_:n2_,m1:m2].astype(np.float32)
-        
+
         raw_data = np.ma.masked_array(raw_data)
-        
-        
+
+
         try:
             fillvalue = dataset.attributes['_FillValue']
-            raw_data = np.ma.masked_equal(raw_data, fillvalue, copy=False)    
+            raw_data = np.ma.masked_equal(raw_data, fillvalue, copy=False)
         except KeyError as IndexError: pass
-        
+
         try:
             valid_range = dataset.attributes['valid_range']
             low = valid_range[0]
             high = valid_range[1]
             raw_data = np.ma.masked_outside(raw_data, low, high, copy=False)
         except KeyError as IndexError: pass
-        
+
         factor = dataset.attributes['factor']
         offset = dataset.attributes['offset']
         raw_data = (raw_data - offset)/factor
-        
+
         raw_data.set_fill_value(np.nan)
-        
+
         interpolation = self.profile['layers'][layer].get('interpolation', 'smart')
         if interpolation == 'smart':
             X = np.arange(n1_, n2_, dtype=np.float32)
@@ -185,56 +182,11 @@ class CloudSat(Product):
             tile['data'] = data.T.copy()
         else:
             raise RuntimeError('Unknown interpolation %s' % interpolation)
-        
+
         return tile
-    
+
     def _dt2ms(self, td):
         return 1.0 * (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**3
-    
+
     def _time(self, time, start):
         return start + dt.timedelta(0, float(time))
-
-    def _calculate_offset(self, level):
-        w = self.profile['zoom'][repr(level)]['width']
-        
-        traj1 = []
-        traj2 = []
-        
-        for x in self.xrange('longitude', repr(level)):
-            lon2 = self.tile('cloudsat-longitude', repr(level), x, 0)['data']
-            lat2 = self.tile('cloudsat-latitude', repr(level), x, 0)['data']
-            
-            obj = self.profile.load({
-                'layer': 'longitude',
-                'zoom': repr(level),
-                'x': x,
-                'z': 0,
-            })
-            if obj is None: continue
-            lon1 = obj['data']
-            
-            obj = self.profile.load({
-                'layer': 'latitude',
-                'zoom': repr(level),
-                'x': x,
-                'z': 0,
-            })
-            if obj is None: continue
-            lat1 = obj['data']
-            traj1 += list(zip(lon1[0,::8], lat1[0,::8]))
-            traj2 += list(zip(lon2[0,::8], lat2[0,::8]))
-        
-        if len(traj1) == 0: return 0
-        
-        def d(n):
-            if n == 0: return utils.trajectories_distance(traj1, traj2)
-            if n < 0: return utils.trajectories_distance(traj1[:n], traj2[-n:])
-            return utils.trajectories_distance(traj1[n:], traj2[:-n])
-        
-        low = int(256.0*self.OFFSET_LOW*1000/w)
-        high = int(256.0*self.OFFSET_HIGH*1000/w)
-        
-        n = utils.intoptim_convex(d, low, high)*8
-        offset = n*w/256
-        
-        return offset

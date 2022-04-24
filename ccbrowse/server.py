@@ -19,16 +19,10 @@ import numpy as np
 
 import ccbrowse
 from ccbrowse.config import sharepath
+from ccbrowse.utils import JSONEncoder
 
 
 RFC822_TIME = '%a, %d %b %Y %H:%M:%S GMT'
-
-
-class JSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return JSONEncoder.default(self, obj)
 
 
 def init(conf):

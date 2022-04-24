@@ -11,6 +11,8 @@ from ccbrowse.storage import MemCacheDriver
 from ccbrowse.ccimport import PRODUCTS
 from ccbrowse import utils
 from .rangelist import RangeList, RangeListEncoder
+from ccbrowse.utils import JSONEncoder
+
 
 class ProfileJSONDecoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
@@ -117,9 +119,9 @@ class Profile(object):
             if obj['format'] == 'png':
                 obj['raw_data'] = utils.pngpack(obj['data'])
             elif obj['format'] == 'json':
-                obj['raw_data'] = json.dumps(obj.get('data'))
+                obj['raw_data'] = json.dumps(obj.get('data'), cls=JSONEncoder)
             else:
-                obj['raw_data'] = json.dumps(obj.get('data'))
+                obj['raw_data'] = json.dumps(obj.get('data'), cls=JSONEncoder)
 
     def dereference(self, obj):
         if 'ref' not in obj: return
@@ -131,10 +133,7 @@ class Profile(object):
                 cls = PRODUCTS[ref['product']]
             except KeyError:
                 raise RuntimeError('Unknown product type "%s"' % ref['product'])
-            if 'offset' in ref:
-                product = cls(ref['filename'], self, offset=ref['offset'])
-            else:
-                product = cls(ref['filename'], self)
+            product = cls(ref['filename'], self)
             tile = product.tile(obj['layer'], obj['zoom'], obj['x'], obj['z'])
             if 'data' in obj:
                 if obj['format'] == 'png':

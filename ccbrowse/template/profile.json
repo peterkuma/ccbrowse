@@ -1,5 +1,6 @@
 {
     "name": "A-Train",
+    "primary": "calipso",
     "origin": ["2006-01-01 00:00:00", 0],
     "prefix": "",
     "zoom":
@@ -86,7 +87,7 @@
             "type": "float32",
             "dimensions": "x",
             "units": "degree",
-            "title": "CloudSAt Longitude",
+            "title": "CloudSat Longitude",
             "src": "layers/cloudsat-longitude/{zoom}/{x},0.png",
             "availability": "layers/cloudsat-longitude/availability.json"
         },
@@ -109,6 +110,36 @@
             "title": "CloudSat Trajectory",
             "src": "layers/cloudsat-trajectory/{zoom}/{x},0.json",
             "availability": "layers/cloudsat-trajectory/availability.json"
+        },
+        "calipso-longitude":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "x",
+            "units": "degree",
+            "title": "CALIPSO Longitude",
+            "src": "layers/calipso-longitude/{zoom}/{x},0.png",
+            "availability": "layers/calipso-longitude/availability.json"
+        },
+        "calipso-latitude":
+        {
+            "format": "png",
+            "type": "float32",
+            "dimensions": "x",
+            "units": "degree",
+            "title": "CloudSat Latitude",
+            "src": "layers/calipso-latitude/{zoom}/{x},0.png",
+            "availability": "layers/calipso-latitude/availability.json"
+        },
+        "calipso-trajectory":
+        {
+            "format": "json",
+            "type": "geojson",
+            "dimensions": "x",
+            "units": "degree",
+            "title": "CALIPSO Trajectory",
+            "src": "layers/calipso-trajectory/{zoom}/{x},0.json",
+            "availability": "layers/calipso-trajectory/availability.json"
         },
         "longitude":
         {
