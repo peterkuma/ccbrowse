@@ -531,6 +531,14 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.4.0 (2022-04-24)
+
+- Transition from raster to SVG images for page elements and favicon.
+- Embedded fonts.
+- Fixed pointer events on map elements.
+- Fixed context switching from About page.
+- Fixed missing data warning appearing on page load.
+
 ### 0.3.0 (2022-04-19)
 
 - Globe showing the current location.
