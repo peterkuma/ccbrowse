@@ -15,7 +15,6 @@ default_config = {
     'port': 8080,
     'root': '',
     'debug': False,
-    'providers': {},
     'colormaps': 'colormaps',
     'cache': {
         'driver': 'filesystem',

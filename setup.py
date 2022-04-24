@@ -85,12 +85,10 @@ setup(
     ],
     packages=[
         'ccbrowse',
-        'ccbrowse.fetch',
         'ccbrowse.ccimport',
         'ccbrowse.storage',
     ],
     scripts=[
-        'bin/ccfetch',
         'bin/ccimport',
         'bin/ccinfo',
         'bin/ccbrowse',

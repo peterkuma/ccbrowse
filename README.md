@@ -201,12 +201,6 @@ The repository configuration is defined in `config.json`, e.g.:
     "host": "localhost",
     "port": 8080,
     "debug": false,
-    "providers": {
-        "echo": {
-            "login": "",
-            "password": ""
-        }
-    },
     "profile": "profile.json",
     "colormaps": "colormaps",
     "cache": {
@@ -233,10 +227,6 @@ The configuration options are:
     host                    hostname to listen on (default: localhost)
     port                    port to listen on (default: 8080)
     debug                   enable server debugging (default: false)
-    providers               specification of services for fetching products
-        echo                the NASA ECHO service
-            login           ECHO login name
-            password        ECHO password
     profile                 path to profile.json (default: profile.json)
     colormaps               directory containing colormap files (default: colormaps)
     cache                   server cache (permanent) storage configuration
