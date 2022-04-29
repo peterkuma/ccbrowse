@@ -557,6 +557,11 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.5.0 (2022-04-29)
+
+- Support for choosing a primary satellite (CloudSat or CALIPSO).
+- Removed obsolete NASA ECHO service code.
+
 ### 0.4.0 (2022-04-24)
 
 - Transition from raster to SVG images for page elements and favicon.
