@@ -59,7 +59,7 @@ files from [CloudSat DPC](https://www.cloudsat.cira.colostate.edu). Next, choose
 the primary satellite in `profile.json`:
 
 ```json
-    "profile": "calipso"
+    "primary": "calipso"
 ```
 
 The choices are `calipso` or `cloudsat`. The primary satellite data need to
