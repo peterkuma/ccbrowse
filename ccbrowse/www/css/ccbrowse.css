@@ -501,24 +501,26 @@ nav {
   font-family: "Open Sans";
   font-weight: bold;
   text-shadow: 2px 2px 0 #000;
-  pointer-events: none; }
+  pointer-events: none;
+  overflow: hidden; }
 
 #location-bar .center {
-  margin: 0 auto;
-  text-align: center; }
+  text-align: center;
+  margin: 0 auto; }
 
-#location-bar .left {
-  position: absolute;
-  left: 10px;
-  bottom: 0;
-  text-align: left; }
+#location-bar .center.wait span {
+  display: inline-block;
+  animation-duration: 1s;
+  animation-name: wait;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out; }
 
-#location-bar .right {
-  position: absolute;
-  right: 10px;
-  bottom: 0;
-  text-align: right; }
-
+@keyframes wait {
+  from {
+    transform: scale(1); }
+  to {
+    transform: scale(1.75); } }
 /*
 #location-bar {
     position: absolute;

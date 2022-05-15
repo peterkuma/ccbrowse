@@ -53,17 +53,17 @@ export default class Geocoding extends EventEmitter2 {
                 });
                 fetch(url)
                     .then(result => {
-                        if (result.status != 200) return;
+                        if (result.status != 200) resolve();
                         result.json()
                             .then(text => {
                                 tiles[i] = text;
                                 resolve(tiles[i]);
                                 this.emit('update');
                             }).catch(() => {
-                                reject();
+                                resolve();
                             });
                     })
-                    .catch(() => p.reject());
+                    .catch(() => resolve());
             });
         }
     }

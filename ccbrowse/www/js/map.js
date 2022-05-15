@@ -160,13 +160,24 @@ export default class Map extends EventEmitter2 {
             .range(this.getXRange());
         const range = this.getXRange();
         const t = 0.5*(range[0] + range[1]);
-        const geocoding = await this.geocoding.geocoding(t);
-        const latitude = await this.geocoding.latitude(t);
-        const longitude = await this.geocoding.longitude(t);
-        if (geocoding && geocoding.features.length > 0)
-            window.setTimeout(() => this.locationBar.location(geocoding.features[0].properties.name));
-        if (isFinite(latitude) && isFinite(longitude))
-            window.setTimeout(() => this.globe.center([longitude, latitude], 0));
+        try {
+            this.locationBar.wait(true);
+            const geocoding = await this.geocoding.geocoding(t);
+            if (geocoding && geocoding.features.length > 0)
+                window.setTimeout(() => this.locationBar.location(geocoding.features[0].properties.name));
+        } catch (error) {
+            this.locationBar.location(undefined);
+        } finally {
+            this.locationBar.wait(false);
+        }
+        try {
+            const latitude = await this.geocoding.latitude(t);
+            const longitude = await this.geocoding.longitude(t);
+            if (isFinite(latitude) && isFinite(longitude))
+                window.setTimeout(() => this.globe.center([longitude, latitude], 0));
+        } catch (error) {
+            this.globe.center([NaN, NaN], 0);
+        }
     }
 
     updateLayer() {
