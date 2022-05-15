@@ -1,7 +1,7 @@
 export default class Globe {
     constructor(el, profile) {
 	    this.el = d3.select(el);
-	    this._center = [0, 0];
+	    this._center = [NaN, NaN];
 
 	    this.canvas = this.el.append('canvas')
 		    .attr('class', 'canvas');
@@ -41,7 +41,7 @@ export default class Globe {
 		    .attr('xlink:href', '#circle')
 		    .attr('class', 'circle');
 
-	    const pointer = svg.append('circle')
+	    this.pointer = svg.append('circle')
 		    .attr('class', 'pointer')
 		    .attr('r', 3)
 		    .attr('cx', '50%')
@@ -98,13 +98,19 @@ export default class Globe {
 			.attr('cy', height/2)
 			.attr('r', d3.min([width/2, height/2]));
 
-		const projection = d3.geoOrthographic()
-			.rotate([-this._center[0], -this._center[1]])
-			.scale(width/2)
-			.translate([width/2, height/2])
-			.clipAngle(90);
+        const validCenter =
+            isFinite(this._center[0]) &&
+            isFinite(this._center[1]);
 
-		const path = d3.geoPath(projection, c);
+        const center = validCenter ? this._center : [0, 0];
+	    const projection = d3.geoOrthographic()
+		    .rotate([-center[0], -center[1]])
+		    .scale(width/2)
+		    .translate([width/2, height/2])
+		    .clipAngle(90);
+	    const path = d3.geoPath(projection, c);
+
+        this.pointer.style('visibility', validCenter ? 'visible' : 'hidden');
 
 		c.clearRect(0, 0, width, height);
 		c.arc(this.circle.attr('cx'), this.circle.attr('cy'),
