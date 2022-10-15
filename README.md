@@ -557,6 +557,10 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.5.3 (2022-10-15)
+
+- Fixed UTC date parsing.
+
 ### 0.5.2 (2022-10-15)
 
 - Fixed inital map placement on Windows.
