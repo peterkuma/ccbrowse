@@ -116,7 +116,7 @@ export class Application {
         }
         if (window.location.hash === '') return;
         const date_s = window.location.hash.substring(1);
-        const date = d3.utcParse('%Y-%m-%dT%H:%M:%S')(date_s);
+        const date = d3.utcParse('%Y-%m-%dT%H:%M:%S+0000')(date_s);
         if (date === null) return;
         this.nav.setCurrent(date);
         this.route();
