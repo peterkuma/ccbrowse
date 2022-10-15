@@ -81,29 +81,6 @@ function ordinal(n) {
     return n + '<span class="ordinal">th</span>';
 }
 
-function formatUTC(date, format) {
-    var date = new Date(date.getUTCFullYear(),
-                        date.getUTCMonth(),
-                        date.getUTCDate(),
-                        date.getUTCHours(),
-                        date.getUTCMinutes(),
-                        date.getUTCSeconds());
-    return d3.utcFormat(format)(date);
-}
-
-var UTCDate = function(year, month, day, hour, minute, second, millisecond) {
-    var date = new Date(1970, 1, 1);
-    date.setUTCFullYear(year);
-    date.setUTCMonth(month);
-    date.setUTCMonth(month);
-    date.setUTCDate(day);
-    date.setUTCHours(hour ? hour : 0);
-    date.setUTCMinutes(minute ? minute : 0);
-    date.setUTCSeconds(second ? second : 0);
-    date.setUTCMilliseconds(millisecond ? millisecond : 0);
-    return date;
-};
-
 function loadImageData(src, cb) {
     var img = document.createElement('img');
     img.onload = function() {

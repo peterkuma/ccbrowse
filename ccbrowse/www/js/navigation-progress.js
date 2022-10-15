@@ -98,6 +98,6 @@ export default class NavigationProgress {
             .style('left', function() {
                 return x - this.clientWidth/2 + 'px';
             })
-            .text(formatUTC(t, '%H:%M'));
+            .text(d3.utcFormat('%H:%M')(t));
     }
 }

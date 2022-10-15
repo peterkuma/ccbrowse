@@ -99,7 +99,7 @@ export default class NavigationPanel {
         month.enter()
             .append('a')
             .attr('class', 'month')
-            .text(function(d) { return formatUTC(d, '%b'); })
+            .text(function(d) { return d3.utcFormat('%b')(d); })
             .each(function() { new Tooltip(this); });
 
         months.selectAll('.month')
@@ -113,7 +113,7 @@ export default class NavigationPanel {
                     d.getUTCMonth()
                 );
             }.bind(this))
-            .attr('href', function(d) { return formatUTC(d, '#%Y-%m-01T00:00:00'); })
+            .attr('href', function(d) { return d3.utcFormat('#%Y-%m-01T00:00:00')(d); })
             .attr('onclick', '')
             .attr('title', '')
             .filter('.disabled')
@@ -156,7 +156,7 @@ export default class NavigationPanel {
                     d.getUTCDate()
                 );
             }.bind(this))
-            .attr('href', function(d) { return formatUTC(d, '#%Y-%m-%dT00:00:00'); })
+            .attr('href', function(d) { return d3.utcFormat('#%Y-%m-%dT00:00:00')(d); })
             .attr('onclick', '')
             .attr('title', '')
             .filter('.disabled')

@@ -116,7 +116,7 @@ export class Application {
         }
         if (window.location.hash === '') return;
         const date_s = window.location.hash.substring(1);
-        const date = d3.utcParse('%Y-%m-%dT%H:%M:%S+0000')(date_s);
+        const date = d3.utcParse('%Y-%m-%dT%H:%M:%S')(date_s);
         if (date === null) return;
         this.nav.setCurrent(date);
         this.route();
@@ -124,11 +124,11 @@ export class Application {
 
     onNavChange() {
         const date = this.nav.getCurrent();
-        const hash = '#'+formatUTC(date, '%Y-%m-%dT%H:%M:%S');
+        const hash = '#'+d3.utcFormat('%Y-%m-%dT%H:%M:%S')(date);
         if (window.location.hash === hash) return;
         this.ignoreHashChange = true;
         window.location.replace(hash);
-        const date_s = formatUTC(this.nav.getCurrent(), '%e %b %Y %H:%M:%S');
+        const date_s = d3.utcFormat('%e %b %Y %H:%M:%S', this.nav.getCurrent());
         document.title = date_s + ' ‧ ccbrowse';
         this.route();
     }
