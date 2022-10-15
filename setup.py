@@ -46,7 +46,7 @@ class build_scss(Command):
 
 setup(
     name='ccbrowse',
-    version='0.5.3',
+    version='0.5.4',
     description='Web application for browsing data from the CloudSat and CALIPSO satellites',
     author='Peter Kuma',
     author_email='peter@peterkuma.net',
