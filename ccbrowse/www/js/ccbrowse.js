@@ -128,7 +128,7 @@ export class Application {
         if (window.location.hash === hash) return;
         this.ignoreHashChange = true;
         window.location.replace(hash);
-        const date_s = d3.utcFormat('%e %b %Y %H:%M:%S', this.nav.getCurrent());
+        const date_s = d3.utcFormat('%e %b %Y %H:%M:%S')(this.nav.getCurrent());
         document.title = date_s + ' ‧ ccbrowse';
         this.route();
     }
