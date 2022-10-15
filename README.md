@@ -557,6 +557,12 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.5.1 (2022-10-15)
+
+- Fixed running on Safari.
+- Fixed globe if location is unknown.
+- Added loading icon.
+
 ### 0.5.0 (2022-04-29)
 
 - Support for choosing a primary satellite (CloudSat or CALIPSO).
