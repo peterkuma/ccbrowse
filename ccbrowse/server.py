@@ -311,7 +311,7 @@ def serve_tile(obj):
     if 'colormap' in profile['layers'][obj['layer']]:
         m = re.match('colormaps/(.+)', profile['layers'][obj['layer']]['colormap'])
         colormap = profile.colormap(m.group(1))
-        img = Image.fromarray(ccbrowse.algorithms.colorize(data, colormap))
+        img = Image.fromarray(ccbrowse.algorithms.colorize(np.ascontiguousarray(data), colormap))
         buf = io.BytesIO()
         img.save(buf, 'png')
         out = buf.getvalue()
