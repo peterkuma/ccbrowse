@@ -218,7 +218,7 @@ export default class Map extends EventEmitter2 {
         this.tileLayer = new L.TileLayer(url, {
             maxZoom: this.nav.getMaxZoom(),
             tileSize: 256,
-            continuousWorld: true,
+            //continuousWorld: true,
             tms: true,
             attribution: layer.source.attribution
         });

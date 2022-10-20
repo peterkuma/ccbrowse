@@ -40,6 +40,7 @@
     text-align: left;
     transition: opacity 200ms;
     opacity: 0.8;
+    z-index: 1000;
 }
 
 .control:hover,.leaflet-container .leaflet-control:hover {
@@ -107,8 +108,17 @@
 }
 
 .leaflet-left .leaflet-control {
-    margin-top: 0.9rem;
-    margin-left: 0.9rem;
+    margin-top: 20px;
+}
+
+.leaflet-control a {
+    background-color: transparent;
+    margin: 0;
+    padding: 8px;
+}
+
+.leaflet-control a:hover {
+    background-color: transparent;
 }
 
 .leaflet-control-zoom {
@@ -122,26 +132,33 @@
     display: flex;
 }
 
-.leaflet-control a {
-    background-color: transparent;
-    margin: 0;
-    padding: 8px;
+.leaflet-bar a {
+    border-bottom: none;
+    width: 19px !important;
+    height: 19px !important;
 }
 
-.leaflet-control a:hover {
-    background-color: transparent;
+.leaflet-bar a:hover {
+    border-bottom: none !important;
 }
 
-.leaflet-control-zoom-in {
+.leaflet-bar a.leaflet-disabled {
+    background: none;
+}
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-in.leaflet-disabled {
     background: url("../img/zoom-in.svg") no-repeat center center;
     border-right: 1px solid #777;
     border-radius: 0 !important;
-    font-size: 0;
+    font-size: 0 !important;
 }
 
-.leaflet-control-zoom-out {
+.leaflet-control-zoom-out,
+.leaflet-control-zoom-out.leaflet-disabled {
     background: url("../img/zoom-out.svg") no-repeat center center;
-    font-size: 0;
+    border-radius: 0 !important;
+    font-size: 0 !important;
 }
 
 .leaflet-touch .leaflet-control-zoom a {
