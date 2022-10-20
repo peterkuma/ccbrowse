@@ -33,7 +33,7 @@ export default class Navigation extends EventEmitter2 {
         return new Date(this.current);
     }
 
-    setCurrent(date, source) {
+    setCurrent(date) {
         this.current = date;
         this.emit('change');
     }
