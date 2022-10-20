@@ -148,6 +148,7 @@ nav {
       margin-left: -10px;
       margin-top: -6px; }
     nav .progress .tooltip {
+      display: none;
       font-family: helvetica, sans-serif;
       font-size: 74%;
       z-index: 2;
@@ -209,7 +210,8 @@ nav {
   overflow: hidden;
   text-align: left;
   transition: opacity 200ms;
-  opacity: 0.8; }
+  opacity: 0.8;
+  z-index: 1000; }
 
 .control:hover, .leaflet-container .leaflet-control:hover {
   opacity: 1; }
@@ -264,8 +266,15 @@ nav {
   margin-top: 20px; }
 
 .leaflet-left .leaflet-control {
-  margin-top: 0.9rem;
-  margin-left: 0.9rem; }
+  margin-top: 20px; }
+
+.leaflet-control a {
+  background-color: transparent;
+  margin: 0;
+  padding: 8px; }
+
+.leaflet-control a:hover {
+  background-color: transparent; }
 
 .leaflet-control-zoom {
   background: black;
@@ -277,23 +286,29 @@ nav {
   transition: opacity 200ms;
   display: flex; }
 
-.leaflet-control a {
-  background-color: transparent;
-  margin: 0;
-  padding: 8px; }
+.leaflet-bar a {
+  border-bottom: none;
+  width: 19px !important;
+  height: 19px !important; }
 
-.leaflet-control a:hover {
-  background-color: transparent; }
+.leaflet-bar a:hover {
+  border-bottom: none !important; }
 
-.leaflet-control-zoom-in {
+.leaflet-bar a.leaflet-disabled {
+  background: none; }
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-in.leaflet-disabled {
   background: url("../img/zoom-in.svg") no-repeat center center;
   border-right: 1px solid #777;
   border-radius: 0 !important;
-  font-size: 0; }
+  font-size: 0 !important; }
 
-.leaflet-control-zoom-out {
+.leaflet-control-zoom-out,
+.leaflet-control-zoom-out.leaflet-disabled {
   background: url("../img/zoom-out.svg") no-repeat center center;
-  font-size: 0; }
+  border-radius: 0 !important;
+  font-size: 0 !important; }
 
 .leaflet-touch .leaflet-control-zoom a {
   width: 18px !important;
@@ -610,7 +625,7 @@ nav {
   color: white;
   font-weight: bold;
   position: absolute;
-  z-index: 100;
+  z-index: 500;
   opacity: 0.9;
   pointer-events: none; }
 
@@ -635,7 +650,7 @@ nav {
 
 .map .globe {
   position: absolute;
-  z-index: 1;
+  z-index: 1000;
   top: 1rem;
   right: 4rem;
   width: 9rem;
