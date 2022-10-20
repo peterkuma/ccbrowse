@@ -63,12 +63,8 @@ export default class Map extends EventEmitter2 {
             ]
         );
 
-        this.map.on('move', () => {
-            this.yaxis.setDomain([
-                this.getYRange()[0]/1000,
-                this.getYRange()[1]/1000
-            ]);
-        });
+        this.map.on('move', () => this.updateYAxis());
+        this.map.on('zoomend', () => this.updateYAxis());
 
         /*
         this.locationLayer = new LocationLayer({
@@ -178,6 +174,13 @@ export default class Map extends EventEmitter2 {
         } catch (error) {
             this.globe.center([NaN, NaN], 0);
         }
+    }
+
+    updateYAxis() {
+        this.yaxis.setDomain([
+            this.getYRange()[0]/1000,
+            this.getYRange()[1]/1000
+        ]);
     }
 
     updateLayer() {
