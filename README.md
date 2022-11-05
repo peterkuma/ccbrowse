@@ -557,6 +557,12 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.6.0 (2022-11-05)
+
+- Updated to the latest version of Leaflet.
+- Fixed updating of y-axis on zoom.
+- Fixed continuous array error on server side.
+
 ### 0.5.4 (2022-10-15)
 
 - Fixed UTC date parsing.
