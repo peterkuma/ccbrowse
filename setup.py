@@ -50,7 +50,7 @@ setup(
     description='Web application for browsing data from the CloudSat and CALIPSO satellites',
     author='Peter Kuma',
     author_email='peter@peterkuma.net',
-    url='https://github.com/peterkuma/ccbrowse',
+    url='https://ccplot.org/ccbrowse/',
     license = "MIT",
     classifiers = [
         "Programming Language :: Python",
