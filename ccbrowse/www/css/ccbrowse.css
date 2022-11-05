@@ -148,7 +148,6 @@ nav {
       margin-left: -10px;
       margin-top: -6px; }
     nav .progress .tooltip {
-      display: none;
       font-family: helvetica, sans-serif;
       font-size: 74%;
       z-index: 2;
