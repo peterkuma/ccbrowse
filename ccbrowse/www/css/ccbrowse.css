@@ -389,12 +389,12 @@ nav {
 .popup-content .color-box {
   width: 10px;
   height: 10px;
-  float: left;
-  margin-right: 5px;
-  margin-top: 8px; }
+  margin-right: 1px;
+  display: inline-block; }
 
 .popup-content .value {
-  font-weight: bold; }
+  font-weight: bold;
+  display: inline-block; }
 
 .popup-content .latlon-link {
   display: block;
