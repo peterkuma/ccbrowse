@@ -173,6 +173,7 @@
     box-shadow: 2px 2px 10px black;
     position: relative;
     left: 30%;
+    font-size: 0.9rem;
 }
 
 .leaflet-popup-content {
@@ -181,6 +182,7 @@
     font-family: inherit;
     margin: 0.5em;
     box-shadow: 2px 2px 6px black;
+    width: 13rem !important;
 }
 
 .leaflet-popup-close-button {
