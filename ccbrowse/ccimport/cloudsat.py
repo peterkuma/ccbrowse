@@ -33,15 +33,16 @@ class CloudSat(Product):
 
     def xrange(self, layer, level):
         w = self.profile['zoom'][level]['width']
-        time = self.swath['Profile_time']
         start = self.swath.attributes['start_time']
+        time = self.swath['Profile_time'][:]
         start = dt.datetime.strptime(start, "%Y%m%d%H%M%S").replace(tzinfo=pytz.utc)
-        t_origin = self.profile['origin'][0]
-        t1 = self._dt2ms(self._time(time[0], start) - t_origin) + self.offset()
-        t2 = self._dt2ms(self._time(time[-1], start) - t_origin) + self.offset()
-        x1 = int(math.floor(t1 / w))
-        x2 = int(math.floor(t2 / w))
-        return list(range(x1, x2+1))
+        origin = self.profile['origin'][0]
+        origin_to_start = (start - origin).total_seconds()
+        t = origin_to_start + time + self.offset()
+        quality = self.swath['Data_quality'][:]
+        mask = (quality & 0x40) == 0
+        x = np.unique((t[mask] * 1000 / w).astype(int))
+        return x.tolist()
 
     def zrange(self, layer, level):
         # One-dimensional layer.
