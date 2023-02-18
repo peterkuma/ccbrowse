@@ -330,7 +330,7 @@ We can see a number of things in this profile specification:
     synchronized to CALIPSO.
   * The x-axis begins at midnight 1st Jan 2006, and the z-axis begins at
     an altitude of 0m.
-  * The lowest zoom level (`0`) has tiles of 131072s in width and 65536m in
+  * The lowest zoom level (`0`) has tiles of 131072ms in width and 65536m in
     height (remember that tiles always have a fixed size of 256x256px,
     so this determines the zoom factor and aspect ratio).
   * There is a two-dimensional (`xz`) layer called `calipso532`.
@@ -351,7 +351,7 @@ The structure of the profile specification is as follows:
     prefix                   URL prefix (when hosting on http://your.domain/prefix/)
     zoom                    list of zoom levels
         0                   zoom level 0
-            width           tile width in seconds
+            width           tile width in milliseconds
             height          tile height in meters
         1                   zoom level 1
         [...]
