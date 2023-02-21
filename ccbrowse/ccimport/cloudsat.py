@@ -38,10 +38,10 @@ class CloudSat(Product):
         start = dt.datetime.strptime(start, "%Y%m%d%H%M%S").replace(tzinfo=pytz.utc)
         origin = self.profile['origin'][0]
         origin_to_start = (start - origin).total_seconds()
-        t = origin_to_start + time + self.offset()
+        t = (origin_to_start + time) * 1000 + self.offset()
         quality = self.swath['Data_quality'][:]
         mask = (quality & 0x40) == 0
-        x = np.unique((t[mask] * 1000 / w).astype(int))
+        x = np.unique((t[mask] / w).astype(int))
         return x.tolist()
 
     def zrange(self, layer, level):
