@@ -34,7 +34,7 @@ class CloudSat(Product):
     def xrange(self, layer, level):
         w = self.profile['zoom'][level]['width']
         start = self.swath.attributes['start_time']
-        time = self.swath['Profile_time'][:]
+        time = self.swath['Profile_time'][:].astype(np.float64)
         start = dt.datetime.strptime(start, "%Y%m%d%H%M%S").replace(tzinfo=pytz.utc)
         origin = self.profile['origin'][0]
         origin_to_start = (start - origin).total_seconds()
