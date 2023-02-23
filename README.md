@@ -557,6 +557,11 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.7.1 (2023-02-23)
+
+- Fixed navigation bar years when switching between layers with different
+availability.
+
 ### 0.7.0 (2023-02-23)
 
 - Improved importing of CloudSat data.
