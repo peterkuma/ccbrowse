@@ -557,6 +557,13 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.7.0 (2023-02-23)
+
+- Improved importing of CloudSat data.
+- Fixed navigation tooltip overflow in Safari.
+- Improved popup layout.
+- Minor fixes in the documentation.
+
 ### 0.6.0 (2022-11-05)
 
 - Updated to the latest version of Leaflet.
