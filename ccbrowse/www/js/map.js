@@ -27,7 +27,7 @@ export default class Map extends EventEmitter2 {
         this.map = new L.Map(this.el, {
             crs: L.CRS.Custom(this.app.profile),
             maxZoom: this.nav.getMaxZoom(),
-            center: new L.LatLng(25000, dt, true),
+            center: new L.LatLng(12000, dt, true),
             zoom: 2,
             worldCopyJump: false,
             fadeAnimation: true,
