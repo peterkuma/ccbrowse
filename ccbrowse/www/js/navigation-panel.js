@@ -43,15 +43,18 @@ export default class NavigationPanel {
         );
 
         var yearGroup = this.years.selectAll('.year-group')
-            .data(years);
+            .data(years, function(d) { return d; });
 
         yearGroup.enter()
             .append('div')
             .attr('class', 'year-group')
             .insert('div')
                 .attr('class', 'year')
-                .text(function(d) { return d.getUTCFullYear(); })
                 .each(function() { new Tooltip(this); });
+
+        yearGroup.exit()
+            .remove();
+
         yearGroup = this.years.selectAll('.year-group');
 
         var year = yearGroup.selectAll('.year');
@@ -66,6 +69,7 @@ export default class NavigationPanel {
                 }.bind(this));
             }.bind(this))
             .attr('title', '')
+            .text(function(d) { return d.getUTCFullYear(); })
             .filter('.disabled')
                 .property('onclick', 'return false;')
                 .attr('title', 'Unavailable');
