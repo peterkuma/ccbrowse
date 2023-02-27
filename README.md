@@ -557,6 +557,10 @@ Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.7.2 (2023-02-27)
+
+- Fixed offset calculation.
+
 ### 0.7.1 (2023-02-23)
 
 - Fixed navigation bar years when switching between layers with different
