@@ -127,8 +127,8 @@ class Product(object):
             if n < 0: return utils.trajectories_distance(traj1[:n], traj2[-n:])
             return utils.trajectories_distance(traj1[n:], traj2[:-n])
 
-        low = int(256.0*self.OFFSET_LOW*1000/w)
-        high = int(256.0*self.OFFSET_HIGH*1000/w)
+        low = int(256.0/8*self.OFFSET_LOW*1000/w)
+        high = int(256.0/8*self.OFFSET_HIGH*1000/w)
 
         res = utils.intoptim_convex(d, low, high)
         if not np.isfinite(res):
