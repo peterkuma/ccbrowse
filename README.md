@@ -125,9 +125,9 @@ ccbrowse server -d -s auto
 
 Other command line options:
 
-    -c CONFIG   configuration file (default: config.json)
-    -s SERVER   server backend or "help" for a list of options (default: gunicorn)
-    -w WORKERS  number of server backend workers (default: 10)
+    -c CONFIG   Configuration file (default: config.json)
+    -s SERVER   Server backend or "help" for a list of options (default: gunicorn)
+    -w WORKERS  Number of server backend workers (default: 10)
 
 ## Deployment
 
