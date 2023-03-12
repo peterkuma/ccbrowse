@@ -54,20 +54,18 @@ cd repo
 
 This will create a directory containing a profile specification, a
 configuration file, file reference database, tile storage and cache. Next, you
-have to import data to be displayed. Download CALIPSO Level 1B product HDF files
-from [NASA Earthdata](https://earthdata.nasa.gov) or CloudSat 2B-GEOPROF
-product HDF-EOS2 files from [CloudSat
-DPC](https://www.cloudsat.cira.colostate.edu). Choose the primary satellite in
-`profile.json`:
+import data to be displayed. Download CALIPSO Level 1B product HDF files from
+[NASA Earthdata](https://earthdata.nasa.gov) or CloudSat 2B-GEOPROF product
+HDF-EOS2 files from [CloudSat DPC](https://www.cloudsat.cira.colostate.edu).
+Choose the primary satellite in `profile.json`:
 
 ```json
-    "primary": "calipso"
+"primary": "calipso"
 ```
 
 The choices are `calipso` or `cloudsat`. The primary satellite data need to
 be imported first for any given time period for time synchronization to work.
-The setting should not be changed after any data have been imported in the
-repository.
+The setting should not be changed after any data have been imported.
 
 To import product files:
 
@@ -76,7 +74,7 @@ cd repo
 ccbrowse import TYPE FILE...
 ```
 
-where type is `calipso` or `cloudsat` and file is a filesystem path to an HDF4
+where TYPE is `calipso` or `cloudsat` and FILE is a filesystem path to an HDF4
 or HDF-EOS2 file. For example:
 
 ```sh
@@ -84,7 +82,7 @@ ccbrowse import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
 ```
 
 When the [sqlite](#sqlite-storage) or [filesystem](#filesystem-storage) storage
-drivers are active (not the default), it is possible to import only a certain
+drivers are used (not the default), it is possible to import only a certain
 layer or a zoom level with the `-l` or `-z` options. For example:
 
 ```sh
@@ -92,6 +90,12 @@ ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30
 ```
 
 This will generate tiles for the layer calipso532 and zoom level 2.
+
+Soft (default) and hard (option `--hard`) import is possible. The soft import
+registers files or tiles by reference. The data are read and interpolated on
+demand by the server. The hard import stores interpolated data in tiles during
+the import. The hard import is slower during import but faster during serving,
+and uses more space.
 
 Finally, run the server with:
 
