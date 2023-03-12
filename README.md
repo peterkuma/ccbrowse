@@ -1,11 +1,11 @@
 # ccbrowse
 
-ccbrowse is an open source web application for browsing data from the CloudSat
-and CALIPSO satellites.
+ccbrowse is an open source web application for browsing data from the CALIPSO
+and CloudSat satellites.
 
-It is comprised of a web application and a backend for importing various types
-of product files. An example ccbrowse deployment is available at
-[browse.ccplot.org](http://browse.ccplot.org).
+It is comprised of a web application and a backend for importing HDF4 (CALIPSO)
+and HDF-EOS2 (CloudSat) product files. An example ccbrowse deployment is
+available at [browse.ccplot.org](http://browse.ccplot.org).
 
 ![](screenshot.png)
 
@@ -14,9 +14,9 @@ of product files. An example ccbrowse deployment is available at
 CALIPSO:
 
 - CALIPSO Level 1 Profile
-    - Total Attenuated Backscatter 532nm
-    - Perpendicular Attenuated Backscatter 532nm
-    - Attenuated Backscatter 1064nm
+    - Total Attenuated Backscatter 532 nm
+    - Perpendicular Attenuated Backscatter 532 nm
+    - Attenuated Backscatter 1064 nm
 
 CloudSat:
 
@@ -25,8 +25,8 @@ CloudSat:
 
 ## Installation
 
-ccbrowse can be installed on Linux (other operating systems are currently not
-supported). On Debian-based distributions (e.g. Ubuntu and Devuan), install
+ccbrowse can be installed on Linux. Other operating systems are currently not
+supported. On Debian-based distributions (e.g. Ubuntu and Devuan), install
 system dependencies with:
 
 ```sh
@@ -40,7 +40,8 @@ pip3 install ccbrowse
 ```
 
 Make sure that the directory `$HOME/.local/bin` is in the PATH environmental
-variable.
+variable, for example by adding `PATH="$HOME/.local/bin:$PATH"` to
+`~/.profile`.
 
 ## Setup
 
@@ -51,12 +52,13 @@ ccbrowse create repo
 cd repo
 ```
 
-This will create a directory containing the profile specification and
-directories where layers and cache will be stored. Next, you have to import
-data to display. Download CALIPSO Level 1B product HDF files from [NASA
-Earthdata](https://earthdata.nasa.gov) or CloudSat 2B-GEOPROF product HDF-EOS2
-files from [CloudSat DPC](https://www.cloudsat.cira.colostate.edu). Next, choose
-the primary satellite in `profile.json`:
+This will create a directory containing a profile specification, a
+configuration file, file reference database, tile storage and cache. Next, you
+have to import data to be displayed. Download CALIPSO Level 1B product HDF files
+from [NASA Earthdata](https://earthdata.nasa.gov) or CloudSat 2B-GEOPROF
+product HDF-EOS2 files from [CloudSat
+DPC](https://www.cloudsat.cira.colostate.edu). Choose the primary satellite in
+`profile.json`:
 
 ```json
     "primary": "calipso"
@@ -64,23 +66,26 @@ the primary satellite in `profile.json`:
 
 The choices are `calipso` or `cloudsat`. The primary satellite data need to
 be imported first for any given time period for time synchronization to work.
-The setting should never be changed after any data have been imported in the
-repository. Import data:
+The setting should not be changed after any data have been imported in the
+repository.
+
+To import product files:
 
 ```sh
 cd repo
-ccbrowse import <type> <file>
+ccbrowse import TYPE FILE...
 ```
 
-where type is `calipso` or `cloudsat` and file is filesystem path to an HDF file,
-e.g.:
+where type is `calipso` or `cloudsat` and file is a filesystem path to an HDF4
+or HDF-EOS2 file. For example:
 
 ```sh
 ccbrowse import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
 ```
 
-Alternatively, to import only a certain layer or zoom level, use the `-l` or
-`-z` options, e.g.:
+When the `sqlite` or `filesystem` storage drivers are active (not by default,
+see below), it is possible to import only a certain layer or a zoom level with
+the `-l` or `-z` options. For example:
 
 ```sh
 ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
@@ -102,21 +107,21 @@ or post to the [mailing list](mailto:ccplot-general@lists.sourceforge.net).
 
 ## Running the server
 
-By default, the server listens on localhost:8080 for incoming HTTP connections,
-but you can change that by supplying an address and port as an argument, e.g.:
+By default, the server listens on the port 8080 on localhost for incoming HTTP
+connections, but you can change that by supplying an address and port as an
+argument. For example:
 
 ```sh
 ccbrowse server 192.168.0.1:8000
 ```
 
-To enable debugging mode, use the -d switch:
+To enable debugging mode, use the `-d` switch. Normally, this should be used
+with the `auto` type of server backend to see messages on the console. This
+will cause the server to respond with detailed messages should an error occur.
 
 ```
-ccbrowse server -d
+ccbrowse server -d -s auto
 ```
-
-This will cause the server to respond with detailed messages should an
-error occur.
 
 Other command line options:
 
@@ -188,38 +193,37 @@ replacing `your.domain` with the desired domain name.
 
 ## Repository
 
-The ccbrowse repository is a directory that holds imported tiles, cache
-and downloaded product files. Additionally, it contains information
-necessary for performing operations on the repository,
-such as the configuration file and profile specification. Here is a
-list of files in a typical ccbrowse repository:
+The ccbrowse repository is a directory that holds the profile specification,
+the configuration, imported file references or tiles and cache. Here is a list
+of files in a typical ccbrowse repository:
 
-    cache               tile cache
-    colormaps           custom colormaps
-    layers              layer data
-    products            raw product files
-    config.json          repository configuration file
-    profile.json         profile specification
-    wsgi.py             WSGI module
-    README              README file
+    cache           Tile cache
+    colormaps       Custom colormaps
+    layers          Layer data
+    config.json     Repository configuration file
+    fileref.sqlite  Fileref storage database
+    profile.json    Profile specification
+    wsgi.py         WSGI module
+    README          README file
 
-When you fetch a product, it is downloaded into `products`, split
-and interpolated into tiles of 256x256px and saved in `layers`. When tiles
-are requested from the server, a chosen colormap is applied on them,
-and the resulting images are saved in `cache`.
+When you import a product file, it is stored in a storage. Depending on the
+configuration, either a reference to the file is saved in the fileref database,
+or references to the file are stored in tiles (soft import) in `layers`, or
+tile data are stored in tiles in `layers` (hard import). If import is done by
+file or tile references, tiles are generated on demand by the server. The raw
+data are split and interpolated into tiles of 256×256 px. When tiles are
+requested from the server, a chosen colormap is applied on them, and the
+resulting images are saved in `cache`.
 
-How tiles and images are stored is configurable. By default, tiles
-are stored in a number of SQLite databases, sharded (split) by the x-coordinate,
-in order to avoid overly large database files and large number of files
-in file system directories. Images are stored in SQLite databases
-sharded by hashing, and automatically resharded to maintain
-database files of a suitable size. This should allow the repository
-to grow to terabytes of data and millions of tiles, as is necessitated by the
-vast amount of satellite recordings available.
-
-Other options of storage include filesystem storage, when each tile
-is stored as a standalone file. This is suitable for testing purposes,
-but does not scale to more that several product files with typical file systems.
+How tiles and images are stored is configurable. By default references to files
+are stored in the fileref database by the fileref storage. A second option is
+the SQLite storage, which stores references to the file (soft import) or data
+(hard import) in tiles in a number of SQLite databases, sharded (split) by the
+x-coordinate in order to avoid overly large database files and large number of
+files in file system directories. A third option is the filesystem storage,
+which does the same, but tiles are stored in individual files. This is
+suitable for testing purposes, but does not scale well to more than several
+product files with typical file systems.
 
 ## Configuration
 
@@ -242,7 +246,7 @@ The repository configuration is defined in `config.json`, e.g.:
     "storage": [
         {
             "requires": ["layer", "zoom", "x", "z"],
-            "driver": "sqlite",
+            "driver": "fileref",
             [...]
         },
         [...]
@@ -250,25 +254,27 @@ The repository configuration is defined in `config.json`, e.g.:
 
 The configuration options are:
 
-    server                  server backend (default: gunicorn)
-    workers                 number of server backend workers (default: 10)
-    log                     log file or null for none (default: null)
-    loglevel                log level: debug, info, warning, error, critical
-                            (default: info)
-    accesslog               access log file or null for none (default: null)
-    host                    hostname to listen on (default: localhost)
-    port                    port to listen on (default: 8080)
-    debug                   enable server debugging (default: false)
-    profile                 path to profile.json (default: profile.json)
-    colormaps               directory containing colormap files (default: colormaps)
-    cache                   server cache (permanent) storage configuration
-        driver              storage driver name
-        [option]...         storage configuration options
-    storage                 list of tile storage definitions
-        [storage]           storage configuration
-            requires        list of required parameters
-            driver          storage driver name
-            [option]...     storage configuration options
+    server                     server backend (default: gunicorn)
+    workers                    number of server backend workers (default: 10)
+    log                        log file or null for none (default: null)
+    loglevel                   log level: debug, info, warning, error, critical
+                               (default: info)
+    accesslog                  access log file or null for none (default: null)
+    host                       hostname to listen on (default: localhost)
+    port                       port to listen on (default: 8080)
+    debug                      enable server debugging (default: false)
+    profile                    path to profile.json (default: profile.json)
+    colormaps                  directory containing colormap files (default: colormaps)
+    cache                      server cache (permanent) storage configuration
+        driver                 storage driver name
+        [option]...            storage configuration options
+    storage                    list of tile storage definitions
+        [storage]              storage configuration
+            requires           list of required parameters
+            store_requires     list of required parameters for storing tiles
+            retrieve_requires  list of required parameters for retrieving tiles
+            driver             storage driver name
+            [option]...        storage configuration options
         [storage]...
 
 The storage configuration options are documented in a later section.
@@ -326,58 +332,62 @@ A sample `profile.json`:
 We can see a number of things in this profile specification:
 
   * It defines a profile called `A-Train`.
+
   * The primary satellite is `calipso`. This means that CloudSat data will be
     synchronized to CALIPSO.
+
   * The x-axis begins at midnight 1st Jan 2006, and the z-axis begins at
-    an altitude of 0m.
-  * The lowest zoom level (`0`) has tiles of 131072ms in width and 65536m in
-    height (remember that tiles always have a fixed size of 256x256px,
-    so this determines the zoom factor and aspect ratio).
+    an altitude of 0 m.
+
+  * The lowest zoom level (`0`) has tiles of 131072 ms in width and 65536 m in
+    height (remember that tiles always have a fixed size of 256×256 px, so this
+    determines the zoom factor and aspect ratio).
+
   * There is a two-dimensional (`xz`) layer called `calipso532`.
-    Its full name is "Total Att. Backscatter 532nm" and has units of km-1 sr-1.
-    Data in this layer is rendered with the `colormaps/calipso-backscatter.json`
-    colormap.
+    Its full name is "Total Att. Backscatter 532nm" and has units of
+    km<sup>-1</sup>.sr<sup>-1</sup>. Data in this layer is rendered with the
+    `colormaps/calipso-backscatter.json` colormap.
+
   * There is a layer called `geography`, which does not have any dimensions
     (it is a single GeoJSON file). This is because it holds information
-    about countires and marine areas, which is common for all x-z tiles.
+    about countries and marine areas, which is common for all x-z tiles.
 
 The structure of the profile specification is as follows:
 
-    name                    name of the profile
-    primary                 primary satellite ("calipso" or "cloudsat")
-    origin                  the physical coordinates of the origin of the system
-                            as time in format "year-month-day hour:minute:second"
-                            and altitude in meters
-    prefix                   URL prefix (when hosting on http://your.domain/prefix/)
-    zoom                    list of zoom levels
-        0                   zoom level 0
-            width           tile width in milliseconds
-            height          tile height in meters
-        1                   zoom level 1
+    name                  name of the profile
+    primary               primary satellite ("calipso" or "cloudsat")
+    origin                the physical coordinates of the origin of the system
+                          as time in format "year-month-day hour:minute:second"
+                          and altitude in meters
+    prefix                URL prefix (when hosting on http://your.domain/prefix/)
+    zoom                  list of zoom levels
+        0                 zoom level 0
+            width         tile width in milliseconds
+            height        tile height in meters
+        1                 zoom level 1
         [...]
-    layers                  list of layers
-        [layer name]        short name of the layer (without white space)
-            format          tile format (png or json)
-            type            tile data type (float32 or geojson)
-            dimensions      layer dimensions
-                            "xz" for two-dimensional layers
-                            "x" for one-dimensional layers
-                            "" for zero-dimensional layers (e.g. geography)
-            units           physical units of data
-            title           layer title
-            src             source URL
-            availability    layer availability
-            attribution     data attribution text displayed on the map
-            colormap        colormap for rendering images
+    layers                list of layers
+        [layer name]      short name of the layer (without white space)
+            format        tile format (png or json)
+            type          tile data type (float32 or geojson)
+            dimensions    layer dimensions
+                          "xz" for two-dimensional layers
+                          "x" for one-dimensional layers
+                          "" for zero-dimensional layers (e.g. geography)
+            units         physical units of data
+            title         layer title
+            src           source URL
+            availability  layer availability
+            attribution   data attribution text displayed on the map
+            colormap      colormap for rendering images
         [...]
 
-As a user, you might wish to modify zoom level and origin, whereas
-you should not modify layers unless you developed you own import class,
-or you are not interested in importing certain layers
-(in which case you can remove them).
+As a user, you might wish to modify zoom level and origin, whereas you should
+not modify layers unless you developed you own import class, or you are not
+interested in importing certain layers (in which case you can remove them).
 
 When modifying the profile specification, the tiles you have already imported
-remain unchanged. E.g., if you modify zoom levels, the x-z coordinates
+remain unchanged. For example, if you modify zoom levels, the x-z coordinates
 would reference the wrong tiles. To avoid the situation, you should either
 modify the profile specification *before* you import any products,
 or modify the tiles in storage accordingly (which may be difficult).
@@ -385,20 +395,19 @@ or modify the tiles in storage accordingly (which may be difficult).
 You can safely change `name`, `primary`, `prefix`, layer `title`, `units`, and
 `colormap`.
 
-If you were to add a new layer to the profile specification,
-it would not become supported by ccbrowse without additional effort.
-The web application would display its name in the selection of layers,
-but could not retrieve any data. For that, you have write an import
-class or extend an existing one, which reads the relevant data from product
-files and returns an array of data interpolated on a regular grid of 256x256
-elements for each tile. You can find instructions on how to do that in
-`src/ccbrowse/ccimport/product.py`, and use the existing import classes
-in the same directory as an example.
+If you were to add a new layer to the profile specification, it would not
+become supported by ccbrowse without an additional effort. The web application
+would display its name in the selection of layers, but it could not retrieve
+any data. For that, you have write an import class or extend an existing one,
+which reads the relevant data from product files and returns an array of data
+interpolated on a regular grid of 256×256 elements for each tile. You can find
+instructions on how to do that in `src/ccbrowse/ccimport/product.py`, and use
+the existing import classes in the same directory as an example.
 
 ## Storage
 
-Internally, ccbrowse handles tiles as objects, where object
-is a simple list of parameters (key-value pairs), e.g.
+Internally, ccbrowse handles files and tiles as objects. A tile object is a
+simple list of parameters (key-value pairs), e.g.
 
     {
         "layer": "calipso532",
@@ -419,17 +428,40 @@ driver to use and its configuration is defined in the configuration file
 `config.json`. You can modify the configuration in order to store tiles
 in a location other that the default, or use a custom sharding.
 
-The concept of objects is modeled after documents in document databases
-such as CouchDB.
+The default storage is fileref, which stores file references. If more than
+one storage is specified in the configuration file, they are used in a
+sequence. For storing, the first storage for which the `store_requires` or
+`requires` list is satisfied is selected. For retrieving, the first storage
+which satisfies `retrieve_requires` or `requires` and has the tile is used.
+`store_requires` and `retrieve_requires` take precedence over `requires`.
 
 There are several storage drivers available.
 
+### Fileref storage
+
+This storage applies to files. It stores references to files in a SQLite
+database.
+
+Example configuration:
+
+    {
+        "store_requires": ["ref"],
+        "retrieve_requires": ["layer", "zoom", "x", "z"],
+        "driver": "fileref",
+        "src": "fileref.sqlite"
+    }
+
+Configuration options:
+
+    driver  "fileref"
+    src     filesystem path of the database file
+
 ### Filesystem storage
 
-This is the simplest type of storage, when objects are stored in standalone
-files.
+This storage applies to tiles. This is the simplest type of tile storage, when
+objects are stored in standalone files.
 
-Example:
+Example configuration:
 
     {
         "driver": "filesystem",
@@ -438,14 +470,14 @@ Example:
 
 Configuration options:
 
-    driver          "filesystem"
-    src             filesystem path relative to the repository directory
+    driver  "filesystem"
+    src     filesystem path relative to the repository directory
 
 ### SQLite storage
 
-Objects are stored as rows in a SQLite database table.
+This storage applies to tiles. Objects are stored as rows in a SQLite database.
 
-Example:
+Example configuration:
 
     {
         "driver": "sqlite",
@@ -460,20 +492,21 @@ Example:
 
 Configuration options:
 
-    driver          "sqlite"
-    src             filesystem path of the database file
-    select          SQL query to retrieve object by its coordinates
-    insert          SQL query to insert object
-    init            list of SQL queries for initialization of an empty database
+    driver  "sqlite"
+    src     filesystem path of the database file
+    select  SQL query to retrieve object by its coordinates
+    insert  SQL query to insert object
+    init    list of SQL queries for initialization of an empty database
 
 ### HTree storage
 
-Objects are stored in a number of SQLite databases (chunks) according to their
-hash. Hash of an object is computed by applying SHA1 function on a key,
-where key is a string based on object parameters. The number of database
-files grows automatically in order to maintain a given maximum chunk size.
+This storage applies to tiles and is normally used as tile cache. Objects are
+stored in a number of SQLite databases (chunks) according to their hash. Hash
+of an object is computed by applying SHA1 function on a key, where key is a
+string based on object parameters. The number of database files grows
+automatically in order to maintain a given maximum chunk size.
 
-Example:
+Example configuration:
 
     {
         "driver": "htree",
@@ -494,26 +527,25 @@ Example:
 
 Configuration options:
 
-    driver          "htree"
-    chunk           maximum chunk size, after which it is split into two
-    src             filesystem path to chunk
-    index           database holding index of chunks
-    lock            lock file
-    key             object key
-    hashlen         length of sha1 hash of key (more digits are discarded)
-    select          SQL query to retrieve object from a chunk
-    insert          SQL query to insert object into a chunk
-    init            a list of SQL queries to initialize a new chunk
+    driver   "htree"
+    chunk    maximum chunk size, after which it is split into two
+    src      filesystem path to chunk
+    index    database holding index of chunks
+    lock     lock file
+    key      object key
+    hashlen  length of sha1 hash of key (more digits are discarded)
+    select   SQL query to retrieve object from a chunk
+    insert   SQL query to insert object into a chunk
+    init     a list of SQL queries to initialize a new chunk
 
-Following the example, when the storage is first created,
-all objects are being stored in single
-database file:
+Following the example, when the storage is first created, all objects are being
+stored in single database file:
 
     00:00000.tiles
 
-where "00" before colon is the number of significant bits, and "00000"
-is the hash. The number of significant bits is 0,
-as all objects are stored in the same chunk.
+where "00" before colon is the number of significant bits, and "00000" is the
+hash. The number of significant bits is 0, as all objects are stored in the
+same chunk.
 
 When the database grows over 128MB, the database is split into two chunks:
 
@@ -529,13 +561,13 @@ When the second chunk grows 128MB, it is split into two other chunks:
     02:80000.tiles
     02:c0000.tiles
 
-Now, first two bits of the hash are significant. For example, an object
-with hash `720ec` would go to the first database, `9e4b1` to the second
-and `ee387` to the third. The number of chunks can increase in this fashion
-until the last significant bit of the hash is reached.
+Now, first two bits of the hash are significant. For example, an object with
+hash `720ec` would go to the first database, `9e4b1` to the second and `ee387`
+to the third. The number of chunks can increase in this fashion until the last
+significant bit of the hash is reached.
 
-The table in chunk is allowed to have an arbitrary name (here "tiles"), but two columns
-are required by the HTree storage: `_id` and `_hash`, having the value
+The table in chunk is allowed to have an arbitrary name (here "tiles"), but two
+columns are required by the HTree storage: `_id` and `_hash`, having the value
 of the supplied `_id` and `_hash` parameters (respectively).
 
 ## How it works
@@ -543,17 +575,16 @@ of the supplied `_id` and `_hash` parameters (respectively).
 ccbrowse consists of two parts: a Python backend and a JavaScript web
 application. The backend is responsible for importing product files and serving
 tiles. The interface between the backend and the web application is defined by
-`profile.json`. When importing product files, data is interpolated onto a
-regular grid and saved as tiles of 256✕256px. Tiles are saved as grayscale PNG
-images, with every four adjacent 8-bit pixels coding one 32-bit float value,
-resulting in images of 1024✕256 pixels. The web application consists of a
-Python bottle server and a JavaScript application running in the browser. The
-JavaScript application uses the mapping framework
-[Leaflet](http://leaflet.cloudmade.com/) for displaying tiles. Information for
-popups and location is fetched via JSON. The server is responsible for serving
-static files, tiles, as well as applying a given colormap. It also performs
-geocoding with the shapely library using geographica data from [Natural
-Earth](http://www.naturalearthdata.com/).
+`profile.json`. Data are interpolated onto a regular grid and saved as tiles of
+256×256 px. In tile storage, tiles are stored as greyscale PNG images, with
+every four adjacent 8-bit pixels coding one 32-bit float value, resulting in
+images of 1024×256 px. The web application consists of a Python bottle server
+and a JavaScript application running in the browser. The JavaScript application
+uses the mapping framework [Leaflet](http://leaflet.cloudmade.com/) for
+displaying tiles. Information for popups and location is fetched via JSON. The
+server is responsible for serving static files, tiles, as well as applying a
+given colormap. It also performs geocoding with the shapely library using
+geographical data from [Natural Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
@@ -582,7 +613,7 @@ availability.
 ### 0.5.4 (2022-10-15)
 
 - Fixed UTC date parsing.
-- Fixed inital map placement on Windows.
+- Fixed initial map placement on Windows.
 - Fixed running on Safari.
 - Fixed globe if location is unknown.
 - Added loading icon.
