@@ -91,11 +91,11 @@ ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30
 
 This will generate tiles for the layer calipso532 and zoom level 2.
 
-Soft (default) and hard (option `--hard`) import is possible. The soft import
-registers files or tiles by reference. The data are read and interpolated on
-demand by the server. The hard import stores interpolated data in tiles during
-the import. The hard import is slower during import but faster during serving,
-and uses more space.
+A soft (default) and a hard (option `--hard`) import are possible. The soft
+import registers files or tiles by reference. The data are read and
+interpolated on demand by the server. The hard import stores interpolated data
+in tiles during the import. The hard import is slower during import but faster
+during serving, and uses more space.
 
 Finally, run the server with:
 
