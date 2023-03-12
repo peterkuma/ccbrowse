@@ -40,9 +40,9 @@ def substitute(s, variables):
     variables. Substitution is performed by eval(var, variables).
     Unrecognized variables are replaced by an empty string.
     """
-    params = []
+    env = variables.copy()
     def repl(m):
-        try: return str(eval(m.group(1), variables))
+        try: return str(eval(m.group(1), env))
         except: return ''
     return re.sub('\{(.+?)\}', repl, s)
 
