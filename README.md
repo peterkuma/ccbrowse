@@ -217,13 +217,13 @@ resulting images are saved in `cache`.
 
 How tiles and images are stored is configurable. By default references to files
 are stored in the fileref database by the fileref storage. A second option is
-the SQLite storage, which stores references to the file (soft import) or data
-(hard import) in tiles in a number of SQLite databases, sharded (split) by the
-x-coordinate in order to avoid overly large database files and large number of
-files in file system directories. A third option is the filesystem storage,
-which does the same, but tiles are stored in individual files. This is
-suitable for testing purposes, but does not scale well to more than several
-product files with typical file systems.
+the SQLite storage, which stores references to the file (soft import) or
+interpolated data (hard import) in tiles in a number of SQLite databases,
+sharded (split) by the x-coordinate in order to avoid overly large database
+files and large number of files in file system directories. A third option is
+the filesystem storage, which does the same, but tiles are stored in individual
+files. This is suitable for testing purposes, but does not scale well to more
+than several product files with typical file systems.
 
 ## Configuration
 
@@ -407,7 +407,7 @@ the existing import classes in the same directory as an example.
 ## Storage
 
 Internally, ccbrowse handles files and tiles as objects. A tile object is a
-simple list of parameters (key-value pairs), e.g.
+simple list of parameters (key–value pairs), e.g.
 
     {
         "layer": "calipso532",
