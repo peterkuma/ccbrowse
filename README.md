@@ -83,9 +83,9 @@ or HDF-EOS2 file. For example:
 ccbrowse import calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
 ```
 
-When the `sqlite` or `filesystem` storage drivers are active (not by default,
-see below), it is possible to import only a certain layer or a zoom level with
-the `-l` or `-z` options. For example:
+When the [sqlite](#sqlite-storage) or [filesystem](#filesystem-storage) storage
+drivers are active (not the default), it is possible to import only a certain
+layer or a zoom level with the `-l` or `-z` options. For example:
 
 ```sh
 ccbrowse import -l calipso532 -z 2 calipso CAL_LID_L1-ValStage1-V3-01.2008-04-30T23-57-40ZN.hdf
@@ -254,27 +254,27 @@ The repository configuration is defined in `config.json`, e.g.:
 
 The configuration options are:
 
-    server                     server backend (default: gunicorn)
-    workers                    number of server backend workers (default: 10)
-    log                        log file or null for none (default: null)
-    loglevel                   log level: debug, info, warning, error, critical
+    server                     Server backend (default: gunicorn)
+    workers                    Number of server backend workers (default: 10)
+    log                        Log file or null for none (default: null)
+    loglevel                   Log level: debug, info, warning, error, critical
                                (default: info)
-    accesslog                  access log file or null for none (default: null)
-    host                       hostname to listen on (default: localhost)
-    port                       port to listen on (default: 8080)
-    debug                      enable server debugging (default: false)
-    profile                    path to profile.json (default: profile.json)
-    colormaps                  directory containing colormap files (default: colormaps)
-    cache                      server cache (permanent) storage configuration
-        driver                 storage driver name
-        [option]...            storage configuration options
-    storage                    list of tile storage definitions
-        [storage]              storage configuration
-            requires           list of required parameters
-            store_requires     list of required parameters for storing tiles
-            retrieve_requires  list of required parameters for retrieving tiles
-            driver             storage driver name
-            [option]...        storage configuration options
+    accesslog                  Access log file or null for none (default: null)
+    host                       Hostname to listen on (default: localhost)
+    port                       Port to listen on (default: 8080)
+    debug                      Enable server debugging (default: false)
+    profile                    Path to profile.json (default: profile.json)
+    colormaps                  Directory containing colormap files (default: colormaps)
+    cache                      Server cache (permanent) storage configuration
+        driver                 Storage driver name
+        [option]...            Storage configuration options
+    storage                    List of tile storage definitions
+        [storage]              Storage configuration
+            requires           List of required parameters
+            store_requires     List of required parameters for storing tiles
+            retrieve_requires  List of required parameters for retrieving tiles
+            driver             Storage driver name
+            [option]...        Storage configuration options
         [storage]...
 
 The storage configuration options are documented in a later section.
@@ -354,32 +354,32 @@ We can see a number of things in this profile specification:
 
 The structure of the profile specification is as follows:
 
-    name                  name of the profile
-    primary               primary satellite ("calipso" or "cloudsat")
-    origin                the physical coordinates of the origin of the system
-                          as time in format "year-month-day hour:minute:second"
-                          and altitude in meters
-    prefix                URL prefix (when hosting on http://your.domain/prefix/)
-    zoom                  list of zoom levels
-        0                 zoom level 0
-            width         tile width in milliseconds
-            height        tile height in meters
-        1                 zoom level 1
+    name                  Name of the profile
+    primary               Primary satellite ("calipso" or "cloudsat")
+    origin                The physical coordinates of the origin of the system
+                          As time in format "year-month-day hour:minute:second"
+                          And altitude in meters
+    prefix                uRL prefix (when hosting on http://your.domain/prefix/)
+    zoom                  List of zoom levels
+        0                 Zoom level 0
+            width         Tile width in milliseconds
+            height        Tile height in meters
+        1                 Zoom level 1
         [...]
-    layers                list of layers
-        [layer name]      short name of the layer (without white space)
-            format        tile format (png or json)
-            type          tile data type (float32 or geojson)
-            dimensions    layer dimensions
+    layers                List of layers
+        [layer name]      Short name of the layer (without white space)
+            format        Tile format (png or json)
+            type          Tile data type (float32 or geojson)
+            dimensions    Layer dimensions
                           "xz" for two-dimensional layers
                           "x" for one-dimensional layers
                           "" for zero-dimensional layers (e.g. geography)
-            units         physical units of data
-            title         layer title
-            src           source URL
-            availability  layer availability
-            attribution   data attribution text displayed on the map
-            colormap      colormap for rendering images
+            units         Physical units of data
+            title         Layer title
+            src           Source URL
+            availability  Layer availability
+            attribution   Data attribution text displayed on the map
+            colormap      Colormap for rendering images
         [...]
 
 As a user, you might wish to modify zoom level and origin, whereas you should
@@ -454,7 +454,7 @@ Example configuration:
 Configuration options:
 
     driver  "fileref"
-    src     filesystem path of the database file
+    src     Filesystem path of the database file
 
 ### Filesystem storage
 
@@ -471,7 +471,7 @@ Example configuration:
 Configuration options:
 
     driver  "filesystem"
-    src     filesystem path relative to the repository directory
+    src     Filesystem path relative to the repository directory
 
 ### SQLite storage
 
@@ -493,10 +493,10 @@ Example configuration:
 Configuration options:
 
     driver  "sqlite"
-    src     filesystem path of the database file
+    src     Filesystem path of the database file
     select  SQL query to retrieve object by its coordinates
     insert  SQL query to insert object
-    init    list of SQL queries for initialization of an empty database
+    init    List of SQL queries for initialization of an empty database
 
 ### HTree storage
 
@@ -528,15 +528,15 @@ Example configuration:
 Configuration options:
 
     driver   "htree"
-    chunk    maximum chunk size, after which it is split into two
-    src      filesystem path to chunk
-    index    database holding index of chunks
-    lock     lock file
-    key      object key
-    hashlen  length of sha1 hash of key (more digits are discarded)
+    chunk    Maximum chunk size, after which it is split into two
+    src      Filesystem path to chunk
+    index    Database holding index of chunks
+    lock     Lock file
+    key      Object key
+    hashlen  Length of sha1 hash of key (more digits are discarded)
     select   SQL query to retrieve object from a chunk
     insert   SQL query to insert object into a chunk
-    init     a list of SQL queries to initialize a new chunk
+    init     A list of SQL queries to initialize a new chunk
 
 Following the example, when the storage is first created, all objects are being
 stored in single database file:
