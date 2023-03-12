@@ -340,7 +340,7 @@ We can see a number of things in this profile specification:
   * The primary satellite is `calipso`. This means that CloudSat data will be
     synchronized to CALIPSO.
 
-  * The x-axis begins at midnight 1<sup>st</sup> Jan 2006, and the z-axis
+  * The x-axis begins at midnight 1<sup>st</sup> January 2006, and the z-axis
     begins at an altitude of 0 m.
 
   * The lowest zoom level (`0`) has tiles of 131072 ms in width and 65536 m in
