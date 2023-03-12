@@ -350,7 +350,7 @@ We can see a number of things in this profile specification:
 
   * There is a layer called `geography`, which does not have any dimensions
     (it is a single GeoJSON file). This is because it holds information
-    about countries and marine areas, which is common for all x-z tiles.
+    about countries and marine areas, which is common for all x–z tiles.
 
 The structure of the profile specification is as follows:
 
@@ -387,7 +387,7 @@ not modify layers unless you developed you own import class, or you are not
 interested in importing certain layers (in which case you can remove them).
 
 When modifying the profile specification, the tiles you have already imported
-remain unchanged. For example, if you modify zoom levels, the x-z coordinates
+remain unchanged. For example, if you modify zoom levels, the x–z coordinates
 would reference the wrong tiles. To avoid the situation, you should either
 modify the profile specification *before* you import any products,
 or modify the tiles in storage accordingly (which may be difficult).
