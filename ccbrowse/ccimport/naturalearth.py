@@ -5,9 +5,15 @@ from tempfile import mkdtemp
 import codecs
 
 class NaturalEarth(object):
+    DATASETS = ['geography']
+
+    @staticmethod
+    def datasets(primary=True):
+        return NaturalEarth.DATASETS
+
     def __init__(self, filename, profile):
         Product.__init__(self, filename, profile)
-        
+
         # Convert shapefile to geojson by ogr2ogr.
         tmpdir = mkdtemp()
         try:
@@ -31,15 +37,15 @@ class NaturalEarth(object):
             try: os.unlink(tmpfile)
             except: pass
             os.rmdir(tmpdir)
-        
+
         self.geojson = geojson
-    
+
     def save(self, layer=None):
         geography = {
             'type': 'FeatureCollection',
             'features': []
         }
-        
+
         for feature in self.geojson['features']:
             try:
                 p = feature['properties']
@@ -49,7 +55,7 @@ class NaturalEarth(object):
                 else: name = p['Name']
                 geometry = feature['geometry']
             except KeyError: continue
-                
+
             if featurecla in ('Admin-0 country', 'Admin-0 countries'):
                 geography['features'].append({
                     'type': 'Feature',
@@ -64,7 +70,7 @@ class NaturalEarth(object):
                 # Ocan names are uppercase, capitalize words instead.
                 if featurecla == 'ocean':
                     name = ' '.join([w.capitalize() for w in name.split()])
-                    
+
                 geography['features'].append({
                     'type': 'Feature',
                     'properties': {
@@ -75,7 +81,7 @@ class NaturalEarth(object):
                 })
             else:
                 continue
-        
+
         self.profile.save({
             'layer': 'geography',
             'data': geography

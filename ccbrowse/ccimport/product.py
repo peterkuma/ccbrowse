@@ -34,19 +34,28 @@ class Product(object):
     OFFSET_LOW = -120 # s
     OFFSET_HIGH = 120 # s
 
-    def __init__(self, filename, profile):
+    @classmethod
+    def datasets(cls, primary=True):
+        if primary:
+            return {k: v for k, v in ( \
+                list(cls.DATASETS.items()) + \
+                list(cls.DATASETS_PRIMARY.items())
+            )}
+        else:
+            return cls.DATASETS
+
+    def __init__(self, filename, profile, offset=None):
         """Product initialization."""
         self.profile = profile
         self.filename = filename
         self._primary = self.profile['primary'] == self.NAME
+        self._datasets = self.datasets(self._primary)
         self._offset = 0
-        if self._primary:
-            self._datasets = {k: v for k, v
-                in (list(self.DATASETS.items()) + \
-                    list(self.DATASETS_PRIMARY.items()))}
-        else:
-            self._datasets = self.DATASETS
+        if offset is not None:
+            self._offset = offset
+        elif not self._primary:
             self._offset = self._calculate_offset(self.OFFSET_LEVEL)
+
         # Open the file and save the handler to a member variable.
 
     def layers(self):
@@ -54,12 +63,20 @@ class Product(object):
         layers = list(self.profile['layers'].keys())
         return set(layers).intersection(list(self._datasets.keys()))
 
+    def bounds(self):
+        """
+        Return a list of product bounds as
+        [time start, time end, height start, height end].
+        """
+        pass
+
     def xrange(self, layer, level):
         """Return a list of valid x coordinates."""
         pass
 
     def zrange(self, layer, level):
         """Return a list of valid z coordinates."""
+        pass
 
     def tile(self, layer, level, x, z):
         """

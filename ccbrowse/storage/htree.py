@@ -167,6 +167,7 @@ class HtreeDriver(Driver):
             raise RuntimeError('%s: %s' % (filename, e))
 
         self.index_update_size(bits, hash, size)
+        return True
 
     def retrieve(self, obj, exclude=[]):
         bits, hash = self.lookup(obj)

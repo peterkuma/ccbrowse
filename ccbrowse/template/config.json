@@ -28,6 +28,12 @@
     },
     "storage": [
         {
+            "store_requires": ["ref"],
+            "retrieve_requires": ["layer", "zoom", "x", "z"],
+            "driver": "fileref",
+            "src": "fileref.sqlite"
+        },
+        {
             "requires": ["layer", "zoom", "x", "z"],
             "driver": "sqlite",
             "src": "layers/{layer}/{zoom}/{x-x%100000}.tiles",

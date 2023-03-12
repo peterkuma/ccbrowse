@@ -33,7 +33,7 @@ class Calipso(Product):
     LIDAR_ALTITUDES = calipso_constants.LIDAR_ALTITUDES
     MET_DATA_ALTITUDES = calipso_constants.MET_DATA_ALTITUDES
 
-    def __init__(self, filename, profile):
+    def __init__(self, filename, profile, offset=None):
         try:
             self.hdf = HDF(filename)
         except OSError:
@@ -42,12 +42,18 @@ class Calipso(Product):
             self.hdf.set_always_mask(False)
         Product.__init__(self, filename, profile)
 
-    def xrange(self, layer, level):
-        w = self.profile['zoom'][level]['width']
+    def bounds(self):
         time = self.hdf['Profile_UTC_Time']
         t_origin = self.profile['origin'][0]
         t1 = self._dt2ms(self._time2dt(time[0,0]) - t_origin) + self.offset()
         t2 = self._dt2ms(self._time2dt(time[-1,0]) - t_origin) + self.offset()
+        h1 = float(self.LIDAR_ALTITUDES[-1])
+        h2 = float(self.LIDAR_ALTITUDES[0])
+        return [t1, t2, h1, h2]
+
+    def xrange(self, layer, level):
+        w = self.profile['zoom'][level]['width']
+        t1, t2, _, _ = self.bounds()
         x1 = int(math.floor(t1 / w))
         x2 = int(math.floor(t2 / w))
         return list(range(x1, x2+1))

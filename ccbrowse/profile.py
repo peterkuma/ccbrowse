@@ -39,6 +39,7 @@ class Profile(object):
         self.storage = ccbrowse.storage.Router(
             self.config['storage'],
             root=self.config['root'],
+            profile=self,
             on_store=lambda obj: self.serialize(obj),
             on_retrieve=lambda obj: self.deserialize(obj),
         )
@@ -85,6 +86,12 @@ class Profile(object):
         if name not in self['layers']:
             raise ValueError('No such layer %s' % name)
         return self['layers'][name]
+
+    def layer_product(self, layer):
+        for name, cls in PRODUCTS.items():
+            if layer in cls.datasets(self['primary'] == name):
+                return name
+        raise ValueError('No product for layer %s' % layer)
 
     def deserialize(self, obj):
         """Deserialize obj.raw_data to obj.data by a format-specific method."""
@@ -133,7 +140,7 @@ class Profile(object):
                 cls = PRODUCTS[ref['product']]
             except KeyError:
                 raise RuntimeError('Unknown product type "%s"' % ref['product'])
-            product = cls(ref['filename'], self)
+            product = cls(ref['filename'], self, ref['offset'])
             tile = product.tile(obj['layer'], obj['zoom'], obj['x'], obj['z'])
             if 'data' in obj:
                 if obj['format'] == 'png':
@@ -150,7 +157,7 @@ class Profile(object):
 
         Object is a dictionary with the following mandatory and optional fields:
 
-            layer   layer name [required]
+            layer   layer name
             data    numpy array (format: png) or dictionary (format: json)
             ref     list of references to product files
             zoom    zoom level
@@ -161,12 +168,13 @@ class Profile(object):
         Return the object augmented with layer fields.
         """
         # Insert layer properties to obj.
-        layer = self.layer_for(obj)
-        o = layer.copy()
-        o.update(obj)
-        obj = o
+        if 'layer' in obj:
+            layer = self.layer_for(obj)
+            o = layer.copy()
+            o.update(obj)
+            obj = o
 
-        if append:
+        if append and 'layer' in obj:
             orig_obj = self.load(obj, dereference=False)
             if orig_obj is not None:
                 # Update data.
@@ -189,20 +197,23 @@ class Profile(object):
                 del obj['raw_data']
 
         #self.cache.store(obj)
-        self.storage.store(obj)
+        res = self.storage.store(obj)
 
         if 'zoom' in obj and 'x' in obj:
             self.update_availability(obj['layer'], obj['zoom'], (obj['x'], obj['x']+1))
 
-        return obj
+        return res
 
     def load(self, obj, exclude=[], dereference=True):
         """Load object from profile."""
         try: layer = self.layer_for(obj)
         except ValueError: return None
 
+        product = self.layer_product(obj['layer'])
+
         o = layer.copy()
         o.update(obj)
+        o['product'] = product
         obj = o
         if 'data' in obj: del obj['data']
 
@@ -272,8 +283,8 @@ class Profile(object):
             }
             self.storage.store(obj)
 
-    def update_availability(self, layer, level, xxx_todo_changeme):
-        (start, stop) = xxx_todo_changeme
+    def update_availability(self, layer, level, interval):
+        start, stop = interval
         availability = self.get_availability(layer)
         if level in availability:
             availability[level].append(start, stop)

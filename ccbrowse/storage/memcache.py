@@ -7,22 +7,22 @@ from ccbrowse import utils
 
 class MemCacheDriver(Driver):
     """MemCacheDriver class.
-    
+
     This class implements LRU cache, allowing lookup by a specified key index.
     Indexing is implemented using the python dict type (hash indexes).
-    
+
     When cache is filled up, oldest entries are removed and stored in a
     backing store (if defined).
     """
-    
+
     def __init__(self, config, backing_store=None, *args, **kwargs):
         """Initialize driver.
-        
+
         config is a dictionary with the following options:
-        
+
             size    maximum cache size
             key     list of object keys to be used as the lookup key
-        
+
         backing_store is a instance of an arbitrary storage driver
         which is used to store oldest objects when they no longer fit
         the cache size.
@@ -36,10 +36,10 @@ class MemCacheDriver(Driver):
         self.index = {}
         self.backing_store = backing_store
         Driver.__init__(self, config, *args, **kwargs)
-        
+
     def sizeof(self, obj):
         return sys.getsizeof(obj) + sum([sys.getsizeof(v) for v in list(obj.values())])
-    
+
     def keyof(self, obj):
         return tuple([obj.get(k,None) for k in self.config['key']])
 
@@ -64,7 +64,7 @@ class MemCacheDriver(Driver):
         key = self.keyof(obj)
         try: entry = self.index[key]
         except KeyError: entry = None
-        
+
         if entry != None and entry[1] != None:
             # Existing object, update it.
             self.size -= self.sizeof(entry[1])
@@ -77,9 +77,11 @@ class MemCacheDriver(Driver):
             heappush(self.cache, entry)
             self.size += self.sizeof(obj)
             self.index[self.keyof(obj)] = entry
-        
+
         if self.size >= self.config['size']:
             self.expire()
+
+        return True
 
     def retrieve(self, obj, exclude=[]):
         key = self.keyof(obj)
@@ -95,7 +97,7 @@ class MemCacheDriver(Driver):
         obj = obj.copy()
         obj.update(o)
         return Driver.retrieve(self, obj, exclude)
-   
+
     def empty(self):
         while True:
             try: entry = heappop(self.cache)

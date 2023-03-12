@@ -26,10 +26,24 @@ class CloudSat(Product):
         'trajectory': ['Latitude', 'Longitude'],
     }
 
-    def __init__(self, filename, profile):
+    def __init__(self, filename, profile, offset=None):
         self.hdfeos = HDFEOS(filename)
         self.swath = self.hdfeos['2B-GEOPROF']
         Product.__init__(self, filename, profile)
+
+    def bounds(self):
+        start = self.swath.attributes['start_time']
+        t1 = self.swath['Profile_time'][0]
+        t2 = self.swath['Profile_time'][-1]
+        start = dt.datetime.strptime(start, "%Y%m%d%H%M%S").replace(tzinfo=pytz.utc)
+        origin = self.profile['origin'][0]
+        origin_to_start = (start - origin).total_seconds()
+        t1 = (origin_to_start + t1) * 1000 + self.offset()
+        t2 = (origin_to_start + t2) * 1000 + self.offset()
+        height = self.swath['Height']
+        h1 = float(np.min(height[:,-1]))
+        h2 = float(np.max(height[:,0]))
+        return [t1, t2, h1, h2]
 
     def xrange(self, layer, level):
         w = self.profile['zoom'][level]['width']
@@ -51,11 +65,9 @@ class CloudSat(Product):
 
         # Two-dimensional layer.
         h = self.profile['zoom'][level]['height']
-        height = self.swath['Height']
-        low = min(height[:,-1])
-        high = max(height[:,0])
-        z1 = int(math.floor((low - self.profile['origin'][1])/h))
-        z2 = int(math.floor((high - self.profile['origin'][1])/h))
+        _, _, h1, h2 = self.bounds()
+        z1 = int(math.floor((h1 - self.profile['origin'][1])/h))
+        z2 = int(math.floor((h2 - self.profile['origin'][1])/h))
         return list(range(z1, z2+1))
 
     def tile(self, layer, level, x, z):

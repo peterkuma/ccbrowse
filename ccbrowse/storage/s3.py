@@ -63,6 +63,8 @@ class S3Driver(Driver):
                 e.message,
             ))
 
+        return True
+
     def retrieve(self, obj, exclude=[]):
         o = obj.copy()
         bucket_name = utils.substitute(self.config['bucket'], obj)

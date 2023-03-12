@@ -9,6 +9,7 @@ import functools
 import time
 
 import ccbrowse
+from ccbrowse.exceptions import StorageNotAvailable
 from ccbrowse.ccimport import PRODUCTS, Calipso, CloudSat, NaturalEarth
 
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
@@ -67,6 +68,23 @@ def save(product, profile, layer=None, zoom=None,
         root = profile.get_root()
         if filename.startswith(root): filename = filename[len(root):]
 
+        ref = {
+            'product': product_name,
+            'filename': filename,
+            'offset': product.offset(),
+            'bounds': product.bounds(),
+        }
+        obj = {'ref': [ref]}
+        try: profile.save(obj)
+        except StorageNotAvailable: pass
+        else:
+            for level in sorted(profile['zoom'].keys()):
+                for l in product.layers():
+                    X = product.xrange(l, level)
+                    for x in X:
+                        profile.update_availability(l, level, (x, x + 1))
+            return
+
     for level in sorted(profile['zoom'].keys()):
         if zoom != None and level != zoom: continue
         for l in product.layers():
@@ -100,11 +118,6 @@ def save(product, profile, layer=None, zoom=None,
                     if not soft:
                         tile = product.tile(l, level, x, z)
                     else:
-                        ref = {
-                            'product': product_name,
-                            'filename': filename,
-                            'offset': product.offset()
-                        }
                         tile = {
                             'layer': l,
                             'zoom': level,

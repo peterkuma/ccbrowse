@@ -1,3 +1,4 @@
+from ccbrowse.exceptions import StorageNotAvailable
 from ccbrowse.storage import *
 import copy
 import reprlib as reprlib
@@ -16,29 +17,40 @@ class Router(Driver):
                         on_store=on_store, on_retrieve=on_retrieve,
                         *args, **kwargs)
 
-    def storage_for(self, obj):
+    def storage_for(self, obj, method):
+        storages = []
         for storage in self.storage:
             config, driver = storage
-            if 'requires' in config:
-                if not set(config['requires']).issubset(list(obj.keys())):
+            requires = None
+            for key in '%s_requires' % method, 'requires':
+                try: requires = config[key]
+                except KeyError: continue
+                break
+            if requires is not None:
+                if not set(requires).issubset(list(obj.keys())):
                     continue
             if 'predicate' in config:
                 try: result = eval(config['predicate'], obj)
                 except: result = False
                 if not result:
                     continue
-            return driver
-        return None
+            storages += [driver]
+        return storages
 
     def store(self, obj):
         if self.on_store: self.on_store(obj)
-        storage = self.storage_for(obj)
-        if storage is None:
-            raise RuntimeError('No suitable storage for object: %s' %
-                               reprlib.repr(obj))
-        storage.store(obj)
+        storages = self.storage_for(obj, 'store')
+        if len(storages) == 0:
+            raise StorageNotAvailable('No suitable storage for object: %s' %
+                reprlib.repr(obj))
+        storages[0].store(obj)
 
     def retrieve(self, obj, exclude=[]):
-        storage = self.storage_for(obj)
-        if storage is None: return None
-        return Driver.retrieve(self, storage.retrieve(obj, exclude), exclude)
+        storages = self.storage_for(obj, 'retrieve')
+        if len(storages) == 0:
+            return None
+        for storage in storages:
+            o = super().retrieve(storage.retrieve(obj, exclude), exclude)
+            if o is not None:
+                return o
+        return None
