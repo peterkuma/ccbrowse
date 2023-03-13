@@ -335,3 +335,17 @@ class JSONEncoder(json.JSONEncoder):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return JSONEncoder.default(self, obj)
+
+
+def intervals(x):
+    if len(x) == 0: return []
+    out = []
+    diff = np.diff(x)
+    ii = np.where(diff > 1)[0]
+    b = -1
+    for k, i in enumerate(ii):
+        a = ii[k-1] + 1 if k > 0 else 0
+        b = i
+        out += [[x[a], x[b]]]
+    out += [[x[b + 1], x[-1]]]
+    return out

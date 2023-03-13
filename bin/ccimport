@@ -9,6 +9,7 @@ import functools
 import time
 
 import ccbrowse
+from ccbrowse import utils
 from ccbrowse.exceptions import StorageNotAvailable
 from ccbrowse.ccimport import PRODUCTS, Calipso, CloudSat, NaturalEarth
 
@@ -81,8 +82,9 @@ def save(product, profile, layer=None, zoom=None,
             for level in sorted(profile['zoom'].keys()):
                 for l in product.layers():
                     X = product.xrange(l, level)
-                    for x in X:
-                        profile.update_availability(l, level, (x, x + 1))
+                    intervals = utils.intervals(X)
+                    for interval in intervals:
+                        profile.update_availability(l, level, interval)
             return
 
     for level in sorted(profile['zoom'].keys()):
