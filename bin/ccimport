@@ -7,6 +7,8 @@ import logging
 import json
 import functools
 import time
+import traceback
+import multiprocessing as mp
 
 import ccbrowse
 from ccbrowse import utils
@@ -53,7 +55,7 @@ Report bugs to <ccplot-general@lists.sourceforge.net>
 def save_decorator(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
-        try: f(*args, **kwargs)
+        try: return f(*args, **kwargs)
         except KeyboardInterrupt: print()
     return wrapper
 
@@ -62,6 +64,8 @@ def save_decorator(f):
 def save(product, profile, layer=None, zoom=None,
          statistics=False, soft=False, overwrite=False, skip=False):
     if statistics: stat = dict(n=0, read=0, save=0)
+
+    XX = []
 
     if soft:
         product_name = list(PRODUCTS.keys())[list(PRODUCTS.values()).index(type(product))]
@@ -82,10 +86,8 @@ def save(product, profile, layer=None, zoom=None,
             for level in sorted(profile['zoom'].keys()):
                 for l in product.layers():
                     X = product.xrange(l, level)
-                    intervals = utils.intervals(X)
-                    for interval in intervals:
-                        profile.update_availability(l, level, interval)
-            return
+                    XX += [[l, level, X]]
+            return XX
 
     for level in sorted(profile['zoom'].keys()):
         if zoom != None and level != zoom: continue
@@ -138,12 +140,43 @@ def save(product, profile, layer=None, zoom=None,
                         stat['save'] += time.clock() - t2
                         stat['n'] += 1
 
-            profile.write_availability()
+            XX += [[l, level, X]]
+
             if line: print('\r\033[K%s level %s tiles %d--%d' % \
                            (l, level, X[0], X[-1]))
     if statistics and stat['n'] > 0:
         print('Statistics: read and processing %.2f ms/tile, save %.2f ms/tile' % \
               (1000*stat['read']/stat['n'], 1000*stat['save']/stat['n']))
+
+    return XX
+
+def worker(args):
+    qin, qout, file_type, config, layer, zoom, options = args
+    with ccbrowse.Profile(config, cache_size=0, write_availability=False) as profile:
+        while True:
+            filename = qin.get()
+            if filename is None:
+                break
+            print(filename)
+            try:
+                if file_type == 'calipso':
+                    product = Calipso(filename, profile)
+                    XX = save(product, profile, layer=layer, zoom=zoom, **options)
+                    qout.put(XX)
+                elif file_type == 'cloudsat':
+                    product = CloudSat(filename, profile)
+                    XX = save(product, profile, layer=layer, zoom=zoom, **options)
+                    qout.put(XX)
+                elif file_type == 'naturalearth':
+                    naturalearth = NaturalEarth(filename, profile)
+                    naturalearth.save(layer=layer)
+                else:
+                    logging.error('Unrecognized type %s' % file_type)
+                    sys.exit(1)
+            except Exception as e:
+                logging.error(traceback.format_exc())
+    qout.put(None)
+
 
 if __name__ == "__main__":
     program_name = sys.argv[0]
@@ -203,28 +236,30 @@ if __name__ == "__main__":
         sys.exit(1)
 
     try:
+        njobs = mp.cpu_count()
+        m = mp.Manager()
+        qin = m.Queue(len(filenames) + njobs)
+        qout = m.Queue(njobs)
+        args = [
+            (qin, qout, file_type, config, layer, zoom, options)
+            for i in range(njobs)
+        ]
         with ccbrowse.Profile(config, cache_size=0) as profile:
-            for filename in filenames:
-                try:
-                    if file_type == 'calipso':
-                        product = Calipso(filename, profile)
-                        save(product, profile, layer=layer, zoom=zoom, **options)
-                    elif file_type == 'cloudsat':
-                        product = CloudSat(filename, profile)
-                        save(product, profile, layer=layer, zoom=zoom, **options)
-                    elif file_type == 'naturalearth':
-                        naturalearth = NaturalEarth(filename, profile)
-                        naturalearth.save(layer=layer)
-                    else:
-                        logging.error('Unrecognized type %s' % file_type)
-                        sys.exit(1)
-                except IOError as e:
-                    if e.filename is not None and e.strerror is not None:
-                        logging.error('%s: %s' % (e.filename, e.strerror))
-                    else:
-                        logging.error(e)
-    except RuntimeError as e:
-        logging.error(e)
+            with mp.Pool(njobs) as p:
+                task = p.map_async(worker, args)
+                for filename in filenames:
+                    qin.put(filename, block=False)
+                for i in range(njobs):
+                    qin.put(None, block=False)
+                n = 0
+                while n < njobs:
+                    XX = qout.get()
+                    if XX is None:
+                        n += 1
+                        continue
+                    for layer, level, X in XX:
+                        intervals = utils.intervals(X)
+                        profile.update_availability(layer, level, intervals)
     except IOError as e:
         if e.filename is not None and e.strerror is not None:
             logging.error('%s: %s' % (e.filename, e.strerror))

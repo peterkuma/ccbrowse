@@ -43,7 +43,7 @@ class Router(Driver):
         if len(storages) == 0:
             raise StorageNotAvailable('No suitable storage for object: %s' %
                 reprlib.repr(obj))
-        storages[0].store(obj)
+        return storages[0].store(obj)
 
     def retrieve(self, obj, exclude=[]):
         storages = self.storage_for(obj, 'retrieve')

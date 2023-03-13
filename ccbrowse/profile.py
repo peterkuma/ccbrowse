@@ -32,9 +32,10 @@ class ProfileJSONDecoder(json.JSONDecoder):
 
 
 class Profile(object):
-    def __init__(self, config, cache_size=4*1024*1024):
+    def __init__(self, config, cache_size=4*1024*1024, write_availability=True):
         self.config = ccbrowse.config.default_config
         self.config.update(config)
+        self._write_availability = write_availability
 
         self.storage = ccbrowse.storage.Router(
             self.config['storage'],
@@ -61,7 +62,8 @@ class Profile(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.write_availability()
+        if self._write_availability:
+            self.write_availability()
         self.cache.empty()
 
     def __contains__(self, item):
@@ -200,7 +202,11 @@ class Profile(object):
         res = self.storage.store(obj)
 
         if 'zoom' in obj and 'x' in obj:
-            self.update_availability(obj['layer'], obj['zoom'], (obj['x'], obj['x']+1))
+            self.update_availability(
+                obj['layer'],
+                obj['zoom'],
+                [(obj['x'], obj['x']+1)],
+            )
 
         return res
 
@@ -223,7 +229,7 @@ class Profile(object):
             if o != None:
                 if dereference and 'ref' in o:
                     self.dereference(o)
-                    self.save(o, append=False)
+                    #self.save(o, append=False)
                 o2 = layer.copy()
                 o2.update(o)
                 self.cache.store(o2, dirty=False)
@@ -240,7 +246,10 @@ class Profile(object):
             colormap = json.load(fp)
         return colormap
 
-    def get_availability(self, layer):
+    def get_availability(self, layer=None):
+        if layer is None:
+            return self.availability
+
         if layer in self.availability:
             return self.availability[layer]
 
@@ -283,10 +292,9 @@ class Profile(object):
             }
             self.storage.store(obj)
 
-    def update_availability(self, layer, level, interval):
-        start, stop = interval
+    def update_availability(self, layer, level, intervals):
         availability = self.get_availability(layer)
-        if level in availability:
+        if level not in availability:
+            availability[level] = RangeList()
+        for start, stop in intervals:
             availability[level].append(start, stop)
-        else:
-            availability[level] = RangeList([(start, stop)])
