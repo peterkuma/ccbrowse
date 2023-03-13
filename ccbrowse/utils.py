@@ -346,6 +346,6 @@ def intervals(x):
     for k, i in enumerate(ii):
         a = ii[k-1] + 1 if k > 0 else 0
         b = i
-        out += [[x[a], x[b]]]
-    out += [[x[b + 1], x[-1]]]
+        out += [[x[a], x[b] + 1]]
+    out += [[x[b + 1], x[-1] + 1]]
     return out
