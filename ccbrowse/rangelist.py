@@ -22,36 +22,39 @@
 """
 
 import json
-from bintrees import RBTree
+from bintrees import FastRBTree
 
 class RangeListEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, RangeList):
-            return list(obj.tree.items())
+            return obj.tolist()
         return json.JSONEncoder.default(self, obj)
 
 class RangeList(object):
     """List of ranges.
-    
+
     Ranges are automatically merged and split when a new range is appended
     or removed.
     """
-    
+
     def __init__(self, sequence=None):
-        self.tree = RBTree(sequence)
-        
+        self.tree = FastRBTree(sequence)
+
     def __iter__(self):
         return iter(list(self.tree.items()))
-    
+
     def __repr__(self):
         return repr(list(self.tree.items()))
-    
+
+    def tolist(self):
+        return list(self.tree.items())
+
     def append(self, start, stop):
         """Append range (start, stop) to the list."""
-        
+
         if start >= stop:
             raise ValueError('stop has to be greater than start')
-        
+
         delete = []
         for nextstart, nextstop in list(self.tree[start:].items()):
             if nextstart <= stop:
@@ -59,7 +62,7 @@ class RangeList(object):
                 delete.append(nextstart)
             else: break
         for key in delete: del self.tree[key]
-        
+
         left = self.tree[:start]
         try:
             prevstart = max(left)
@@ -69,12 +72,12 @@ class RangeList(object):
                 stop = max(prevstop, stop)
                 del self.tree[prevstart]
         except ValueError: pass
-        
+
         self.tree[start] = stop
-        
+
     def remove(self, start, stop):
         """Remove range (start, stop) from the list."""
-        
+
         delete = []
         for nextstart, nextstop in list(self.tree[start:].items()):
             if nextstart < stop:
@@ -82,7 +85,7 @@ class RangeList(object):
                 delete.append(nextstart)
             else: break
         for key in delete: del self.tree[key]
-        
+
         left = self.tree[:start]
         try:
             prevstart = max(left)
@@ -90,7 +93,7 @@ class RangeList(object):
             if prevstop > stop: self.tree[stop] = prevstop
             if prevstop >= start: self.tree[prevstart] = start
         except ValueError: pass
-        
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
