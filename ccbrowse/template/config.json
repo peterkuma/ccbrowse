@@ -34,22 +34,6 @@
             "src": "fileref.sqlite"
         },
         {
-            "requires": ["layer", "zoom", "x", "z"],
-            "driver": "sqlite",
-            "src": "layers/{layer}/{zoom}/{x-x%100000}.tiles",
-            "select": "SELECT raw_data, modified from tiles WHERE x={x} AND z={z}",
-            "insert": "INSERT OR REPLACE INTO tiles (x, z, raw_data, modified) VALUES ({x}, {z}, {raw_data}, strftime('%s'))",
-            "init": [
-                "CREATE TABLE tiles (x INT, z INT, raw_data BLOB, modified INT)",
-                "CREATE UNIQUE INDEX tiles_idx ON tiles (x, z)",
-                "CREATE INDEX tiles_modified_idx ON tiles (modified)"
-            ]
-        },
-        {
-            "requires": ["layer", "zoom", "x", "z", "format"],
-            "src": "layers/{layer}/{zoom}/{x},{z}.{format}"
-        },
-        {
             "requires": ["layer", "format"],
             "src": "layers/{layer}.{format}"
         }
