@@ -12,7 +12,7 @@ Importing is much faster and takes much less space. You might want to start
 with a new repository if migrating from a previous version. Otherwise your
 current storage driver as defined in the repository configuration is used.
 
-![](screenshot.png)
+<a href="https://browse.ccplot.org"><img src="screenshot.png" alt="browse.ccplot.org" /></a>
 
 ## Supported products
 
