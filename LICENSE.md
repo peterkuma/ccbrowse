@@ -1,6 +1,6 @@
 This program is available under the terms of an MIT license as follows.
 
-Copyright (c) 2012-2022 Peter Kuma
+Copyright (c) 2012-2023 Peter Kuma
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
