@@ -592,6 +592,11 @@ geographical data from [Natural Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 0.8.0 (2023-03-13)
+
+- New default fileref storage.
+- Parallel importing.
+
 ### 0.7.2 (2023-02-27)
 
 - Fixed offset calculation.
