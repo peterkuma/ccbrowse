@@ -28,12 +28,13 @@
     },
     "storage": [
         {
+            "driver": "fileref",
             "store_requires": ["ref"],
             "retrieve_requires": ["layer", "zoom", "x", "z"],
-            "driver": "fileref",
             "src": "fileref.sqlite"
         },
         {
+            "driver": "filesystem",
             "requires": ["layer", "format"],
             "src": "layers/{layer}.{format}"
         }

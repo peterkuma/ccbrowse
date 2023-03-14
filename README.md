@@ -249,8 +249,8 @@ The repository configuration is defined in `config.json`, e.g.:
     }
     "storage": [
         {
-            "requires": ["layer", "zoom", "x", "z"],
             "driver": "fileref",
+            "requires": ["layer", "zoom", "x", "z"],
             [...]
         },
         [...]
@@ -485,8 +485,8 @@ This storage applies to tiles. Objects are stored as rows in a SQLite database.
 Example configuration:
 
     {
-        "requires": ["layer", "zoom", "x", "z"],
         "driver": "sqlite",
+        "requires": ["layer", "zoom", "x", "z"],
         "src": "layers/{layer}/{zoom}/{x-x%100000}.tiles",
         "select": "SELECT raw_data, modified from tiles WHERE x={x} AND z={z}",
         "insert": "INSERT OR REPLACE INTO tiles (x, z, raw_data, modified) VALUES ({x}, {z}, {raw_data}, strftime('%s'))",
