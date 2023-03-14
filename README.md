@@ -469,7 +469,8 @@ Example configuration:
 
     {
         "driver": "filesystem",
-        "src": "layers/{layer}/{zoom}/{x},{z}.png"
+        "requires": ["layer", "zoom", "x", "z", "format"],
+        "src": "layers/{layer}/{zoom}/{x},{z}.{format}"
     }
 
 Configuration options:
@@ -484,13 +485,15 @@ This storage applies to tiles. Objects are stored as rows in a SQLite database.
 Example configuration:
 
     {
+        "requires": ["layer", "zoom", "x", "z"],
         "driver": "sqlite",
         "src": "layers/{layer}/{zoom}/{x-x%100000}.tiles",
         "select": "SELECT raw_data, modified from tiles WHERE x={x} AND z={z}",
-        "insert": "INSERT INTO tiles (x, z, raw_data, modified) VALUES ({x}, {z}, {raw_data}, strftime('%s'))",
+        "insert": "INSERT OR REPLACE INTO tiles (x, z, raw_data, modified) VALUES ({x}, {z}, {raw_data}, strftime('%s'))",
         "init": [
             "CREATE TABLE tiles (x INT, z INT, raw_data BLOB, modified INT)",
-            "CREATE INDEX tiles_x_idx ON tiles (x)"
+            "CREATE UNIQUE INDEX tiles_idx ON tiles (x, z)",
+            "CREATE INDEX tiles_modified_idx ON tiles (modified)"
         ]
     }
 
