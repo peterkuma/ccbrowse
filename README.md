@@ -44,6 +44,9 @@ To install ccbrowse:
 pip3 install ccbrowse
 ```
 
+**Note:** You might have to replace `pip3` with `pip` depending on your Python
+distribution.
+
 Make sure that the directory `$HOME/.local/bin` is in the PATH environmental
 variable, for example by adding `PATH="$HOME/.local/bin:$PATH"` to
 `~/.profile`.
