@@ -8,6 +8,7 @@ import subprocess
 import signal
 import logging
 
+import ccbrowse
 from ccbrowse.config import sharepath
 
 
@@ -26,6 +27,7 @@ def usage():
     sys.stderr.write('''Usage: {program_name} COMMAND [ARGS]
        {program_name} COMMAND --help
        {program_name} --help
+       {program_name} --version
 
 Try `{program_name} --help\' for more information.
 '''.format(program_name=program_name))
@@ -35,6 +37,7 @@ def print_help():
     sys.stdout.write('''Usage: {program_name} COMMAND [ARGS]
        {program_name} COMMAND --help
        {program_name} --help
+       {program_name} --version
 
 Perform commands on a ccbrowse repository.
 
@@ -42,6 +45,11 @@ Available commands:
   create        create a new repository
   import        import a product file
   server        run the ccbrowse HTTP server
+
+Optional arguments:
+
+  --help        print this help information and exit
+  --version     print the version number and exit
 
 Use `{program_name} COMMAND --help' for more information about a command.
 
@@ -63,6 +71,10 @@ Positional arguments:
         print_help()
 
 
+def print_version():
+    print(ccbrowse.__version__)
+
+
 if __name__ == "__main__":
     program_name = sys.argv[0]
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
@@ -75,6 +87,10 @@ if __name__ == "__main__":
 
     if command == '--help':
         print_help()
+        sys.exit(0)
+
+    if command == '--version':
+        print_version()
         sys.exit(0)
 
     if command != 'create' and not os.path.exists('config.json'):
