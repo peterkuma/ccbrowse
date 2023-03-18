@@ -2,7 +2,7 @@ import os
 import sqlite3
 
 from ccbrowse import utils
-from ccbrowse.ccimport import PRODUCTS
+from ccbrowse.products import PRODUCTS
 from .driver import Driver
 
 INIT = [

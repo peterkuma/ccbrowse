@@ -85,7 +85,7 @@ setup(
     ],
     packages=[
         'ccbrowse',
-        'ccbrowse.ccimport',
+        'ccbrowse.products',
         'ccbrowse.storage',
     ],
     scripts=[

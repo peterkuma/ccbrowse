@@ -13,7 +13,7 @@ import multiprocessing as mp
 import ccbrowse
 from ccbrowse import utils
 from ccbrowse.exceptions import StorageNotAvailable
-from ccbrowse.ccimport import PRODUCTS, Calipso, CloudSat, NaturalEarth
+from ccbrowse.products import PRODUCTS, Calipso, CloudSat, NaturalEarth
 
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
 

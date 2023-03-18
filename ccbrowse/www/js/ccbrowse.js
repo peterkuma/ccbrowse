@@ -23,7 +23,7 @@
  *
  * At the heart of the program is the profile object, loaded from a JSON file.
  * The object hold information about available layers and location of tiles.
- * Layer data has to be prepared in advance by the ccimport.* programs,
+ * Layer data has to be prepared in advance by the products.* modules,
  * which are part of this project.
  */
 

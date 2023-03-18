@@ -410,7 +410,7 @@ would display its name in the selection of layers, but it could not retrieve
 any data. For that, you have write an import class or extend an existing one,
 which reads the relevant data from product files and returns an array of data
 interpolated on a regular grid of 256×256 elements for each tile. You can find
-instructions on how to do that in `src/ccbrowse/ccimport/product.py`, and use
+instructions on how to do that in `src/ccbrowse/products/product.py`, and use
 the existing import classes in the same directory as an example.
 
 ## Storage

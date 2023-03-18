@@ -8,7 +8,7 @@ import os
 import ccbrowse
 import ccbrowse.config
 from ccbrowse.storage import MemCacheDriver
-from ccbrowse.ccimport import PRODUCTS
+from ccbrowse.products import PRODUCTS
 from ccbrowse import utils
 from .rangelist import RangeList, RangeListEncoder
 from ccbrowse.utils import JSONEncoder
