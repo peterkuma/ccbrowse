@@ -34,6 +34,7 @@ class Product(object):
     OFFSET_LEVEL = 2
     OFFSET_LOW = -120 # s
     OFFSET_HIGH = 120 # s
+    OFFSET_MAX_DISTANCE = 20e3 # m
 
     @classmethod
     def datasets(cls, primary=True):
@@ -138,20 +139,28 @@ class Product(object):
             traj2 += list(zip(lon2[0,::8], lat2[0,::8]))
 
         if len(traj1) == 0:
-            raise ValueError('cannot calculate time offset: primary satellite data not available')
+            raise ValueError('%s: cannot calculate time offset: primary satellite data not available' % self.filename)
 
         def d(n):
             if n == 0: return utils.trajectories_distance(traj1, traj2)
             if n < 0: return utils.trajectories_distance(traj1[:n], traj2[-n:])
             return utils.trajectories_distance(traj1[n:], traj2[:-n])
 
+        # Units: number of pixels divided by 8.
         low = int(256.0/8*self.OFFSET_LOW*1000/w)
         high = int(256.0/8*self.OFFSET_HIGH*1000/w)
 
         res = utils.intoptim_convex(d, low, high)
-        if not np.isfinite(res):
-            raise ValueError('cannot calculate time offset: time offset is outside of the bounds [%.3f, %.3f] seconds' % \
-                (self.OFFSET_LOW, self.OFFSET_HIGH))
-        n = res*8
-        offset = n*w/256
+        dist = np.nan
+        if np.isfinite(res):
+            n = int(np.round(res))
+            dist = d(n)
+        if not np.isfinite(res) or dist > self.OFFSET_MAX_DISTANCE:
+            raise ValueError('%s: cannot calculate time offset: time offset is outside of the bounds of %d to %d s or %d km' % (
+                self.filename,
+                self.OFFSET_LOW,
+                self.OFFSET_HIGH,
+                self.OFFSET_MAX_DISTANCE*1e-3
+            ))
+        offset = res*8*w/256
         return offset

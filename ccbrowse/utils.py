@@ -10,7 +10,7 @@ import re
 from math import sqrt, cos, radians
 
 
-EARTH_RADIUS = 6371.009
+EARTH_RADIUS = 6371.009e3 # m
 
 
 def coerce(x, low, high):
@@ -258,10 +258,8 @@ def trajectories_distance(traj1, traj2):
     return d/len(traj1)
 
 
-def quadmin(xxx_todo_changeme, xxx_todo_changeme1):
+def quadmin(x1, x2, x3, y1, y2, y3):
     """Find the minimum of a quadratic polynomial fitting three points."""
-    (x1, x2, x3) = xxx_todo_changeme
-    (y1, y2, y3) = xxx_todo_changeme1
     w1 = 1.0*(x1-x2)*(x1-x3)
     w2 = 1.0*(x2-x1)*(x2-x3)
     w3 = 1.0*(x3-x1)*(x3-x2)
@@ -291,7 +289,7 @@ def intoptim_convex(f, low, high):
         elif y1 <= y2 <= y3:
             x3 = x2
         elif y2 < y1 and y2 < y3:
-            x = int(quadmin([x1, x2, x3], [y1, y2, y3]))
+            x = int(quadmin(x1, x2, x3, y1, y2, y3))
             break
         else:
             raise AssertionError('Function not convex')
@@ -313,7 +311,7 @@ def intoptim_convex(f, low, high):
             x1, x2, x3 = x1-1, x1, x2
             y1, y2, y3 = f(x1), y1, y2
 
-    return quadmin([x1, x2, x3], [y1, y2, y3])
+    return quadmin(x1, x2, x3, y1, y2, y3)
 
 
 class JSONEncoder(json.JSONEncoder):
