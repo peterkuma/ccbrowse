@@ -19,20 +19,6 @@ def coerce(x, low, high):
     return x
 
 
-#def substitute(s, variables):
-#    for (key, value) in variables.items():
-#        placeholder = '{'+key+'}'
-#        value = unicode(value)
-#        i = s.find(placeholder)
-#        j = 0
-#        while i >= 0:
-#            j = i+len(placeholder)
-#            s = s[:i] + value + s[j:]
-#            start = i + len(value)
-#            i = s.find(placeholder, start)
-#    return s
-
-
 def substitute(s, variables):
     """Substitute variables in string s.
 
