@@ -4,6 +4,7 @@ import json
 from tempfile import mkdtemp
 import codecs
 
+
 class NaturalEarth(object):
     DATASETS = ['geography']
 

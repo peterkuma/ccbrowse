@@ -1,10 +1,11 @@
-import sqlite3
 import re
 import os
 import logging
+import sqlite3
 
 from ccbrowse import utils
 from .driver import Driver
+
 
 class SQLiteDriver(Driver):
     def __init__(self, config, *args, **kwargs):

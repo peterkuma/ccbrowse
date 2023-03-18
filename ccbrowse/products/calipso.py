@@ -12,6 +12,7 @@ from ccbrowse.algorithms import interp2d
 
 from .product import Product
 
+
 class Calipso(Product):
     NAME = 'calipso'
 

@@ -3,6 +3,7 @@ import os
 from ccbrowse import utils
 from .driver import Driver
 
+
 class FilesystemDriver(Driver):
     """Filesystem driver class.
 

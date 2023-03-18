@@ -15,7 +15,9 @@ from ccbrowse import utils
 from ccbrowse.exceptions import StorageNotAvailable
 from ccbrowse.products import PRODUCTS, Calipso, CloudSat, NaturalEarth
 
+
 SUPPORTED_TYPES = ['calipso', 'naturalearth']
+
 
 def usage():
     sys.stderr.write('''Usage: {program_name} [option]... TYPE FILE...
@@ -149,6 +151,7 @@ def save(product, profile, layer=None, zoom=None,
               (1000*stat['read']/stat['n'], 1000*stat['save']/stat['n']))
 
     return XX
+
 
 def worker(args):
     qin, qout, file_type, config, layer, zoom, options = args

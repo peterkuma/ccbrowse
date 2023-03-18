@@ -1,7 +1,9 @@
-from ccbrowse.exceptions import StorageNotAvailable
-from ccbrowse.storage import *
 import copy
 import reprlib as reprlib
+
+from ccbrowse.exceptions import StorageNotAvailable
+from ccbrowse.storage import *
+
 
 class Router(Driver):
     def __init__(self, config, root='.', on_store=None, on_retrieve=None, *args, **kwargs):

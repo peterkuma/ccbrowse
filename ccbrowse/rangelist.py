@@ -24,11 +24,13 @@
 import json
 from bintrees import FastRBTree
 
+
 class RangeListEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, RangeList):
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
+
 
 class RangeList(object):
     """List of ranges.
@@ -93,6 +95,7 @@ class RangeList(object):
             if prevstop > stop: self.tree[stop] = prevstop
             if prevstop >= start: self.tree[prevstart] = start
         except ValueError: pass
+
 
 if __name__ == "__main__":
     import doctest

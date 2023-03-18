@@ -9,6 +9,7 @@ import numpy as np
 import ccbrowse
 import ccbrowse.utils as utils
 
+
 class Product(object):
     """Import a product file into ccbrowse profile.
 

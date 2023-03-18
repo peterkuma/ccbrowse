@@ -3,11 +3,13 @@ cimport numpy as np
 import numpy as np
 from PIL import ImageColor
 
+
 cdef extern from "math.h":
     double floor(double)
     double ceil(double)
     double round(double)
     bint isnan(double x)
+
 
 @cython.boundscheck(False)
 @cython.wraparound(False)

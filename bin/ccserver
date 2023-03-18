@@ -9,6 +9,7 @@ import bottle
 
 import ccbrowse
 
+
 def usage():
     sys.stderr.write('''Usage: {program_name} [OPTIONS] [[HOST:]PORT]
        {program_name} --help

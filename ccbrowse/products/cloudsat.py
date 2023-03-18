@@ -10,6 +10,7 @@ from ccbrowse.algorithms import interp2d_12
 
 from .product import Product
 
+
 class CloudSat(Product):
     NAME = 'cloudsat'
 

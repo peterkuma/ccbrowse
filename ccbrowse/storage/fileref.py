@@ -5,6 +5,7 @@ from ccbrowse import utils
 from ccbrowse.products import PRODUCTS
 from .driver import Driver
 
+
 INIT = [
     'CREATE TABLE files (filename TEXT, product TEXT, offset INT, t1 REAL, t2 REAL, h1 REAL, h2 REAL, modified INT)',
     'CREATE UNIQUE INDEX files_filename_idx ON files (filename)',
@@ -18,6 +19,7 @@ SELECT = 'SELECT filename, offset, modified from files WHERE \
           product = {product} AND \
           ((t1 < {ts1} AND t2 > {ts1}) OR (t1 >= {ts1} AND t1 < {ts2})) AND \
           ((h1 < {hs1} AND h2 > {hs1}) OR (h1 >= {hs1} AND h1 < {hs2}))'
+
 
 class FilerefDriver(Driver):
     """Fileref driver class.
