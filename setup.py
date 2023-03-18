@@ -79,7 +79,6 @@ setup(
         'bottle>=0.12.19',
         'bintrees>=2.2.0',
         'jinja2>=3.0.3',
-        'boto>=2.49.0',
         'gunicorn>=20.1.0',
         'netCDF4>=1.5.5',
     ],
