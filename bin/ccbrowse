@@ -105,9 +105,6 @@ if __name__ == "__main__":
     elif command == 'server':
         os.execvp('ccserver', [' '.join(sys.argv[:2])] + sys.argv[2:])
 
-    elif command == 'load':
-        os.execvp('ccload', [' '.join(sys.argv[:2])] + sys.argv[2:])
-
     else:
         logging.error('Unknown command %s' % command)
         sys.exit(1)

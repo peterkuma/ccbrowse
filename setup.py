@@ -90,11 +90,9 @@ setup(
     ],
     scripts=[
         'bin/ccimport',
-        'bin/ccinfo',
         'bin/ccbrowse',
         'bin/ccserver',
         'bin/cchtree-clean',
-        'bin/ccload',
     ],
     include_package_data=True,
     zip_safe=False,
