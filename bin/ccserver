@@ -10,14 +10,14 @@ import bottle
 import ccbrowse
 
 def usage():
-    sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
+    sys.stderr.write('''Usage: {program_name} [OPTIONS] [[HOST:]PORT]
        {program_name} --help
 Try `{program_name} --help' for more information.
 '''.format(program_name=program_name))
 
 
 def print_help():
-    sys.stderr.write('''Usage: {program_name} [-d] [-c FILE] [[HOST:]PORT]
+    sys.stderr.write('''Usage: {program_name} [OPTIONS] [[HOST:]PORT]
        {program_name} --help
 
 Run the ccbrowse HTTP server.
