@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 import os
 import sys
@@ -153,27 +155,22 @@ def save(product, profile, layer=None, zoom=None,
 
 
 def worker_init(config):
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     global profile
     profile = ccbrowse.Profile(config, cache_size=0, write_availability=False)
 
 
-def worker(file_type, filename, config, layer, zoom, options):
+def worker(file_type, filename, layer, zoom, options):
     print(filename)
-    try:
-        if file_type == 'calipso':
-            product = Calipso(filename, profile)
-            return save(product, profile, layer=layer, zoom=zoom, **options)
-        elif file_type == 'cloudsat':
-            product = CloudSat(filename, profile)
-            return save(product, profile, layer=layer, zoom=zoom, **options)
-        elif file_type == 'naturalearth':
-            naturalearth = NaturalEarth(filename, profile)
-            naturalearth.save(layer=layer)
-        else:
-            logging.error('Unrecognized type %s' % file_type)
-            sys.exit(1)
-    except Exception as e:
-        logging.error(traceback.format_exc())
+    if file_type == 'calipso':
+        product = Calipso(filename, profile)
+        return save(product, profile, layer=layer, zoom=zoom, **options)
+    elif file_type == 'cloudsat':
+        product = CloudSat(filename, profile)
+        return save(product, profile, layer=layer, zoom=zoom, **options)
+    elif file_type == 'naturalearth':
+        naturalearth = NaturalEarth(filename, profile)
+        naturalearth.save(layer=layer)
 
 
 if __name__ == '__main__':
@@ -233,6 +230,10 @@ if __name__ == '__main__':
     file_type = args[0]
     filenames = args[1:]
 
+    if not file_type in ['calipso', 'cloudsat', 'naturalearth']:
+        logging.error('Invalid file type "%s"' % file_type)
+        sys.exit(1)
+
     try:
         with open(config_filename) as fp:
             config = json.load(fp)
@@ -242,7 +243,7 @@ if __name__ == '__main__':
 
     try:
         tasks = [
-            (file_type, filename, config, layer, zoom, options)
+            (file_type, filename, layer, zoom, options)
             for filename in filenames
         ]
         with ccbrowse.Profile(config, cache_size=0) as profile:
@@ -263,4 +264,3 @@ if __name__ == '__main__':
             logging.error('%s: %s' % (e.filename, e.strerror))
         else:
             logging.error(e)
-    except KeyboardInterrupt: pass
