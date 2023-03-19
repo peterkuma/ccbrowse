@@ -159,14 +159,14 @@ def unlock(lockfp, filename):
 
 
 def usage():
-    sys.stderr.write('''Usage: {program_name} [-df] [-n SECONDS] STORAGE
+    sys.stderr.write('''Usage: {program_name} [OPTIONS] STORAGE
        {program_name} --help
 Try `{program_name} --help' for more information.
 '''.format(program_name=program_name))
 
 
 def print_help():
-    sys.stdout.write('''Usage: {program_name} [-dfs] [-n SECONDS] STORAGE
+    sys.stdout.write('''Usage: {program_name} [OPTIONS] STORAGE
        {program_name} --help
 
 Perform clean operation on htree storage.

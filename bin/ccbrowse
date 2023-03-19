@@ -47,7 +47,6 @@ Available commands:
   server        run the ccbrowse HTTP server
 
 Optional arguments:
-
   --help        print this help information and exit
   --version     print the version number and exit
 

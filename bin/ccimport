@@ -16,9 +16,6 @@ from ccbrowse.exceptions import StorageNotAvailable
 from ccbrowse.products import PRODUCTS, Calipso, CloudSat, NaturalEarth
 
 
-SUPPORTED_TYPES = ['calipso', 'naturalearth']
-
-
 def usage():
     sys.stderr.write('''Usage: {program_name} [option]... TYPE FILE...
        {program_name} --help
@@ -27,10 +24,10 @@ Try `{program_name} --help' for more information.
 
 
 def print_help():
-    sys.stdout.write('''Usage: {program_name} [option]... TYPE FILE...
+    sys.stdout.write('''Usage: {program_name} [OPTIONS] TYPE FILE...
        {program_name} --help
 
-Import data from FILE into profile specified in configuration file CONFIG.
+Import data from FILE into profile specified in configuration file.
 
 Positional arguments:
   TYPE             product type
@@ -48,6 +45,7 @@ Optional arguments:
 
 Supported product types:
   calipso
+  cloudsat
   naturalearth
 
 Report bugs to <ccplot-general@lists.sourceforge.net>
