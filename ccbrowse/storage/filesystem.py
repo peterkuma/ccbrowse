@@ -25,8 +25,12 @@ class FilesystemDriver(Driver):
         try: os.makedirs(os.path.dirname(filename))
         except os.error: pass
 
-        with open(filename, 'w') as f:
+        tmp_filename = filename + '.tmp'
+        with open(tmp_filename, 'w') as f:
             f.write(obj['raw_data'])
+            f.flush()
+            os.fsync(f.fileno())
+        os.rename(tmp_filename, filename)
         return True
 
     def retrieve(self, obj, exclude=[]):
