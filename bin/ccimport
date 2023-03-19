@@ -8,7 +8,7 @@ import json
 import functools
 import time
 import traceback
-import multiprocessing as mp
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import ccbrowse
 from ccbrowse import utils
@@ -152,32 +152,28 @@ def save(product, profile, layer=None, zoom=None,
     return XX
 
 
-def worker(args):
-    qin, qout, file_type, config, layer, zoom, options = args
-    with ccbrowse.Profile(config, cache_size=0, write_availability=False) as profile:
-        while True:
-            filename = qin.get()
-            if filename is None:
-                break
-            print(filename)
-            try:
-                if file_type == 'calipso':
-                    product = Calipso(filename, profile)
-                    XX = save(product, profile, layer=layer, zoom=zoom, **options)
-                    qout.put(XX)
-                elif file_type == 'cloudsat':
-                    product = CloudSat(filename, profile)
-                    XX = save(product, profile, layer=layer, zoom=zoom, **options)
-                    qout.put(XX)
-                elif file_type == 'naturalearth':
-                    naturalearth = NaturalEarth(filename, profile)
-                    naturalearth.save(layer=layer)
-                else:
-                    logging.error('Unrecognized type %s' % file_type)
-                    sys.exit(1)
-            except Exception as e:
-                logging.error(traceback.format_exc())
-    qout.put(None)
+def worker_init(config):
+    global profile
+    profile = ccbrowse.Profile(config, cache_size=0, write_availability=False)
+
+
+def worker(file_type, filename, config, layer, zoom, options):
+    print(filename)
+    try:
+        if file_type == 'calipso':
+            product = Calipso(filename, profile)
+            return save(product, profile, layer=layer, zoom=zoom, **options)
+        elif file_type == 'cloudsat':
+            product = CloudSat(filename, profile)
+            return save(product, profile, layer=layer, zoom=zoom, **options)
+        elif file_type == 'naturalearth':
+            naturalearth = NaturalEarth(filename, profile)
+            naturalearth.save(layer=layer)
+        else:
+            logging.error('Unrecognized type %s' % file_type)
+            sys.exit(1)
+    except Exception as e:
+        logging.error(traceback.format_exc())
 
 
 if __name__ == '__main__':
@@ -192,7 +188,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     config_filename = 'config.json'
-    njobs = mp.cpu_count()
+    njobs = os.cpu_count()
     file_type = None
     layer = None
     zoom = None
@@ -245,27 +241,21 @@ if __name__ == '__main__':
         sys.exit(1)
 
     try:
-        m = mp.Manager()
-        qin = m.Queue(len(filenames) + njobs)
-        qout = m.Queue(njobs)
-        args = [
-            (qin, qout, file_type, config, layer, zoom, options)
-            for i in range(njobs)
+        tasks = [
+            (file_type, filename, config, layer, zoom, options)
+            for filename in filenames
         ]
         with ccbrowse.Profile(config, cache_size=0) as profile:
-            with mp.Pool(njobs) as p:
-                task = p.map_async(worker, args)
-                for filename in filenames:
-                    qin.put(filename, block=False)
-                for i in range(njobs):
-                    qin.put(None, block=False)
-                n = 0
-                while n < njobs:
-                    XX = qout.get()
-                    if XX is None:
-                        n += 1
-                        continue
-                    for layer, level, X in XX:
+            with ProcessPoolExecutor(
+                max_workers=njobs,
+                initializer=worker_init,
+                initargs=(config,),
+            ) as ex:
+                fs = [ex.submit(worker, *task) for task in tasks]
+                for f in as_completed(fs):
+                    res = f.result()
+                    if res is None: continue
+                    for layer, level, X in res:
                         intervals = utils.intervals(X)
                         profile.update_availability(layer, level, intervals)
     except IOError as e:

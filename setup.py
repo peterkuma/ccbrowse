@@ -65,7 +65,7 @@ setup(
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
     ],
-    python_requires='>=3.0.0',
+    python_requires='>=3.7.0',
     setup_requires=[
         'cython',
     ],
