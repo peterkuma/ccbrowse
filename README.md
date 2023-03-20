@@ -51,6 +51,13 @@ Make sure that the directory `$HOME/.local/bin` is in the PATH environmental
 variable, for example by adding `PATH="$HOME/.local/bin:$PATH"` to
 `~/.profile`.
 
+Optional requirements needed for importing Natural Earth data (already included
+in the standard ccbrowse installation) and building manual pages:
+
+```sh
+apt install gdal-bin ronn
+```
+
 ## Setup
 
 A new ccbrowse repository `repo` can be created with:
