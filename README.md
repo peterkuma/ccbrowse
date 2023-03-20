@@ -25,7 +25,7 @@ CALIPSO:
 
 CloudSat:
 
-- CloudSat Level 2B-GEOPROF:
+- CloudSat 2B-GEOPROF:
     - Radar Reflectivity Factor
 
 ## Installation
