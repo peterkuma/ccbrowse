@@ -162,16 +162,18 @@ def worker_init(config):
 
 def worker(file_type, filename, layer, zoom, options):
     print(filename)
-    if file_type == 'calipso':
-        product = Calipso(filename, profile)
-        return save(product, profile, layer=layer, zoom=zoom, **options)
-    elif file_type == 'cloudsat':
-        product = CloudSat(filename, profile)
-        return save(product, profile, layer=layer, zoom=zoom, **options)
-    elif file_type == 'naturalearth':
-        naturalearth = NaturalEarth(filename, profile)
-        naturalearth.save(layer=layer)
-
+    try:
+        if file_type == 'calipso':
+            product = Calipso(filename, profile)
+            return save(product, profile, layer=layer, zoom=zoom, **options)
+        elif file_type == 'cloudsat':
+            product = CloudSat(filename, profile)
+            return save(product, profile, layer=layer, zoom=zoom, **options)
+        elif file_type == 'naturalearth':
+            naturalearth = NaturalEarth(filename, profile)
+            naturalearth.save(layer=layer)
+    except Exception:
+        logging.error('%s: %s' % (filename, traceback.format_exc()))
 
 if __name__ == '__main__':
     program_name = 'ccbrowse import'
