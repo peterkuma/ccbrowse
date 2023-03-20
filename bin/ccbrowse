@@ -74,8 +74,8 @@ def print_version():
     print(ccbrowse.__version__)
 
 
-if __name__ == "__main__":
-    program_name = sys.argv[0]
+if __name__ == '__main__':
+    program_name = 'ccbrowse'
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
 
     if len(sys.argv) < 2:

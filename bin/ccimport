@@ -174,7 +174,7 @@ def worker(file_type, filename, layer, zoom, options):
 
 
 if __name__ == '__main__':
-    program_name = sys.argv[0]
+    program_name = 'ccbrowse import'
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'c:j:l:sz:',

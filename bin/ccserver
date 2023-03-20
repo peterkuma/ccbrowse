@@ -42,8 +42,8 @@ def print_server_backends():
     print('\n'.join(bottle.server_names))
 
 
-if __name__ == "__main__":
-    program_name = sys.argv[0]
+if __name__ == '__main__':
+    program_name = 'ccbrowse server'
     logging.basicConfig(format=program_name+': %(message)s', level=logging.INFO)
     os.setpgrp()
 
