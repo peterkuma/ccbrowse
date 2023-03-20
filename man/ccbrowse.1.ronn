@@ -1,0 +1,55 @@
+ccbrowse -- Web application for browsing data from the CALIPSO and CloudSat satellites
+========
+
+## SYNOPSIS
+
+`ccbrowse` *command* [*options*]<br>
+`ccbrowse` *command* `--help`<br>
+`ccbrowse --help`<br>
+`ccbrowse --version`<br>
+
+## DESCRIPTION
+
+ccbrowse is an open source web application for browsing data from the CALIPSO
+and CloudSat satellites. It is comprised of a web application and a backend for
+importing HDF4 (CALIPSO) and HDF-EOS2 (CloudSat) product files.
+
+## ARGUMENTS
+
+* *command*:
+A command to perform. See `COMMANDS` below.
+
+## COMMANDS
+
+* `create`:
+Create a new repository. See `ccbrowse-create`(1) for more information.
+
+* `import`:
+Import a product file. See `ccbrowse-import`(1) for more information.
+
+* `server`:
+Run the ccbrowse HTTP server. See `ccbrowse-server`(1) for more information.
+
+## OPTIONS
+
+* `--help`:
+Print help information and exit.
+
+* `--version`:
+Print the version number and exit.
+
+## COPYRIGHT
+
+Copyright © 2012–2023 Peter Kuma. This program is available under the terms of
+an MIT license.
+
+## BUG REPORTING
+
+Report bugs to <ccplot-general@lists.sourceforge.net>.
+
+## SEE ALSO
+
+`ccbrowse-create`(1), `ccbrowse-import`(1), `ccbrowse-server`(1)
+
+Full documentation is available at <https://ccplot.org/ccbrowse> and
+<https://github.com/peterkuma/ccbrowse>.

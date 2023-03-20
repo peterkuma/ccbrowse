@@ -123,4 +123,7 @@ setup(
             ],
         ),
     ],
+	data_files=[
+		('share/man/man1', glob('man/*.1')),
+	],
 )

@@ -1,0 +1,68 @@
+ccbrowse -- Web application for browsing data from the CALIPSO and CloudSat satellites
+========
+
+## SYNOPSIS
+
+`ccbrowse import` [*options*] *type* *file*...<br>
+`ccbrowse import --help`
+
+## DESCRIPTION
+
+Import data from *file* into profile specified in configuration file. This command
+must be run within a ccbrowse repository created with `ccbrowse-create`(1).
+
+## ARGUMENTS
+
+* `type`:
+Product type. One of:
+`calipso` (CALIPSO Level 1 Profile),
+`cloudsat` (CloudSat 2B-GEOPROF),
+`naturalearth` (Natural Earth countries).
+
+* `file`:
+Product file.
+
+## OPTIONS
+
+* `-c` *file*:
+Configuration file (default: `config.json`).
+
+* `-j` *n*:
+Number of parallel jobs (default: number of CPU cores).
+
+* `-l` *layer*:
+Import only specified profile layer.
+
+* `--overwrite`:
+Overwrite existing tiles.
+
+* `-s`:
+Print statistics.
+
+* `--skip`:
+Skip tiles that exist.
+
+* `--hard`:
+Hard import.
+
+* `--help`:
+Print help information and exit.
+
+* `-z` *zoom*:
+Import only specified zoom level.
+
+## COPYRIGHT
+
+Copyright © 2012–2023 Peter Kuma. This program is available under the terms of
+an MIT license.
+
+## BUG REPORTING
+
+Report bugs to <ccplot-general@lists.sourceforge.net>.
+
+## SEE ALSO
+
+`ccbrowse`(1), `ccbrowse-create`(1), `ccbrowse-server`(1)
+
+Full documentation is available at <https://ccplot.org/ccbrowse> and
+<https://github.com/peterkuma/ccbrowse>.

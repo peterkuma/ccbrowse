@@ -1,0 +1,37 @@
+ccbrowse -- Web application for browsing data from the CALIPSO and CloudSat satellites
+========
+
+## SYNOPSIS
+
+`ccbrowse create` *name*<br>
+`ccbrowse create --help`
+
+## DESCRIPTION
+
+Create a new repository.
+
+## ARGUMENTS
+
+* `name`:
+Name of the repository.
+
+## OPTIONS
+
+* `--help`:
+Print help information and exit.
+
+## COPYRIGHT
+
+Copyright © 2012–2023 Peter Kuma. This program is available under the terms of
+an MIT license.
+
+## BUG REPORTING
+
+Report bugs to <ccplot-general@lists.sourceforge.net>.
+
+## SEE ALSO
+
+`ccbrowse`(1), `ccbrowse-import`(1), `ccbrowse-server`(1)
+
+Full documentation is available at <https://ccplot.org/ccbrowse> and
+<https://github.com/peterkuma/ccbrowse>.

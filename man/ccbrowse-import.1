@@ -1,0 +1,54 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "CCBROWSE" "1" "March 2023" ""
+.SH "NAME"
+\fBccbrowse\fR \- Web application for browsing data from the CALIPSO and CloudSat satellites
+.SH "SYNOPSIS"
+\fBccbrowse import\fR [\fIoptions\fR] \fItype\fR \fIfile\fR\|\.\|\.\|\.
+.br
+\fBccbrowse import \-\-help\fR
+.SH "DESCRIPTION"
+Import data from \fIfile\fR into profile specified in configuration file\. This command must be run within a ccbrowse repository created with \fBccbrowse\-create\fR(1)\.
+.SH "ARGUMENTS"
+.TP
+\fBtype\fR
+Product type\. One of: \fBcalipso\fR (CALIPSO Level 1 Profile), \fBcloudsat\fR (CloudSat 2B\-GEOPROF), \fBnaturalearth\fR (Natural Earth countries)\.
+.TP
+\fBfile\fR
+Product file\.
+.SH "OPTIONS"
+.TP
+\fB\-c\fR \fIfile\fR
+Configuration file (default: \fBconfig\.json\fR)\.
+.TP
+\fB\-j\fR \fIn\fR
+Number of parallel jobs (default: number of CPU cores)\.
+.TP
+\fB\-l\fR \fIlayer\fR
+Import only specified profile layer\.
+.TP
+\fB\-\-overwrite\fR
+Overwrite existing tiles\.
+.TP
+\fB\-s\fR
+Print statistics\.
+.TP
+\fB\-\-skip\fR
+Skip tiles that exist\.
+.TP
+\fB\-\-hard\fR
+Hard import\.
+.TP
+\fB\-\-help\fR
+Print help information and exit\.
+.TP
+\fB\-z\fR \fIzoom\fR
+Import only specified zoom level\.
+.SH "COPYRIGHT"
+Copyright \(co 2012–2023 Peter Kuma\. This program is available under the terms of an MIT license\.
+.SH "BUG REPORTING"
+Report bugs to \fIccplot\-general@lists\.sourceforge\.net\fR\.
+.SH "SEE ALSO"
+\fBccbrowse\fR(1), \fBccbrowse\-create\fR(1), \fBccbrowse\-server\fR(1)
+.P
+Full documentation is available at \fIhttps://ccplot\.org/ccbrowse\fR and \fIhttps://github\.com/peterkuma/ccbrowse\fR\.
