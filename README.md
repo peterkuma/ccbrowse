@@ -603,6 +603,14 @@ geographical data from [Natural Earth](http://www.naturalearthdata.com/).
 
 ## Release notes
 
+### 1.1.0 (2023-03-20)
+
+- ccbrowse import: Improved parallelisation support and error reporting.
+- Improved and fixed command help messages.
+- Added manual pages.
+- Atomic file writing in the filesystem storage.
+- Minor improvements in the About page.
+
 ### 1.0.0 (2023-03-18)
 
 - Restrict satellite offset calculation to an average distance of 20 km.
