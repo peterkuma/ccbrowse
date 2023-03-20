@@ -35,7 +35,7 @@ supported. On Debian-based distributions (e.g. Ubuntu and Devuan), install
 system dependencies with:
 
 ```sh
-apt install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3
+apt install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3 gdal-bin ronn
 ```
 
 To install ccbrowse:
@@ -50,13 +50,6 @@ distribution.
 Make sure that the directory `$HOME/.local/bin` is in the PATH environmental
 variable, for example by adding `PATH="$HOME/.local/bin:$PATH"` to
 `~/.profile`.
-
-Optional requirements needed for importing Natural Earth data (already included
-in the standard ccbrowse installation) and building manual pages:
-
-```sh
-apt install gdal-bin ronn
-```
 
 ## Setup
 
