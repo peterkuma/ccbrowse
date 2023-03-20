@@ -13,13 +13,13 @@ must be run within a ccbrowse repository created with `ccbrowse-create`(1).
 
 ## ARGUMENTS
 
-* `type`:
+* *type*:
 Product type. One of:
 `calipso` (CALIPSO Level 1 Profile),
 `cloudsat` (CloudSat 2B-GEOPROF),
 `naturalearth` (Natural Earth countries).
 
-* `file`:
+* *file*:
 Product file.
 
 ## OPTIONS
