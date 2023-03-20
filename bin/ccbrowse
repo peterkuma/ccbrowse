@@ -59,11 +59,15 @@ Report bugs to <ccplot-general@lists.sourceforge.net>
 def print_help_for(command):
     if command == 'create':
         sys.stdout.write('''Usage: {program_name} create NAME
+       {program_name} create --help
 
 Create a new repository.
 
 Positional arguments:
   NAME          name of the repository
+
+Optional arguments:
+  --help        print this help information and exit
 '''.format(program_name=program_name))
 
     else:

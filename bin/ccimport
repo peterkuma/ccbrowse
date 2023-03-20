@@ -43,7 +43,7 @@ Optional arguments:
   -s               print statistics
   --skip           skip tiles that exist
   --hard           hard import
-  -t TYPE          type of FILE or `help' for a list of supported types
+  --help           print this help information and exit
   -z ZOOM          import only specified zoom level
 
 Supported product types:

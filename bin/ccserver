@@ -30,9 +30,9 @@ Positional arguments:
 Optional arguments:
   -c FILE           configuration file (default: config.json)
   -d                print debugging information
+  --help            print this help information and exit
   -s SERVER         server backend or "help" to print a list of backends
   -w WORKERS        number of server backend workers
-  --help            print this help information
 
 Report bugs to <ccplot-general@lists.sourceforge.net>.
 '''.format(program_name=program_name))
