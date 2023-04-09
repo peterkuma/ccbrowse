@@ -16,6 +16,7 @@ nav {
         .years {
             display: flex;
             flex-wrap: wrap;
+            min-height: 1.8em;
 
             .year-group {
                 display: flex;
@@ -71,6 +72,8 @@ nav {
         }
 
         .days {
+            min-height: 1.7em;
+
             .day {
                 display: inline-block;
                 cursor: pointer;
