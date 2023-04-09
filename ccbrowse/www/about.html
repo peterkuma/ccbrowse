@@ -7,42 +7,58 @@
 <h1>About</h1>
 <article>
 <p style="font-size: 1.8rem; color: #555; margin: 0.3rem 0">
-<strong>ccbrowse</strong> is an open source web application for browsing data
+ccbrowse is an open source web application for browsing data
 from the CALIPSO and CloudSat satellites.
+</p>
+<h2>About CALIPSO and CloudSat</h2>
+<p>
+<a href="https://www-calipso.larc.nasa.gov">CALIPSO</a> is a satellite carrying
+a lidar and <a href="https://cloudsat.atmos.colostate.edu">CloudSat</a> is a
+satellite carrying a cloud radar. Both have been co-located in the satellite
+constellation A-Train.
 </p>
 <h2>How to use</h2>
 <p>
-For navigation, press and drag the image. Zoom by scrolling. Read off values
-by double-clicking. Select UTC time with the blue progress bar above.
+Select year, month and day in the navigation bar. Select the time of day (UTC)
+on the progress bar below the navigation bar.
+</p><p>
+Green/full blue sections of the bar indicate time periods where data for the
+selected layer are available. Striped grey/blue sections of the bar indicate
+time periods where data are not available.
+</p><p>
+Select a layer using the <strong>Layers</strong> dialog in the top right corner.
+</p><p>
+Use the <strong>+/-</strong> buttons in the top left corner to zoom in and out,
+or use the mouse wheel or pinch to zoom on a touchscreen.
+</p><p>
+Click/touch and drag the image to move time and height. Height in km is
+indicated on the left side. The geographical location is indicated at the
+bottom. The globe in the top right corner shows the location of the satellite
+at the time corresponding to the center of the image.
+</p><p>
+Double-click on the image to open a dialog showing the numerical value,
+date, height, geographical coordinates and the geographical location. Click/tap
+on the geographical coordinates to view the location on an external map
+(OpenStreetMap).
+</p><p>
+Loading of the image tiles might take up several seconds due to a delay in data
+reading and interpolation.
 </p>
-<h2>Data Quality</h2>
-<p>
-Data quality is not guaranteed. Especially,
-</p>
-<ul>
-<li>The quality of interpolation is limited.</li>
-<li>Quality Control (QC) information is not shown.</li>
-</ul>
 <h2>Interpolation</h2>
 <p>
 Data is interpolated by averaging all data points overlying a given pixel of
 the resulting image. When the scale of the image is greater than that of the
 data, ordinary nearest-neighbor interpolation is performed.
 </p>
-<!--
-<h2>Data Sources</h2>
-<p>
-Data is provided free of charge by the <a href="http://eosweb.larc.nasa.gov/PRODOCS/calipso/table_calipso.html">CALIPSO</a> and
-<a href="http://www.cloudsat.cira.colostate.edu/">CloudSat</a> missions of NASA.
-</p>
--->
 <h2>More Information</h2>
 <p>
 For more information, please visit ccbrowse on
-<a href="https://github.com/peterkuma/ccbrowse">GitHub</a>.
+<a href="https://github.com/peterkuma/ccbrowse">GitHub</a>. Full source code
+is available, which means that you can run ccbrowse locally or on your own
+server.
 </p>
 <h2>License</h2>
-<p><strong>ccbrowse</strong> is distributed under terms of an MIT license.</p>
+<p>ccbrowse is distributed under terms of an MIT license.</p>
 <div style="color: #555; margin: 1.2rem 0.6rem; font-size: 0.9rem">
 <p>Copyright &copy; 2012–2023 &nbsp;Peter Kuma</p>
 <p>
