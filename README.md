@@ -605,7 +605,7 @@ geographical data from [Natural Earth](http://www.naturalearthdata.com/).
 
 ### ccbrowse
 
-```sh
+```
 Usage: ccbrowse COMMAND [ARGS]
        ccbrowse COMMAND --help
        ccbrowse --help
@@ -627,7 +627,7 @@ Use `ccbrowse COMMAND --help' for more information about a command.
 
 ### ccbrowse import
 
-```sh
+```
 Usage: ccbrowse import [OPTIONS] TYPE FILE...
        ccbrowse import --help
 
@@ -656,7 +656,7 @@ Supported product types:
 
 ### ccbrowse server
 
-```sh
+```
 Usage: ccbrowse server [OPTIONS] [[HOST:]PORT]
        ccbrowse server --help
 
