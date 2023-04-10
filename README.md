@@ -625,6 +625,21 @@ Optional arguments:
 Use `ccbrowse COMMAND --help' for more information about a command.
 ```
 
+### ccbrowse create
+
+```
+Usage: ccbrowse create NAME
+       ccbrowse create --help
+
+Create a new repository.
+
+Positional arguments:
+  NAME          name of the repository
+
+Optional arguments:
+  --help        print this help information and exit
+```
+
 ### ccbrowse import
 
 ```
