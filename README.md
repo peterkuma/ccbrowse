@@ -601,6 +601,79 @@ server is responsible for serving static files, tiles, as well as applying a
 given colormap. It also performs geocoding with the shapely library using
 geographical data from [Natural Earth](http://www.naturalearthdata.com/).
 
+## Command reference
+
+### ccbrowse
+
+```sh
+Usage: ccbrowse COMMAND [ARGS]
+       ccbrowse COMMAND --help
+       ccbrowse --help
+       ccbrowse --version
+
+Perform commands on a ccbrowse repository.
+
+Available commands:
+  create        create a new repository
+  import        import a product file
+  server        run the ccbrowse HTTP server
+
+Optional arguments:
+  --help        print this help information and exit
+  --version     print the version number and exit
+
+Use `ccbrowse COMMAND --help' for more information about a command.
+```
+
+### ccbrowse import
+
+```sh
+Usage: ccbrowse import [OPTIONS] TYPE FILE...
+       ccbrowse import --help
+
+Import data from FILE into profile specified in configuration file.
+
+Positional arguments:
+  TYPE             product type
+  FILE             product file
+
+Optional arguments:
+  -c FILE          configuration file (default: config.json)
+  -j N             number of parallel jobs (default: number of CPU cores)
+  -l LAYER         import only specified profile layer
+  --overwrite      overwrite existing tiles
+  -s               print statistics
+  --skip           skip tiles that exist
+  --hard           hard import
+  --help           print this help information and exit
+  -z ZOOM          import only specified zoom level
+
+Supported product types:
+  calipso
+  cloudsat
+  naturalearth
+```
+
+### ccbrowse server
+
+```sh
+Usage: ccbrowse server [OPTIONS] [[HOST:]PORT]
+       ccbrowse server --help
+
+Run the ccbrowse HTTP server.
+
+Positional arguments:
+  HOST              hostname (default: localhost)
+  PORT              port (default: 8080)
+
+Optional arguments:
+  -c FILE           configuration file (default: config.json)
+  -d                print debugging information
+  --help            print this help information and exit
+  -s SERVER         server backend or "help" to print a list of backends
+  -w WORKERS        number of server backend workers
+```
+
 ## Release notes
 
 ### 1.1.0 (2023-03-20)
