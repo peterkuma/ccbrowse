@@ -34,8 +34,13 @@
             "src": "fileref.sqlite"
         },
         {
-            "driver": "filesystem",
+            "requires": ["layer", "format", "name"],
+            "predicate": "name == 'availability'",
+            "src": "layers/{layer}.{format}"
+        },
+        {
             "requires": ["layer", "format"],
+            "predicate": "layer == 'geography'",
             "src": "layers/{layer}.{format}"
         }
     ]
