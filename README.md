@@ -38,11 +38,17 @@ system dependencies with:
 apt install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3 gdal-bin ronn
 ```
 
-To install ccbrowse:
+1. Install the required package [bintrees](https://github.com/mozman/bintrees):
 
-```sh
-pip3 install ccbrowse
-```
+    ```sh
+    pip3 install https://github.com/mozman/bintrees/archive/refs/tags/v2.2.0.zip
+    ```
+
+2. Install ccbrowse:
+
+    ```
+    pip3 install ccbrowse
+    ```
 
 You might have to replace `pip3` with `pip` depending on your Python
 distribution.
