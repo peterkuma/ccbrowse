@@ -31,20 +31,22 @@ CloudSat:
 ## Installation
 
 ccbrowse can be installed on Linux. Other operating systems are currently not
-supported. On Debian-based distributions (e.g. Ubuntu and Devuan), install
-system dependencies with:
+supported.
 
-```sh
-apt install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3 gdal-bin ronn
-```
+1. On Debian-based distributions (e.g. Ubuntu and Devuan), install system
+dependencies with:
 
-1. Install the required package [bintrees](https://github.com/mozman/bintrees):
+   ```sh
+   apt install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3 gdal-bin ronn
+   ```
+
+2. Install the required package [bintrees](https://github.com/mozman/bintrees):
 
     ```sh
     pip3 install https://github.com/mozman/bintrees/archive/refs/tags/v2.2.0.zip
     ```
 
-2. Install ccbrowse:
+3. Install ccbrowse:
 
     ```
     pip3 install ccbrowse
