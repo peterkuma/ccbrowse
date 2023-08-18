@@ -50,7 +50,8 @@ distribution.
 Some Python distributions (such as Python 3.11 on Debian 12) no longer allow
 installation of Python packages in the home directory. You can either override
 this by adding `--break-system-packages`, or by installing with `pipx install
-ccbrowse`.
+ccbrowse` (pipx can be installed with `apt install pipx` on Debian-based
+distributions).
 
 Make sure that the directory `$HOME/.local/bin` is in the PATH environmental
 variable, for example by adding `PATH="$HOME/.local/bin:$PATH"` to
