@@ -697,6 +697,11 @@ Optional arguments:
 
 ## Release notes
 
+### 1.1.1 (2023-08-18)
+
+- Fixed installation on Python 3.11.
+- Added installation notes about pipx.
+
 ### 1.1.0 (2023-03-20)
 
 - ccbrowse import: Improved parallelisation support and error reporting.
