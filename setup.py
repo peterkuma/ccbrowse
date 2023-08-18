@@ -77,7 +77,6 @@ setup(
         'scipy>=1.1.0',
         'shapely>=1.5.13',
         'bottle>=0.12.19',
-        'bintrees @ https://github.com/mozman/bintrees/archive/refs/tags/v2.2.0.zip',
         'jinja2>=3.0.3',
         'gunicorn>=20.1.0',
         'netCDF4>=1.5.5',
