@@ -705,7 +705,7 @@ Optional arguments:
 
 ## Release notes
 
-### 1.1.1 (2023-08-18)
+### 1.1.2 (2023-08-18)
 
 - Fixed installation on Python 3.11.
 - Added installation notes about pipx.
