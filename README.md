@@ -33,37 +33,23 @@ CloudSat:
 ccbrowse can be installed on Linux. Other operating systems are currently not
 supported.
 
-1. On Debian-based distributions (e.g. Ubuntu and Devuan), install system
+On Debian-based distributions (e.g. Ubuntu and Devuan), install system
 dependencies with:
 
-   ```sh
-   apt install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3 gdal-bin ronn
-   ```
+```sh
+apt install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3 pipx gdal-bin ronn
+```
 
-2. Install the required package [bintrees](https://github.com/mozman/bintrees):
+Install ccbrowse:
 
-    ```sh
-    pip3 install https://github.com/mozman/bintrees/archive/refs/tags/v2.2.0.zip
-    ```
-
-3. Install ccbrowse:
-
-    ```
-    pip3 install ccbrowse
-    ```
-
-You might have to replace `pip3` with `pip` depending on your Python
-distribution.
-
-Some Python distributions (such as Python 3.11 on Debian 12) no longer allow
-installation of Python packages in the home directory. You can either override
-this by adding `--break-system-packages`, or by installing with `pipx install
-ccbrowse` (pipx can be installed with `apt install pipx` on Debian-based
-distributions).
+```
+pipx install ccbrowse
+pipx runpip ccbrowse install https://github.com/mozman/bintrees/archive/refs/tags/v2.2.0.zip
+```
 
 Make sure that the directory `$HOME/.local/bin` is in the PATH environmental
-variable, for example by adding `PATH="$HOME/.local/bin:$PATH"` to
-`~/.profile`.
+variable if not already, for example by adding `PATH="$HOME/.local/bin:$PATH"`
+to `~/.profile`.
 
 ## Setup
 
@@ -167,8 +153,9 @@ adduser --system --group --shell /bin/bash ccbrowse
 mkdir /var/log/ccbrowse
 chown ccbrowse:ccbrowse /var/log/ccbrowse
 su - ccbrowse
-pip3 install ccbrowse
-~/.local/bin/ccbrowse create repo
+pipx install ccbrowse
+pipx runpip ccbrowse install https://github.com/mozman/bintrees/archive/refs/tags/v2.2.0.zip
+ccbrowse create repo
 cd repo
 # Edit config.json. Change log to "/var/log/ccbrowse/error.log" and accesslog
 # to "/var/log/ccbrowse/access.log".
