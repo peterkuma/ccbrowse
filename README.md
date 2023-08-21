@@ -40,7 +40,8 @@ dependencies with:
 apt install libhdf4-dev libhdfeos-dev libgeos-dev sqlite3 python3 python3-dev python3-setuptools cython3 pipx gdal-bin ronn
 ```
 
-Install ccbrowse:
+Install ccbrowse and the required package
+[bintrees](https://github.com/mozman/bintrees):
 
 ```
 pipx install ccbrowse
