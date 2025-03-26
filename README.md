@@ -4,15 +4,16 @@ ccbrowse is an open source web application for browsing data from the CALIPSO
 and CloudSat satellites.
 
 It is comprised of a web application and a backend for importing HDF4 (CALIPSO)
-and HDF-EOS2 (CloudSat) product files. An example ccbrowse deployment is
-available at [browse.ccplot.org](http://browse.ccplot.org).
+and HDF-EOS2 (CloudSat) product files. <!--An example ccbrowse deployment is
+available at [browse.ccplot.org](http://browse.ccplot.org).-->
 
 **Note:** As of version 0.8.0, a new storage driver fileref is the default.
 Importing is much faster and takes much less space. You might want to start
 with a new repository if migrating from a previous version. Otherwise your
 current storage driver as defined in the repository configuration is used.
 
-<a href="https://browse.ccplot.org"><img src="screenshot.png" alt="browse.ccplot.org" /></a>
+<!--<a href="https://browse.ccplot.org"><img src="screenshot.png" alt="browse.ccplot.org" /></a>-->
+<img src="screenshot.png" alt="browse.ccplot.org" />
 
 ## Supported products
 
